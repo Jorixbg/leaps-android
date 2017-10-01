@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/search_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/search_bg">
+
+    <LinearLayout
+        android:id="@+id/search_linear"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_margin="12dp"
+        android:orientation="horizontal">
+        <EditText
+            android:id="@+id/search_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:background="@drawable/homescreen_search_shape"
+            android:drawableLeft="@drawable/ic_action_search"
+            android:drawablePadding="8dp"
+            android:drawableStart="@drawable/ic_action_search"
+            android:ellipsize="start"
+            android:gravity="center_vertical"
+            android:imeOptions="actionDone"
+            android:maxLines="1"
+            android:paddingLeft="12dp"
+            android:paddingStart="12dp"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:id="@+id/cancel_search_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/show_map_btn"/>
+
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/scroll_search_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/search_linear">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/search_max_distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:text="@string/lbl_maximum_distance"
+                android:textColor="@android:color/white" />
+
+            <TextView
+                android:id="@+id/search_distance_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="32dp"
+                android:text="20 km"
+                android:textColor="@android:color/white" />
+
+
+            <android.support.v7.widget.AppCompatSeekBar
+                android:id="@+id/search_seek_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/search_max_distance"
+                android:layout_marginTop="32dp"
+                android:max="150"
+                android:progress="20"
+                android:thumb="@drawable/white_thumb" />
+
+            <com.google.android.flexbox.FlexboxLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/search_flow_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/search_seek_bar"
+                android:layout_marginEnd="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                app:alignContent="flex_start"
+                app:alignItems="flex_start"
+                app:dividerDrawable="@drawable/flex_divider"
+                app:flexWrap="wrap"
+                app:showDivider="beginning|middle">
+
+
+            </com.google.android.flexbox.FlexboxLayout>
+
+
+            <Button
+                android:id="@+id/search_today_btn"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/search_flow_layout"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:text="Today"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/search_next_3_btn"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/search_flow_layout"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="32dp"
+                android:text="Next 3 days"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/search_next_5_btn"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/search_flow_layout"
+                android:layout_marginEnd="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:text="Next 5 days"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white" />
+
+            <com.example.xcomputers.leaps.utils.CustomWhiteButton
+                android:id="@+id/search_btn"
+                android:layout_width="144dp"
+                android:layout_height="40dp"
+                android:layout_below="@id/search_next_3_btn"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/round_white_button_shape"
+                android:text="@string/lbl_search"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/search_reset_btn"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/search_btn"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="12dp"
+                android:text="Reset all"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white" />
+
+        </RelativeLayout>
+
+    </ScrollView>
+</RelativeLayout>

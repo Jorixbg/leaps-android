@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/done_btn"
+        style="@style/Base.Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/done"
+        android:textAllCaps="false"
+        android:textColor="@color/primaryBlue"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:id="@+id/profile_edit_picture"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:layout_width="96dp"
+        android:layout_height="96dp" />
+
+    <TextView
+        android:id="@+id/change_profile_pic_lbl"
+        android:layout_below="@+id/profile_edit_picture"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/primaryBlue"
+        android:text="@string/change_profile_picture"
+        android:layout_marginTop="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/change_profile_pic_lbl"
+        android:layout_marginTop="16dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <View
+                android:id="@+id/divider1"
+
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="16dp"
+                android:background="@android:color/darker_gray" />
+
+            <TextView
+                android:id="@+id/name_lbl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/divider1"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:text="@string/name"
+                android:textColor="@color/primaryBlue"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/name_et"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/name_lbl"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@android:color/transparent"
+                android:textColor="@color/primaryBlue" />
+
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/name_et"
+                android:layout_margin="16dp"
+                android:background="@android:color/darker_gray" />
+
+            <TextView
+                android:id="@+id/userName_lbl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/divider2"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:background="@android:color/transparent"
+                android:text="@string/username"
+                android:textColor="@color/primaryBlue"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/username_et"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/userName_lbl"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@android:color/transparent"
+                android:textColor="@color/primaryBlue" />
+
+            <View
+                android:id="@+id/divider3"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/username_et"
+                android:layout_margin="16dp"
+                android:background="@android:color/darker_gray" />
+
+            <TextView
+                android:id="@+id/gender_lbl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/divider3"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:background="@android:color/transparent"
+                android:text="@string/gender"
+                android:textColor="@color/primaryBlue"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/gender_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/gender_lbl"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/primaryBlue" />
+
+
+            <View
+                android:id="@+id/divider4"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/gender_spinner"
+                android:layout_margin="16dp"
+                android:background="@android:color/darker_gray" />
+
+            <TextView
+                android:id="@+id/birthday_lbl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/divider4"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:background="@android:color/transparent"
+                android:text="@string/birthday"
+                android:textColor="@color/primaryBlue"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/birthday_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/birthday_lbl"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/primaryBlue" />
+
+
+            <View
+                android:id="@+id/divider5"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/birthday_tv"
+                android:layout_margin="16dp"
+                android:background="@android:color/darker_gray" />
+
+            <TextView
+                android:id="@+id/location_lbl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/divider5"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:background="@android:color/transparent"
+                android:text="@string/location"
+                android:textColor="@color/primaryBlue"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/location_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/location_lbl"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@android:color/transparent"
+                android:textColor="@color/primaryBlue" />
+
+
+            <View
+                android:id="@+id/divider6"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/location_tv"
+                android:layout_margin="16dp"
+                android:background="@android:color/darker_gray" />
+
+            <TextView
+                android:id="@+id/about_me_lbl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/divider6"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:background="@android:color/transparent"
+                android:text="@string/about_me"
+                android:textColor="@color/primaryBlue"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/about_me_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/about_me_lbl"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@android:color/transparent"
+                android:textColor="@color/primaryBlue" />
+
+
+            <View
+                android:id="@+id/divider7"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/about_me_et"
+                android:layout_margin="16dp"
+                android:background="@android:color/darker_gray" />
+        </RelativeLayout>
+           </ScrollView>
+</RelativeLayout>

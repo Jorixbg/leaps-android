@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/create_event_third_header"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center"
+        android:text="@string/price_and_slots"
+        android:textAllCaps="true"
+        android:textColor="@color/primaryBlue"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/create_event_price_from_lbl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/create_event_third_header"
+        android:text="@string/price_from"
+        android:textColor="@color/primaryBlue"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/create_event_price_from_et"
+        android:background="@drawable/round_blue_edit_text"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:inputType="numberDecimal"
+        android:textColor="@color/primaryBlue"
+        android:gravity="center_vertical"
+        android:hint="$ 0"
+        android:paddingStart="16dp"
+        android:paddingLeft="16dp"
+        android:layout_below="@+id/create_event_price_from_lbl"
+        android:layout_width="match_parent"
+        android:layout_height="36dp" />
+
+
+    <TextView
+        android:id="@+id/create_event_free_slots_lbl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_below="@+id/create_event_price_from_et"
+        android:text="@string/free_slots"
+        android:textColor="@color/primaryBlue"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/create_event_free_slots_et"
+        android:background="@drawable/round_blue_edit_text"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:inputType="number"
+        android:textColor="@color/primaryBlue"
+        android:gravity="center_vertical"
+        android:hint="0"
+        android:paddingStart="16dp"
+        android:paddingLeft="16dp"
+        android:layout_below="@+id/create_event_free_slots_lbl"
+        android:layout_width="match_parent"
+        android:layout_height="36dp" />
+
+    <TextView
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="32dp"
+        android:textColor="@color/primaryBlue"
+        android:text="@string/lbl_create_event_free_slots_explanation"
+        android:layout_below="@+id/create_event_free_slots_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/create_event_next_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        app:srcCompat="@drawable/next_big" />
+
+</RelativeLayout>

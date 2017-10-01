@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/settings_header"
+        android:layout_marginTop="16dp"
+        android:textAllCaps="true"
+        android:textColor="@color/primaryBlue"
+        android:text="@string/settings"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <TextView
+        android:id="@+id/search_max_distance"
+        android:layout_below="@+id/settings_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="64dp"
+        android:text="@string/lbl_maximum_distance"
+        android:textColor="@color/primaryBlue" />
+
+    <TextView
+        android:id="@+id/search_distance_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/search_max_distance"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:text="20 km"
+        android:textColor="@color/primaryBlue" />
+
+
+    <android.support.v7.widget.AppCompatSeekBar
+        android:id="@+id/search_seek_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/search_max_distance"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:max="150"
+        android:progress="20"
+        android:thumb="@drawable/blue_thumb" />
+
+    <TextView
+        android:layout_below="@+id/search_seek_bar"
+        android:layout_marginTop="32dp"
+        android:text="@string/settings_explanation"
+        android:layout_marginRight="64dp"
+        android:layout_marginEnd="64dp"
+        android:layout_marginLeft="64dp"
+        android:layout_marginStart="64dp"
+        android:textAlignment="center"
+        android:textColor="@color/primaryBlue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/settings_done_btn"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:textColor="@color/primaryBlue"
+        android:textAllCaps="false"
+        android:text="@string/done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>

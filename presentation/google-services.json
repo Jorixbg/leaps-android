@@ -1,0 +1,74 @@
+{
+  "project_info": {
+    "project_number": "801378930759",
+    "firebase_url": "https://leaps-168714.firebaseio.com",
+    "project_id": "leaps-168714",
+    "storage_bucket": "leaps-168714.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:801378930759:android:6c3ec5094dd39008",
+        "android_client_info": {
+          "package_name": "com.example.xcomputers.leaps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "801378930759-2am1vgb5kv7dsi39heb768hnmjmlsr4v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.xcomputers.leaps",
+            "certificate_hash": "0f6fe4a107758264e73fd00e1fe5094349a26362"
+          }
+        },
+        {
+          "client_id": "801378930759-6tch9qd8qauj0v6hi1eq3dshdl46thee.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "801378930759-1qin9e465c6mm5g4ua0ppqqci6po9n2m.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "801378930759-khe3pcddsol8abpl074slovef61v67mc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.xcomputers.leaps",
+            "certificate_hash": "93a3c248e03a1510536af058a9c40c3de32e51d3"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBcKk3LxIaJy3EYu3JFzMXq5CYUKBwDNI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "801378930759-6tch9qd8qauj0v6hi1eq3dshdl46thee.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "801378930759-m9jc5cgovq4hc76r6feaigqgmkq3qdhn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.leaps"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="88dp">
+
+    <ImageView
+        android:id="@+id/feed_trainers_pic"
+        android:layout_width="56dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp" />
+
+    <TextView
+        android:id="@+id/feed_trainers_names"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/feed_trainers_pic"
+        android:layout_toEndOf="@+id/feed_trainers_pic"
+        android:layout_toRightOf="@+id/feed_trainers_pic"
+        android:text="Jon Keller"
+        android:textColor="@color/primaryBlue"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/feed_trainers_tags"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/feed_trainers_names"
+        android:layout_toEndOf="@+id/feed_trainers_pic"
+        android:layout_toRightOf="@+id/feed_trainers_pic"
+        android:text="Cardio"
+        android:textColor="@color/inactive_blue"
+        android:textSize="14sp"
+        android:textStyle="italic" />
+
+    <TextView
+        android:id="@+id/feed_trainers_events_open"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/feed_trainers_pic"
+        android:layout_below="@+id/feed_trainers_tags"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_toEndOf="@+id/feed_trainers_pic"
+        android:layout_toRightOf="@+id/feed_trainers_pic"
+        android:layout_marginTop="2dp"
+        android:textColor="@color/inactive_blue"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/open_events_lbl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/feed_trainers_pic"
+        android:layout_below="@+id/feed_trainers_tags"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_toEndOf="@+id/feed_trainers_events_open"
+        android:layout_toRightOf="@+id/feed_trainers_events_open"
+        android:text="@string/lbl_open_events"
+        android:textColor="@color/inactive_blue" />
+
+    <TextView
+        android:id="@+id/feed_trainers_events_finished"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_alignBaseline="@+id/feed_trainers_pic"
+        android:layout_below="@+id/feed_trainers_tags"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_toEndOf="@+id/open_events_lbl"
+        android:layout_toRightOf="@+id/open_events_lbl"
+        android:textColor="@color/inactive_blue"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_alignBaseline="@+id/feed_trainers_pic"
+        android:layout_below="@+id/feed_trainers_tags"
+        android:layout_toEndOf="@+id/feed_trainers_events_finished"
+        android:layout_toRightOf="@+id/feed_trainers_events_finished"
+        android:text="@string/lbl_finished"
+        android:textColor="@color/inactive_blue" />
+
+</RelativeLayout>

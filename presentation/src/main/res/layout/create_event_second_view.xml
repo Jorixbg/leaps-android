@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/create_event_second_header"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center"
+        android:text="@string/lbl_location"
+        android:textAllCaps="true"
+        android:textColor="@color/primaryBlue"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/create_event_second_location_lbl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/create_event_second_header"
+        android:text="@string/event_location"
+        android:textColor="@color/primaryBlue"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/create_event_location_tv"
+        android:background="@drawable/round_blue_edit_text"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/primaryBlue"
+        android:text="City, address"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:layout_below="@+id/create_event_second_location_lbl"
+        android:layout_width="match_parent"
+        android:layout_height="36dp" />
+
+    <ImageView
+        android:id="@+id/create_event_next_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        app:srcCompat="@drawable/next_big" />
+
+</RelativeLayout>

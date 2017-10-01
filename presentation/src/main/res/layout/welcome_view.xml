@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_login">
+
+    <Button
+        android:id="@+id/welcome_login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:textColor="@color/primaryBlue"
+        android:textSize="12sp"
+        android:text="@string/btn_log_in"
+        android:textAllCaps="false"/>
+
+    <com.example.xcomputers.leaps.utils.CustomTextView
+        android:layout_width="180dp"
+        android:textAlignment="center"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="140dp"
+        android:textColor="@color/primaryBlue"
+        android:layout_height="wrap_content"
+        android:text="@string/lbl_welcome"
+        android:textSize="50sp"/>
+
+    <com.facebook.login.widget.LoginButton
+        xmlns:facebook="http://schemas.android.com/apk/res-auto"
+        facebook:com_facebook_login_text="@string/btn_sign_in_facebook"
+        android:id="@+id/facebook_login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/facebook_ico"
+        android:drawableStart="@drawable/facebook_ico"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:paddingLeft="16dp"
+        android:paddingStart="16dp"
+        android:layout_alignStart="@+id/google_login_button"
+        android:layout_alignLeft="@+id/google_login_button"
+        android:layout_alignEnd="@+id/google_login_button"
+        android:layout_alignRight="@id/google_login_button"
+        android:layout_above="@+id/google_login_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="12dp"
+        />
+
+    <Button
+        android:background="@drawable/round_google_button"
+        android:id="@+id/google_login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="-48dp"
+        android:paddingLeft="16dp"
+        android:paddingStart="16dp"
+        android:drawableLeft="@drawable/google_ico"
+        android:drawableStart="@drawable/google_ico"
+        android:text="@string/btn_sign_in_with_google"
+        android:layout_above="@+id/register_btn"
+        android:textAllCaps="false"
+        android:textColor="@color/primaryBlue"
+        android:layout_alignStart="@+id/register_btn"
+        android:layout_alignLeft="@+id/register_btn"
+        android:layout_alignEnd="@+id/register_btn"
+        android:layout_alignRight="@+id/register_btn"
+        android:layout_marginBottom="12dp"
+        android:layout_centerHorizontal="true"/>
+
+    <Button
+        android:id="@+id/register_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/register_button_shape"
+        android:textColor="@android:color/white"
+        android:textAllCaps="false"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginLeft="36dp"
+        android:text="@string/btn_create_account"/>
+
+</RelativeLayout>

@@ -1,0 +1,428 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/nested_trainer_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ProgressBar
+                android:id="@+id/loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_centerInParent="true"
+                android:indeterminate="true"
+                style="?android:attr/progressBarStyleLarge"
+                android:visibility="gone" />
+
+        <RelativeLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/trainer_image_horizontall_scroll"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"/>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:id="@+id/recycler_placeholder"/>
+
+
+            <ImageView
+                android:id="@+id/profile_list_profile_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                app:srcCompat="@drawable/settings" />
+
+
+            <ImageView
+                android:id="@+id/trainer_pic"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="96dp" />
+
+            <com.example.xcomputers.leaps.utils.CustomTextView
+                android:id="@+id/trainer_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/trainer_image_horizontall_scroll"
+                android:layout_marginBottom="8dp"
+                android:layout_toEndOf="@+id/trainer_pic"
+                android:layout_toRightOf="@+id/trainer_pic"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:textSize="22sp"
+                android:gravity="center_vertical"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/trainer_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/trainer_pic"
+                android:layout_alignBottom="@+id/trainer_name"
+                android:layout_alignTop="@+id/trainer_name"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:textSize="12sp"
+                android:layout_toEndOf="@+id/trainer_name"
+                android:layout_toRightOf="@+id/trainer_name"
+                android:gravity="center"
+                android:textColor="@android:color/white" />
+
+            <LinearLayout
+                android:id="@+id/layout_follow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/trainer_pic">
+
+                <Button
+                    android:id="@+id/follow_trainer_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/following_button_unclicked"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linear_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@+id/layout_follow"
+                android:layout_centerHorizontal="true">
+
+                <TextView
+                    android:id="@+id/events_number_tv"
+                    android:textColor="@color/primaryBlue"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_marginBottom="4dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:text="0"/>
+
+                <TextView
+                    android:id="@+id/user_profile_following_tv"
+                    android:textColor="@color/primaryBlue"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="0"/>
+
+                <TextView
+                    android:id="@+id/user_profile_followers_tv"
+                    android:textColor="@color/primaryBlue"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:text="0"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linear_attributes"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/linear_number"
+                android:layout_centerHorizontal="true">
+
+                <TextView
+                    android:id="@+id/events_number_label"
+                    android:text="@string/lbl_events"
+                    android:textColor="@color/primaryBlue"
+                    android:gravity="center"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    />
+
+                <TextView
+                    android:id="@+id/user_profile_following_lbl"
+                    android:text="@string/following"
+                    android:textColor="@color/primaryBlue"
+                    android:gravity="center"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.2" />
+
+                <TextView
+                    android:id="@+id/user_profile_followers_lbl"
+                    android:text="@string/followers"
+                    android:textColor="@color/primaryBlue"
+                    android:gravity="center"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"/>
+
+            </LinearLayout>
+
+
+            <View
+                android:id="@+id/trainer_divider1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/linear_attributes"
+                android:layout_margin="16dp"
+                android:background="@android:color/darker_gray" />
+
+
+            <ImageView
+                android:id="@+id/trainer_tags_icon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_below="@+id/trainer_divider1"
+                android:layout_marginBottom="12dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                app:srcCompat="@drawable/in_hashtag" />
+
+            <TextView
+                android:id="@+id/trainer_spec_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/trainer_tags_icon"
+                android:layout_alignTop="@+id/trainer_tags_icon"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_toEndOf="@+id/trainer_tags_icon"
+                android:layout_toRightOf="@+id/trainer_tags_icon"
+                android:gravity="center"
+                android:text="@string/lbl_specialities"
+                android:textColor="@color/primaryBlue"
+                android:textStyle="bold" />
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/trainer_tags_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/trainer_spec_label"
+                android:layout_alignStart="@+id/trainer_spec_label"
+                android:layout_below="@+id/trainer_spec_label"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="4dp"
+                app:alignContent="flex_start"
+                app:alignItems="flex_start"
+                app:dividerDrawable="@drawable/flex_divider"
+                app:flexWrap="wrap"
+                app:showDivider="beginning|middle" />
+
+            <View
+                android:id="@+id/trainer_divider2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/trainer_tags_container"
+                android:layout_margin="16dp"
+                android:background="@android:color/darker_gray" />
+
+            <ImageView
+                android:id="@+id/trainer_about_icon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_below="@+id/trainer_divider2"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                app:srcCompat="@drawable/in_info" />
+
+            <TextView
+                android:id="@+id/trainer_about_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/trainer_about_icon"
+                android:layout_alignTop="@+id/trainer_about_icon"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_toEndOf="@+id/trainer_about_icon"
+                android:layout_toRightOf="@+id/trainer_about_icon"
+                android:gravity="center"
+                android:text="@string/lbl_about"
+                android:textColor="@color/primaryBlue"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/ageLbl"
+                android:textColor="@color/primaryBlue"
+                android:layout_below="@+id/trainer_about_label"
+                android:layout_alignLeft="@+id/trainer_about_label"
+                android:layout_alignStart="@+id/trainer_about_label"
+                android:layout_marginTop="12dp"
+                android:text="@string/age"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/trainer_age"
+                android:textColor="@color/primaryBlue"
+                android:textStyle="bold"
+                android:layout_toRightOf="@+id/ageLbl"
+                android:layout_toEndOf="@+id/ageLbl"
+                android:layout_alignTop="@+id/ageLbl"
+                android:layout_marginLeft="4dp"
+                android:layout_marginStart="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/locationLbl"
+                android:layout_below="@+id/ageLbl"
+                android:layout_alignLeft="@+id/ageLbl"
+                android:layout_alignStart="@+id/ageLbl"
+                android:textColor="@color/primaryBlue"
+                android:text="@string/location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/trainer_location"
+                android:textColor="@color/primaryBlue"
+                android:textStyle="bold"
+                android:layout_toEndOf="@+id/locationLbl"
+                android:layout_toRightOf="@+id/locationLbl"
+                android:layout_alignTop="@+id/locationLbl"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/trainer_about_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@id/trainer_about_label"
+                android:layout_alignStart="@id/trainer_about_label"
+                android:layout_below="@id/locationLbl"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/primaryBlue" />
+
+            <View
+                android:id="@+id/trainer_divider3"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/trainer_about_tv"
+                android:layout_margin="16dp"
+                android:background="@android:color/darker_gray" />
+
+
+            <ImageView
+                android:id="@+id/trainer_events_icon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_below="@+id/trainer_divider3"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                app:srcCompat="@drawable/in_cal" />
+
+            <TextView
+                android:id="@+id/trainer_events_recycler_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/trainer_events_icon"
+                android:layout_alignTop="@+id/trainer_events_icon"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_toEndOf="@+id/trainer_events_icon"
+                android:layout_toRightOf="@+id/trainer_events_icon"
+                android:gravity="center_vertical"
+                android:text="@string/lbl_events"
+                android:textColor="@color/primaryBlue"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/trainer_show_past_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:drawableEnd="@drawable/arrow_right"
+                android:drawableRight="@drawable/arrow_right"
+                android:layout_below="@+id/trainer_divider3"
+                android:gravity="center"
+                android:text="@string/lbl_show_past"
+                android:textColor="@color/primaryBlue"
+                android:textStyle="bold" />
+
+            <RelativeLayout
+                android:id="@+id/empty_state"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="256dp"
+                android:layout_below="@+id/trainer_show_past_btn"
+                android:layout_marginEnd="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp">
+                <TextView
+                    android:gravity="center"
+                    android:layout_centerInParent="true"
+                    android:text="@string/no_items_to_show"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/trainer_events_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="256dp"
+                android:layout_below="@+id/trainer_show_past_btn"
+                android:layout_marginEnd="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp" />
+        </RelativeLayout>
+        </RelativeLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+
+    <FrameLayout
+        android:id="@+id/followers_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
+
+</LinearLayout>

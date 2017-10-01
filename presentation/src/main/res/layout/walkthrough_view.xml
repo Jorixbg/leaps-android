@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/walkthrough_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg1">
+
+    <Button
+          android:id="@+id/walkthrough_skip_btn"
+          style="@style/Widget.AppCompat.Button.Borderless"
+          android:textColor="@color/primaryBlue"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignParentEnd="true"
+          android:layout_alignParentRight="true"
+          android:text="@string/skip" />
+
+
+     <com.example.xcomputers.leaps.utils.CustomTextView
+          android:id="@+id/walkthrough_header_tv"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_above="@+id/walkthrough_explanation_tv"
+          android:layout_centerHorizontal="true"
+          android:gravity="center"
+          android:textColor="@color/primaryBlue"
+          android:textSize="30sp"
+          android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/walkthrough_explanation_tv"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="80dp"
+        android:textAlignment="center"
+        android:textColor="@color/primaryBlue"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/walkthrough_next_btn"
+        style="@style/Base.Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:textColor="@color/primaryBlue"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:drawableRight="@drawable/arrow_right"
+        android:text="@string/next" />
+
+</RelativeLayout>

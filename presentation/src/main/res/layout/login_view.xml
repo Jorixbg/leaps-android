@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_login">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_login">
+
+        <com.example.xcomputers.leaps.utils.CustomTextView
+            android:id="@+id/login_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lbl_login"
+            android:textAllCaps="true"
+            android:textColor="@color/primaryBlue"
+            android:textSize="40sp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="100dp"/>
+
+        <com.example.xcomputers.leaps.utils.CustomEditText
+            android:id="@+id/login_username_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:hint="@string/lbl_login_username"
+            android:ellipsize="start"
+            android:gravity="center_horizontal"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:imeOptions="actionNext"
+            android:layout_below="@+id/login_header"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="36dp"
+            android:layout_marginStart="36dp"
+            android:layout_marginBottom="20dp"/>
+
+        <com.example.xcomputers.leaps.utils.CustomEditText
+            android:id="@+id/login_password_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/lbl_password"
+            android:ellipsize="start"
+            android:gravity="center_horizontal"
+            android:inputType="textPassword"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:imeOptions="actionDone"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/login_username_et"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="36dp"
+            android:layout_marginStart="36dp"
+            android:layout_marginBottom="20dp"/>
+
+        <Button
+            android:id="@+id/forgot_password_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@android:style/Widget.Holo.Button.Borderless"
+            android:text="@string/lbl_forgot_password"
+            android:textAllCaps="false"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/login_password_et"
+            android:textColor="@color/primaryBlue"
+            android:layout_marginBottom="20dp"/>
+
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/sign_in_button"
+            android:text="@string/lbl_sign_in"
+            android:textColor="@android:color/white"
+            android:textAllCaps="false"
+            android:background="@drawable/sign_in_button_shape"
+            android:layout_below="@+id/forgot_password_button"
+            android:layout_centerHorizontal="true"/>
+
+        </RelativeLayout>
+    </ScrollView>
+
+</RelativeLayout>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+   android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:id="@+id/create_event_header"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center"
+        android:text="@string/time_and_date"
+        android:textAllCaps="true"
+        android:textColor="@color/primaryBlue"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/create_event_date_lbl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/create_event_header"
+        android:text="@string/date"
+        android:textColor="@color/primaryBlue"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/create_event_date_tv"
+        android:background="@drawable/round_blue_edit_text"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/primaryBlue"
+        android:gravity="center_vertical"
+        android:hint="01.01.2017"
+        android:paddingStart="16dp"
+        android:paddingLeft="16dp"
+        android:layout_below="@+id/create_event_date_lbl"
+        android:layout_width="match_parent"
+        android:layout_height="36dp" />
+
+    <TextView
+        android:id="@+id/create_event_time_lbl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/create_event_date_tv"
+        android:text="@string/time"
+        android:textColor="@color/primaryBlue"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/create_event_time_tv"
+        android:background="@drawable/round_blue_edit_text"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/primaryBlue"
+        android:gravity="center_vertical"
+        android:hint="11:11 AM"
+        android:paddingStart="16dp"
+        android:paddingLeft="16dp"
+        android:layout_below="@+id/create_event_time_lbl"
+        android:layout_width="match_parent"
+        android:layout_height="36dp" />
+
+
+<com.example.xcomputers.leaps.utils.CustomWhiteButton
+    android:id="@+id/publish_event_btn"
+    android:text="@string/publish_your_event"
+    android:layout_alignParentBottom="true"
+    android:layout_centerHorizontal="true"
+    android:layout_marginBottom="16dp"
+    android:layout_width="256dp"
+    android:layout_height="wrap_content" />
+
+</RelativeLayout>

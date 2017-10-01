@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include android:id="@+id/filter_header" layout="@layout/home_feed_recycler_filter_header"/>
+
+    <TextView
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:layout_below="@+id/filter_header"
+        android:id="@+id/feed_trainers_header"
+        android:background="#F1F1F1"
+        android:textAllCaps="true"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/primaryBlue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/lbl_feed_trainers_header"
+        android:layout_marginBottom="8dp"
+        />
+
+    <View
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/feed_trainers_header"
+        android:layout_height="1px"
+        android:id="@+id/feed_trainers_divider"
+        android:background="@android:color/darker_gray"
+        />
+
+    <RelativeLayout
+        android:id="@+id/empty_state"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/feed_trainers_divider"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp">
+        <TextView
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:text="@string/no_items_to_show"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_below="@+id/feed_trainers_divider"
+        android:id="@+id/feed_trainers_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</RelativeLayout>

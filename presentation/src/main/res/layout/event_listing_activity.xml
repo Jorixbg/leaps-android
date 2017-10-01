@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/event_listing_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.example.xcomputers.leaps.utils.CustomTextView
+        android:id="@+id/event_listing_header"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="16dp"
+        android:textColor="@color/primaryBlue"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
+        android:textAllCaps="true"
+        android:gravity="center"
+        android:textSize="28sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/event_listing_header"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
+        android:background="@color/primaryBlue" />
+
+    <RelativeLayout
+        android:id="@+id/empty_state"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/event_listing_header"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp">
+        <TextView
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:text="@string/no_items_to_show"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/event_listing_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/event_listing_header"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp">
+
+
+    </android.support.v7.widget.RecyclerView>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_centerInParent="true"
+        android:indeterminate="true"
+        style="?android:attr/progressBarStyleLarge"
+        android:visibility="gone" />
+
+</RelativeLayout>

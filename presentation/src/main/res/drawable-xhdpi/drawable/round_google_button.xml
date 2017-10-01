@@ -1,0 +1,6 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="6dp" />
+    <stroke android:width="1px" android:color="@color/primaryBlue" />
+    <solid android:color="@color/common_google_signin_btn_tint"/>
+</shape>
