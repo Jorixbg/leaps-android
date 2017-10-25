@@ -11,6 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+
+
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -27,6 +30,31 @@
                     android:id="@+id/event_image_horizontall_scroll"
                     android:layout_width="match_parent"
                     android:layout_height="192dp" />
+
+
+                <ImageView
+                    android:id="@+id/feed_recycler_follow_button"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_toLeftOf="@+id/feed_recycler_share_button"
+                    android:layout_toStartOf="@+id/feed_recycler_share_button"
+                    />
+
+                <ImageView
+                    android:id="@+id/feed_recycler_share_button"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="15dp"
+                    app:srcCompat="@drawable/share"
+                    />
+
 
                 <com.example.xcomputers.leaps.utils.CustomTextView
                     android:id="@+id/event_title"
@@ -239,11 +267,10 @@
                         android:id="@+id/event_location_icon"
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-
                         android:layout_marginLeft="16dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="12dp"
-                        app:srcCompat="@drawable/in_info" />
+                        app:srcCompat="@drawable/event_location" />
 
                     <TextView
                         android:id="@+id/event_location_label"
@@ -271,6 +298,16 @@
                         android:layout_marginRight="16dp"
                         android:layout_marginTop="16dp"
                         android:textColor="@color/primaryBlue" />
+
+                    <fragment
+                        android:id="@+id/event_map"
+                        android:name="com.google.android.gms.maps.SupportMapFragment"
+                        android:layout_width="match_parent"
+                        android:layout_height="180dp"
+                        android:layout_below="@id/event_location_tv"
+                        android:layout_marginTop="16dp">
+                    </fragment>
+
 
                     <ImageView
                         android:id="@+id/event_location_mockup_image"
@@ -301,11 +338,10 @@
                         android:id="@+id/event_attendance_icon"
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-
                         android:layout_marginLeft="16dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="12dp"
-                        app:srcCompat="@drawable/in_info" />
+                        app:srcCompat="@drawable/nav_profile_s" />
 
                     <TextView
                         android:id="@+id/event_attendance_label"
@@ -455,6 +491,34 @@
 
                 </RelativeLayout>
 
+
+               <LinearLayout
+                   android:orientation="horizontal"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_below="@+id/attendance_layout"
+                   android:layout_marginTop="20dp">
+
+
+                   <Button
+                       android:id="@+id/edit_button_event"
+                       android:layout_width="0dp"
+                       android:layout_height="wrap_content"
+                       android:layout_weight="1"
+                       android:visibility="gone"
+                       android:text="Edit"/>
+
+                   <Button
+                       android:id="@+id/delete_button_event"
+                       android:layout_width="0dp"
+                       android:layout_height="wrap_content"
+                       android:layout_weight="1"
+                       android:visibility="gone"
+                       android:text="Delete" />
+
+               </LinearLayout>
+
+
             </RelativeLayout>
         </ScrollView>
 
@@ -525,7 +589,10 @@
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 
 </RelativeLayout>

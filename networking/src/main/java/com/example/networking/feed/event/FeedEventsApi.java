@@ -29,6 +29,10 @@ public interface FeedEventsApi {
     @GET("/event/suited/{page}")
     Observable<List<RealEvent>> getSuited(@Path("page") int page);
 
+    @GET("/event/following/future")
+    Observable<List<RealEvent>> getFollowingFutureEvent();
+
+
 
 
 }

@@ -1,8 +1,8 @@
 package com.example.xcomputers.leaps.profile;
 
+import com.example.networking.following.FollowingService;
 import com.example.networking.login.LoginService;
 import com.example.networking.login.UserResponse;
-import com.example.networking.test.FollowingService;
 import com.example.xcomputers.leaps.User;
 import com.example.xcomputers.leaps.base.BasePresenter;
 import com.example.xcomputers.leaps.utils.EntityHolder;
@@ -19,11 +19,17 @@ import rx.subjects.Subject;
 
 public class ProfileListPresenter extends BasePresenter {
 
+
+
     private FollowingService followingService;
     private Subject<UserResponse, UserResponse> followingUserSubject;
     private Subject<Throwable, Throwable> errorFollowingUserSubject;
+    private Subject<UserResponse, UserResponse> unFollowingUserSubject;
+    private Subject<Throwable, Throwable> errorUnFollowingUserSubject;
+    private Subject<UserResponse, UserResponse> userEntitySubject;
     private Subject<Void, Void> userSubject;
     private Subject<Void, Void> errorSubject;
+
     private LoginService service;
 
     public ProfileListPresenter(){
@@ -33,11 +39,14 @@ public class ProfileListPresenter extends BasePresenter {
         followingService = new FollowingService();
         followingUserSubject = PublishSubject.create();
         errorFollowingUserSubject = PublishSubject.create();
+        unFollowingUserSubject = PublishSubject.create();
+        errorUnFollowingUserSubject = PublishSubject.create();
+        userEntitySubject = PublishSubject.create();
     }
 
     public void FollowingUser(String auth, long userId){
         followingService.addHeader("Authorization", auth);
-        followingService.FollowingUser(User.getInstance().getUserId())
+        followingService.FollowingUser(userId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(userResponse -> {
                     followingUserSubject.onNext(userResponse);
@@ -49,6 +58,20 @@ public class ProfileListPresenter extends BasePresenter {
                 });
 
 
+    }
+
+    public void UnFollowUser(String auth, long userId){
+        followingService.addHeader("Authorization", auth);
+        followingService.UnFollowingUser(userId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(userResponse -> {
+                    unFollowingUserSubject.onNext(userResponse);
+                    followingService.removeHeader("Authorization");
+                }, throwable -> {
+                    followingService.removeHeader("Authorization");
+                    errorHandler().call(throwable);
+                    errorUnFollowingUserSubject.onNext(null);
+                });
     }
 
     public void getUser(long userId, String auth){
@@ -64,12 +87,22 @@ public class ProfileListPresenter extends BasePresenter {
             User.getInstance().setLattitude(lat);
             User.getInstance().setLongtitude(longitude);
             userSubject.onNext(null);
+            userEntitySubject.onNext(userResponse);
         },(throwable) -> {
             errorHandler().call(throwable);
             errorSubject.onNext(null);
         });
     }
 
+
+
+    public Observable<UserResponse> getUnFollowingUserSubject(){
+        return unFollowingUserSubject.asObservable().observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<Throwable> getErrorUnFollowingUserSubject(){
+        return errorUnFollowingUserSubject.asObservable().observeOn(AndroidSchedulers.mainThread());
+    }
 
     public Observable<UserResponse> getFollowingUserSubject(){
         return followingUserSubject.asObservable().observeOn(AndroidSchedulers.mainThread());
@@ -82,7 +115,18 @@ public class ProfileListPresenter extends BasePresenter {
     public Observable<Void> getUserObservable(){
         return userSubject.asObservable().observeOn(AndroidSchedulers.mainThread());
     }
+
+    public Observable<UserResponse> getUserEntityObservable(){
+        return userEntitySubject.asObservable().observeOn(AndroidSchedulers.mainThread());
+    }
+
     public Observable<Void> getErrorObservable(){
         return errorSubject.asObservable().observeOn(AndroidSchedulers.mainThread());
     }
+
+    public FollowingService getFollowingService() {
+        return followingService;
+    }
+
+
 }

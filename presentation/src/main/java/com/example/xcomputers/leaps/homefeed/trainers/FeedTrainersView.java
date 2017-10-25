@@ -4,24 +4,31 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.networking.feed.event.FeedFilterRequest;
 import com.example.networking.feed.trainer.Entity;
+import com.example.networking.login.UserResponse;
 import com.example.xcomputers.leaps.R;
+import com.example.xcomputers.leaps.User;
 import com.example.xcomputers.leaps.base.BaseView;
 import com.example.xcomputers.leaps.base.Layout;
 import com.example.xcomputers.leaps.event.EventActivity;
 import com.example.xcomputers.leaps.homefeed.FeedInsideTab;
+import com.example.xcomputers.leaps.homefeed.HomeFeedContainer;
 import com.example.xcomputers.leaps.homefeed.OnSearchDataCollectedListener;
 import com.example.xcomputers.leaps.trainer.TrainerActivity;
+import com.example.xcomputers.leaps.utils.EntityHolder;
+import com.example.xcomputers.leaps.utils.LoginResponseToUserTypeMapper;
 import com.example.xcomputers.leaps.welcome.WelcomeActivity;
 
 import java.util.Collections;
@@ -37,11 +44,10 @@ import static com.example.xcomputers.leaps.trainer.TrainerActivity.ENTITY_KEY;
  * Created by xComputers on 15/06/2017.
  */
 @Layout(layoutId = R.layout.home_feed_trainers)
-public class FeedTrainersView extends BaseView<FeedTrainersPresenter> implements FeedInsideTab {
+public class FeedTrainersView extends BaseView<FeedTrainersPresenter> implements FeedInsideTab,SwipeRefreshLayout.OnRefreshListener {
 
     private RecyclerView trainersRecycler;
     private TextView header;
-    private RelativeLayout filterHeaderRl;
     private TextView filterHeaderText;
     private LinearLayoutManager layoutManager;
     private TextView filterCancel;
@@ -50,6 +56,7 @@ public class FeedTrainersView extends BaseView<FeedTrainersPresenter> implements
     private RecyclerView.OnScrollListener listener;
     private Entity trainer;
     private RelativeLayout emptyState;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private static final int FEED_TRAINER_VIEW_REQUEST_CODE = 3;
 
@@ -60,22 +67,31 @@ public class FeedTrainersView extends BaseView<FeedTrainersPresenter> implements
         trainersRecycler = (RecyclerView) view.findViewById(R.id.feed_trainers_recycler);
         layoutManager = new LinearLayoutManager(getContext());
         header = (TextView) view.findViewById(R.id.feed_trainers_header);
-        filterHeaderRl = (RelativeLayout) view.findViewById(R.id.filter_header);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeTrainers);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        LayoutInflater factory = getLayoutInflater();
+
+        View homeFeedContainerView = factory.inflate(R.layout.home_feed_container_view, null);
+        filterCancel = (TextView) homeFeedContainerView.findViewById(R.id.feed_header_lbl);
         filterHeaderText = (TextView) view.findViewById(R.id.home_feed_header_name);
-        filterCancel = (TextView) filterHeaderRl.findViewById(R.id.feed_header_lbl);
-        filterCancel.setOnClickListener(v -> {
+
+        HomeFeedContainer.getHomeView().findViewById(R.id.feed_header_lbl).setOnClickListener(v -> {
             showLoading();
             emptyState.setVisibility(View.GONE);
             trainersRecycler.setVisibility(View.VISIBLE);
+            presenter.clearData();
             presenter.getTrainersNoFilter();
+            filterHeaderText.setVisibility(View.INVISIBLE);
             if (getParentFragment() != null) {
                 ((OnSearchDataCollectedListener) getParentFragment()).resetSearch();
             }
+            HomeFeedContainer.getHomeView().findViewById(R.id.homescreen_search_tv).setClickable(true);
+            HomeFeedContainer.getHomeView().findViewById(R.id.feed_header_lbl).setVisibility(View.GONE);
         });
-        filterHeaderRl.setVisibility(View.GONE);
         if (getArguments() != null) {
             if (FEED_SEARCH_TRAINER_KEY.equals(((OnSearchDataCollectedListener) getParentFragment()).getOrigin())) {
                 setFilter(((OnSearchDataCollectedListener) getParentFragment()).onSearchDataCollected());
+                HomeFeedContainer.getHomeView().findViewById(R.id.feed_header_lbl).setVisibility(View.VISIBLE);
                 Log.d("TAG", this.getClass().getCanonicalName() + " getting trainers!!!");
             } else {
                 showLoading();
@@ -97,6 +113,10 @@ public class FeedTrainersView extends BaseView<FeedTrainersPresenter> implements
         trainersRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         RecyclerView.ItemDecoration decoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
         trainersRecycler.addItemDecoration(decoration);
+
+        //  filterHeaderRl = (RelativeLayout) view.findViewById(R.id.filter_header);
+        // filterCancel = (TextView) filterHeaderRl.findViewById(R.id.feed_header_lbl);
+        // filterHeaderRl.setVisibility(View.GONE);
     }
 
     @Override
@@ -118,7 +138,10 @@ public class FeedTrainersView extends BaseView<FeedTrainersPresenter> implements
                 intent.putExtra(ENTITY_KEY, trainer);
                 startActivity(intent);
             });
-            filterHeaderRl.setVisibility(View.GONE);
+          //  filterHeaderRl.setVisibility(View.GONE);
+            if(swipeRefreshLayout.isRefreshing()){
+                swipeRefreshLayout.setRefreshing(false);
+            }
             header.setVisibility(View.VISIBLE);
             trainersRecycler.setAdapter(adapter);
             trainersRecycler.setLayoutManager(layoutManager);
@@ -126,6 +149,7 @@ public class FeedTrainersView extends BaseView<FeedTrainersPresenter> implements
 
         subscriptions.add(presenter.getTrainersFilterObservable()
                 .subscribe(entities -> {
+                    Log.e("Entities",String.valueOf(entities.getTotalResults()));
                     if (entities.getTrainers().isEmpty()) {
                         emptyState.setVisibility(View.VISIBLE);
                         trainersRecycler.setVisibility(View.GONE);
@@ -145,7 +169,7 @@ public class FeedTrainersView extends BaseView<FeedTrainersPresenter> implements
                                 startActivity(intent);
 
                             });
-                            filterHeaderText.setText("Trainers filtered " + entities.getTotalResults());
+                            filterHeaderText.setText("Trainers filtered " + String.valueOf(entities.getTotalResults()));
                             trainersRecycler.setAdapter(filterAdapter);
                         } else {
                             filterAdapter.setLoadingState(false);
@@ -161,6 +185,16 @@ public class FeedTrainersView extends BaseView<FeedTrainersPresenter> implements
                     }
                 }));
         subscriptions.add(presenter.getGeneralErrorObservable().subscribe(aVoid -> hideLoading()));
+
+        subscriptions.add(presenter.getUsersFollowing().subscribe(this::SuccessFollowing));
+
+
+
+    }
+
+    private void SuccessFollowing(UserResponse userResponse){
+        LoginResponseToUserTypeMapper.map(userResponse);
+        EntityHolder.getInstance().setEntity(userResponse);
     }
 
     @Override
@@ -173,7 +207,7 @@ public class FeedTrainersView extends BaseView<FeedTrainersPresenter> implements
         this.request = request;
         showLoading();
         presenter.clearData();
-        filterHeaderRl.setVisibility(View.VISIBLE);
+      //  filterHeaderRl.setVisibility(View.VISIBLE);
         header.setVisibility(View.GONE);
         request.setLimit(20);
         request.setOffset(0);
@@ -215,4 +249,12 @@ public class FeedTrainersView extends BaseView<FeedTrainersPresenter> implements
             }
         }
     }
+
+    public void onRefresh() {
+        showLoading();
+        presenter.getTrainersNoFilter();
+        presenter.getFollowing(User.getInstance().getUserId(),PreferenceManager.getDefaultSharedPreferences(getContext()).getString("Authorization", ""));
+        hideLoading();
+    }
+
 }

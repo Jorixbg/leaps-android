@@ -46,19 +46,27 @@
             android:layout_height="match_parent" />
     </RelativeLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/event_listing_recycler"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeEvents"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/event_listing_header"
         android:layout_marginEnd="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="8dp"
+        android:layout_below="@+id/event_listing_header">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/event_listing_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/event_listing_header">
 
 
-    </android.support.v7.widget.RecyclerView>
+        </android.support.v7.widget.RecyclerView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <ProgressBar
         android:id="@+id/progress_bar"

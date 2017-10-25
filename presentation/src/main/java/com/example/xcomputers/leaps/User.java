@@ -1,6 +1,8 @@
 package com.example.xcomputers.leaps;
 
 
+import com.example.networking.feed.event.RealEvent;
+import com.example.networking.following.user.Followed;
 import com.example.xcomputers.leaps.utils.SectionedDataHolder;
 
 import java.util.List;
@@ -33,10 +35,12 @@ public class User {
     private String longDescription;
     private SectionedDataHolder attending;
     private SectionedDataHolder hosting;
+    private List<RealEvent> hostingEvents;
     private double longtitude = 0;
     private double lattitude = 0;
     private List<String> specs;
     private String imageUrl;
+    private Followed followed;
 
 
 
@@ -66,6 +70,22 @@ public class User {
     public SectionedDataHolder getAttending() {
 
         return attending;
+    }
+
+    public static void setInstance(User instance) {
+        User.instance = instance;
+    }
+
+    public List<RealEvent> getHostingEvents() {
+        return hostingEvents;
+    }
+
+    public void setHostingEvents(List<RealEvent> hostingEvents) {
+        this.hostingEvents = hostingEvents;
+    }
+
+    public Followed getFollowed(){
+        return  followed;
     }
 
     public SectionedDataHolder getHosting() {
@@ -138,6 +158,8 @@ public class User {
     public String getLongDescription() {
         return longDescription;
     }
+
+    public void setFollowed(Followed followed){ this.followed = followed;}
 
     public void setUserId(long userId) {
         this.userId = userId;

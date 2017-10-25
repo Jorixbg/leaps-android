@@ -1,7 +1,9 @@
 package com.example.networking.feed.trainer;
 
+import com.example.networking.feed.event.AttendeeResponse;
 import com.example.networking.feed.event.Event;
-import com.example.networking.test.Followed;
+import com.example.networking.feed.event.RealEvent;
+import com.example.networking.following.user.Followed;
 
 import java.io.Serializable;
 import java.util.List;
@@ -33,7 +35,8 @@ public interface Entity extends Serializable {
     List<Image> images();
     List<String> specialities();
     List<Event> attending();
-    List<Event> hosting();
+    List<RealEvent> hosting();
     Followed followers();
+    List<AttendeeResponse> filter();
     int attendedEvents();
 }

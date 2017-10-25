@@ -5,7 +5,7 @@ import com.example.networking.base.RetrofitInterface;
 import com.example.networking.feed.event.FeedFilterRequest;
 import com.example.networking.feed.event.FeedFilterTrainerResponse;
 import com.example.networking.login.UserResponse;
-import com.example.networking.test.FollowedResponse;
+import com.example.networking.following.user.FollowedResponse;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class TrainersService extends BaseService<TrainersApi> {
         return serviceApi.getTrainersNoFilter();
     }
 
-    public Observable<List<UserResponse>> getUsersFollowing(long userId, String auth){
+    public Observable<UserResponse> getUsersFollowing(long userId, String auth){
         addHeader("Authorization", auth);
         return serviceApi.getFollowing(userId);
     }

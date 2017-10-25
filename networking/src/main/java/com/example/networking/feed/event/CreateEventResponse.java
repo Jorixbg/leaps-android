@@ -11,6 +11,10 @@ public class CreateEventResponse {
     @SerializedName("event_id")
     private long eventId;
 
+    public CreateEventResponse(long eventId) {
+        this.eventId = eventId;
+    }
+
     public long getEventId() {
         return eventId;
     }

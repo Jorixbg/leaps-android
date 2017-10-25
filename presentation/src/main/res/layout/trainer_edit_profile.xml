@@ -272,17 +272,91 @@
 
             <View
                 android:id="@+id/divider1"
-
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_margin="16dp"
                 android:background="@android:color/darker_gray" />
 
             <TextView
+                android:id="@+id/trainer_spec_label"
+                android:layout_below="@+id/divider1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:gravity="center"
+                android:text="@string/lbl_specialities"
+                android:textColor="@color/primaryBlue"
+                android:textStyle="bold" />
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/trainer_tags_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/trainer_spec_label"
+                android:layout_alignStart="@+id/trainer_spec_label"
+                android:layout_below="@+id/trainer_spec_label"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="4dp"
+                app:alignContent="flex_start"
+                app:alignItems="flex_start"
+                app:dividerDrawable="@drawable/flex_divider"
+                app:flexWrap="wrap"
+                app:showDivider="beginning|middle" />
+
+            <View
+                android:id="@+id/trainer_divider2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/trainer_tags_container"
+                android:layout_margin="16dp"
+                android:background="@android:color/darker_gray" />
+
+
+
+            <TextView
+                android:id="@+id/about_me_lbl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/trainer_divider2"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:background="@android:color/transparent"
+                android:text="@string/about_me"
+                android:textColor="@color/primaryBlue"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/about_me_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/about_me_lbl"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@android:color/transparent"
+                android:textColor="@color/primaryBlue" />
+
+
+
+
+
+            <View
+                android:id="@+id/trainer_divider3"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/about_me_et"
+                android:layout_margin="16dp"
+                android:background="@android:color/darker_gray" />
+
+
+
+            <TextView
                 android:id="@+id/name_lbl"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/divider1"
+                android:layout_below="@+id/trainer_divider3"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:text="@string/name"
@@ -432,43 +506,13 @@
                 android:layout_margin="16dp"
                 android:background="@android:color/darker_gray" />
 
-            <TextView
-                android:id="@+id/about_me_lbl"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/divider6"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"
-                android:background="@android:color/transparent"
-                android:text="@string/about_me"
-                android:textColor="@color/primaryBlue"
-                android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/about_me_et"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/about_me_lbl"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:background="@android:color/transparent"
-                android:textColor="@color/primaryBlue" />
-
-
-            <View
-                android:id="@+id/divider7"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_below="@+id/about_me_et"
-                android:layout_margin="16dp"
-                android:background="@android:color/darker_gray" />
 
             <TextView
                 android:id="@+id/years_lbl"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/divider7"
+                android:layout_below="@+id/divider6"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:background="@android:color/transparent"
@@ -489,7 +533,7 @@
                 android:textColor="@color/primaryBlue" />
 
             <View
-                android:id="@+id/divider8"
+                android:id="@+id/divider7"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_below="@+id/years_et"
@@ -500,7 +544,7 @@
                 android:id="@+id/price_lbl"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/divider8"
+                android:layout_below="@+id/divider7"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:background="@android:color/transparent"

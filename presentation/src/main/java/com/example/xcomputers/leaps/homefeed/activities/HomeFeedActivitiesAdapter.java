@@ -1,5 +1,7 @@
 package com.example.xcomputers.leaps.homefeed.activities;
 
+import android.app.Activity;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -14,13 +16,20 @@ import com.afollestad.sectionedrecyclerview.SectionedViewHolder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.networking.feed.event.Event;
+import com.example.networking.feed.event.RealEvent;
 import com.example.xcomputers.leaps.LeapsApplication;
 import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.utils.GlideInstance;
 import com.example.xcomputers.leaps.utils.SectionedDataHolder;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -33,12 +42,18 @@ public class HomeFeedActivitiesAdapter extends SectionedRecyclerViewAdapter<Sect
     private SectionedDataHolder data;
     private OnEventClickListener listener;
     private OnHeaderClickListener headerClickListener;
+    private Event event;
+    private HomeFeedActivitiesPresenter presenter;
+    private MainVH mainHolder;
 
-    public HomeFeedActivitiesAdapter(SectionedDataHolder data, OnEventClickListener listener, OnHeaderClickListener headerClickListener) {
+    public HomeFeedActivitiesAdapter(SectionedDataHolder data,HomeFeedActivitiesPresenter presenter, OnEventClickListener listener, OnHeaderClickListener headerClickListener) {
         this.listener = listener;
         this.headerClickListener = headerClickListener;
         this.data = data;
+        this.presenter = presenter;
     }
+
+
 
     @Override
     public int getSectionCount() {
@@ -64,8 +79,16 @@ public class HomeFeedActivitiesAdapter extends SectionedRecyclerViewAdapter<Sect
 
     @Override
     public void onBindViewHolder(SectionedViewHolder holder, int section, int relativePosition, int absolutePosition) {
-        MainVH mainHolder = (MainVH) holder;
-        Event event = data.getItem(section, relativePosition);
+        mainHolder = (MainVH) holder;
+        event = data.getItem(section, relativePosition);
+
+        if(mainHolder.isClicked()){
+            mainHolder.followBtn.setImageResource(R.drawable.follow_event);
+        }
+        else {
+            mainHolder.followBtn.setImageResource(R.drawable.unfollow_event);
+        }
+
         GlideInstance.loadImageCircle(mainHolder.itemPic.getContext(), event.ownerPicUrl(), mainHolder.itemPic, R.drawable.profile_placeholder);
         Glide.with(mainHolder.eventPic.getContext()).load(LeapsApplication.BASE_URL + File.separator + event.imageUrl()).diskCacheStrategy(DiskCacheStrategy.RESULT).placeholder(R.drawable.event_placeholder).into(mainHolder.eventPic);
         mainHolder.itemName.setText(event.ownerName());
@@ -83,16 +106,28 @@ public class HomeFeedActivitiesAdapter extends SectionedRecyclerViewAdapter<Sect
                 mainHolder.itemTag2.setVisibility(View.INVISIBLE);
             }
         }
+        mainHolder.followBtn.setImageResource(R.drawable.unfollow_event);
+
         Calendar eventTime = Calendar.getInstance();
         eventTime.setTime(event.timeFrom());
+
+        Date date = event.timeFrom();
+        DateFormat formatter = new SimpleDateFormat("HH:mm");
+        String dateFormatted = formatter.format(date);
+
         mainHolder.itemDate.setText(
                 eventTime.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault())
                         + " "
                         + eventTime.get(Calendar.DAY_OF_MONTH)
-                        + eventTime.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault()));
+                        + " "
+                        + eventTime.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault())
+                        + ",  "
+                        + dateFormatted
+                        + ",  "
+                        + eventTime.get(Calendar.YEAR)
+                        + " ");
 
         //TODO mainHolder.itemDistance;
-        //TODO mainHolder.shareBtn;
         if (event.priceFrom() > 0) {
             mainHolder.itemPrice.setBackground(ContextCompat.getDrawable(mainHolder.itemPrice.getContext(), R.drawable.round_white_button_shape));
             mainHolder.itemPrice.setAllCaps(false);
@@ -102,6 +137,27 @@ public class HomeFeedActivitiesAdapter extends SectionedRecyclerViewAdapter<Sect
             mainHolder.itemPrice.setAllCaps(true);
             mainHolder.itemPrice.setText(R.string.lbl_free);
         }
+        boolean clicked = false;
+
+        List<RealEvent> eventList = presenter.getRealEventList();
+        if(eventList !=null) {
+            for (int i = 0; i < eventList.size(); i++) {
+                if (event.eventId() == eventList.get(i).eventId()) {
+                    mainHolder.followBtn.setImageResource(R.drawable.follow_event);
+                    mainHolder.setClicked(true);
+                    clicked = true;
+                    break;
+                }
+            }
+            if (!clicked) {
+                mainHolder.followBtn.setImageResource(R.drawable.unfollow_event);
+                mainHolder.setClicked(false);
+            }
+        }
+
+
+
+
     }
 
     @Override
@@ -141,7 +197,6 @@ public class HomeFeedActivitiesAdapter extends SectionedRecyclerViewAdapter<Sect
 
     class MainVH extends SectionedViewHolder implements View.OnClickListener {
 
-
         private ImageView itemPic;
         private TextView itemName;
         private TextView itemTitle;
@@ -150,11 +205,13 @@ public class HomeFeedActivitiesAdapter extends SectionedRecyclerViewAdapter<Sect
         private TextView itemDate;
         private ImageView itemRecurringIcon;
         private TextView itemDistance;
-        private ImageView shareBtn;
         private TextView itemPrice;
         private ImageView eventPic;
         private ImageView followBtn;
-        private HomeFeedActivitiesPresenter presenter= new HomeFeedActivitiesPresenter();
+        private ImageView shareBtn;
+        private boolean isClicked;
+
+
 
         MainVH(View itemView) {
             super(itemView);
@@ -168,13 +225,21 @@ public class HomeFeedActivitiesAdapter extends SectionedRecyclerViewAdapter<Sect
             itemDate = (TextView) itemView.findViewById(R.id.feed_recycler_date);
             itemRecurringIcon = (ImageView) itemView.findViewById(R.id.feed_recycler_recurring_icon);
             itemDistance = (TextView) itemView.findViewById(R.id.feed_recycler_distance_tv);
-            shareBtn = (ImageView) itemView.findViewById(R.id.feed_recycler_share_button);
             itemPrice = (TextView) itemView.findViewById(R.id.feed_recycler_price);
-
             followBtn = (ImageView) itemView.findViewById(R.id.feed_recycler_follow_button);
-
+            shareBtn = (ImageView) itemView.findViewById(R.id.feed_recycler_share_button);
             followBtn.setOnClickListener(this);
+            shareBtn.setOnClickListener(this);
 
+
+
+        }
+        public boolean isClicked() {
+            return isClicked;
+        }
+
+        public void setClicked(boolean clicked) {
+            isClicked = clicked;
         }
 
         @Override
@@ -187,12 +252,49 @@ public class HomeFeedActivitiesAdapter extends SectionedRecyclerViewAdapter<Sect
             if (view.getId() == followBtn.getId()){
                 final long followingEventId = data.getItem(section, relativePos).eventId();
                 presenter.followingEvent(PreferenceManager.getDefaultSharedPreferences(view.getContext()).getString("Authorization", ""), followingEventId);
+                presenter.getFollowFutureEvent(PreferenceManager.getDefaultSharedPreferences(view.getContext()).getString("Authorization",""));
+                checkForFollowing();
+
             }
-            if (view.getId() != followBtn.getId()){
+            if(view.getId() == shareBtn.getId()){
+                String imgUrl = event.imageUrl();
+
+                ShareLinkContent shareLinkContent = new ShareLinkContent.Builder()
+                        .setContentTitle(event.title())
+                        .setContentDescription(event.description())
+                        .setContentUrl(Uri.parse("http://ec2-35-157-240-40.eu-central-1.compute.amazonaws.com:8888/"+imgUrl))
+                        .build();
+
+
+                ShareDialog.show((Activity) view.getContext(), shareLinkContent);
+
+
+            }
+            if (view.getId() != followBtn.getId() && view.getId() != shareBtn.getId()){
                 listener.onEventClicked(data.getItem(section, relativePos));
             }
         }
+
+
+        public void checkForFollowing(){
+                if (!isClicked) {
+                    followBtn.setImageResource(R.drawable.follow_event);
+                    isClicked=true;
+
+                }
+                else {
+                    followBtn.setImageResource(R.drawable.unfollow_event);
+                    isClicked=false;
+                }
+            }
+
+
+
+
+
     }
+
+
 
     public interface OnEventClickListener {
         void onEventClicked(Event event);

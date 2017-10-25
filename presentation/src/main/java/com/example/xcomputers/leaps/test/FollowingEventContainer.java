@@ -129,10 +129,10 @@ public class FollowingEventContainer extends BaseView<EmptyPresenter>{
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 1:
-                    return "UPCOMING";
+                    return "PAST";
                 case 0:
                 default:
-                    return "PAST";
+                    return "UPCOMING";
             }
         }
 

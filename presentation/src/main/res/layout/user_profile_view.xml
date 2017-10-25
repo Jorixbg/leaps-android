@@ -8,23 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/edit_profile_btn"
-            app:srcCompat="@drawable/settings"
-            android:layout_margin="16dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <View
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_below="@+id/edit_profile_btn"
-            android:layout_marginTop="32dp"
-            android:background="#E1E1E1"
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"/>
 
         <ImageView
             android:layout_centerHorizontal="true"
@@ -41,19 +24,22 @@
             android:layout_below="@+id/user_profile_image"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="16dp"
-            android:textSize="26sp"
+            android:textSize="24sp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="Ivan"/>
 
         <TextView
             android:id="@+id/user_profile_username"
             android:layout_centerHorizontal="true"
             android:textColor="@color/primaryBlue"
             android:layout_below="@+id/user_profile_names"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="20dp"
             android:layout_marginTop="4dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="Ivan"/>
+
         <LinearLayout
             android:id="@+id/linear_attributes"
             android:orientation="horizontal"
@@ -61,13 +47,14 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/user_profile_username">
 
-
             <Button
                 android:id="@+id/follow_user_btn"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:text="Follow"/>
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/following_button_unclicked"/>
+
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -99,7 +86,7 @@
                             android:layout_marginBottom="4dp"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
+                            android:layout_weight="2"
                             android:text="0"/>
 
                         <TextView
@@ -139,7 +126,7 @@
                         android:gravity="center"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1.2" />
+                        android:layout_weight="2" />
 
                     <TextView
                         android:id="@+id/user_profile_followers_lbl"
@@ -156,13 +143,18 @@
             </RelativeLayout>
 
         </LinearLayout>
+        <RelativeLayout
+            android:id="@+id/user_profile_view_rl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/linear_attributes"
+            android:visibility="gone">
 
         <View
             android:id="@+id/divider"
             android:background="#E1E1E1"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:layout_below="@+id/linear_attributes"
             android:layout_marginTop="32dp"
             android:layout_marginBottom="32dp"
             android:layout_width="match_parent"
@@ -242,6 +234,237 @@
             android:layout_marginRight="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp" />
+
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/profile_view_settings_rl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/linear_attributes">
+
+            <TextView
+                android:id="@+id/about_me_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:textColor="@color/primaryBlue"
+                android:textSize="15sp" />
+
+            <View
+                android:id="@+id/profile_list_divider2"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_below="@id/about_me_txt"
+                android:layout_marginEnd="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="#E1E1E1" />
+
+            <TextView
+                android:id="@+id/edit_profile_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="Edit Profile"
+                android:layout_below="@+id/profile_list_divider2"
+                android:textColor="@color/primaryBlue"
+                android:textSize="15sp" />
+
+            <View
+                android:id="@+id/profile_list_divider3"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_below="@id/edit_profile_txt"
+                android:layout_marginEnd="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="#E1E1E1" />
+
+            <TextView
+                android:id="@+id/profile_list_settings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/profile_list_divider3"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/lbl_settings"
+                android:textColor="@color/primaryBlue"
+                android:textSize="15sp" />
+
+            <View
+                android:id="@+id/profile_list_divider4"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_below="@+id/profile_list_settings"
+                android:layout_marginEnd="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="#E1E1E1" />
+
+            <TextView
+                android:id="@+id/profile_list_invite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/profile_list_divider4"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/lbl_invite_friends"
+                android:textColor="@color/primaryBlue"
+                android:textSize="15sp" />
+
+
+            <View
+                android:id="@+id/profile_list_divider5"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_below="@+id/profile_list_invite"
+                android:layout_marginEnd="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="#E1E1E1" />
+
+            <TextView
+                android:id="@+id/profile_list_feedback"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/profile_list_divider5"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/give_us_feedback"
+                android:textColor="@color/primaryBlue"
+                android:textSize="15sp" />
+
+            <View
+                android:id="@+id/profile_list_divider6"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_below="@+id/profile_list_feedback"
+                android:layout_marginEnd="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="#E1E1E1" />
+
+            <TextView
+                android:id="@+id/profile_list_tutorial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/profile_list_divider6"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/view_help_tutorial_again"
+                android:textColor="@color/primaryBlue"
+                android:textSize="15sp" />
+
+            <View
+                android:id="@+id/profile_list_divider7"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_below="@id/profile_list_tutorial"
+                android:layout_marginEnd="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="#E1E1E1" />
+
+            <TextView
+                android:id="@+id/profile_list_log_out"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/profile_list_divider7"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/log_out"
+                android:textColor="@color/primaryBlue"
+                android:textSize="15sp" />
+
+            <View
+                android:id="@+id/profile_list_divider8"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_below="@+id/profile_list_log_out"
+                android:layout_marginEnd="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="#E1E1E1" />
+
+            <RelativeLayout
+                android:id="@+id/profile_list_become_trainer_rl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/profile_list_divider8"
+                android:layout_marginTop="16dp">
+
+                <ImageView
+                    android:id="@+id/trainer_gradient"
+                    android:layout_width="match_parent"
+                    android:layout_height="128dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginStart="16dp"
+                    app:srcCompat="@drawable/become_trainer_blue" />
+
+                <Button
+                    android:id="@+id/profile_listing_become_trainer_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/round_blue_button_shape"
+                    android:textSize="18sp"
+                    android:paddingEnd="8dp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:paddingStart="8dp"
+                    android:text="@string/become_a_trainer"
+                    android:textColor="@android:color/white" />
+
+                <TextView
+                    android:id="@+id/become_trainer_lbl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/profile_listing_become_trainer_btn"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginLeft="96dp"
+                    android:layout_marginStart="96dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/become_trainer_lbl"
+                    android:textStyle="bold"
+                    android:textAlignment="center"
+                    android:textColor="@color/primaryBlue" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+
+
+
+
+
+
     </RelativeLayout>
 
 </android.support.v4.widget.NestedScrollView>

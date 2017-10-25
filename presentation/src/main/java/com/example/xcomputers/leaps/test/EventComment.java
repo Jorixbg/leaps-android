@@ -5,8 +5,6 @@ package com.example.xcomputers.leaps.test;
  */
 
 public class EventComment {
-    //Todo comment object
-
 
     private String userName;
     private String userComment;

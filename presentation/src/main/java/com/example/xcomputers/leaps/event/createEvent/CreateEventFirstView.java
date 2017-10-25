@@ -1,10 +1,13 @@
 package com.example.xcomputers.leaps.event.createEvent;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -21,14 +24,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import com.example.networking.feed.event.RealEvent;
+import com.example.networking.feed.trainer.Image;
+import com.example.xcomputers.leaps.LeapsApplication;
 import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.TagsHolder;
 import com.example.xcomputers.leaps.base.BaseView;
 import com.example.xcomputers.leaps.base.EmptyPresenter;
 import com.example.xcomputers.leaps.base.Layout;
+import com.example.xcomputers.leaps.test.CropActivity;
+import com.example.xcomputers.leaps.utils.EntityHolder;
+import com.example.xcomputers.leaps.utils.GlideInstance;
 import com.example.xcomputers.leaps.utils.TagView;
 import com.google.android.flexbox.FlexboxLayout;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,6 +91,7 @@ public class CreateEventFirstView extends BaseView<EmptyPresenter> {
     private Map<Integer, Uri> images;
     private List<String> tagList;
     private int imageRequest = -1;
+    private RealEvent event;
 
 
     @Override
@@ -85,7 +100,12 @@ public class CreateEventFirstView extends BaseView<EmptyPresenter> {
         images = new HashMap<>();
         tagList = new ArrayList<>();
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        event = (RealEvent) getArguments().getSerializable("event");
+
         initViews(view);
+        if(event !=null){
+            loadVies();
+        }
         view.findViewById(R.id.create_event_first_title).requestFocus();
         initListeners();
         setupFlexBox();
@@ -186,13 +206,9 @@ public class CreateEventFirstView extends BaseView<EmptyPresenter> {
     }
 
     private void requestImage(int requestIndex) {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        getActivity().startActivityForResult(Intent.createChooser(intent,
-                "Select Picture"), requestIndex);
+        Intent intent = new Intent(getContext(),CropActivity.class);
+        getActivity().startActivityForResult(intent,requestIndex);
 
-        Toast.makeText(getContext(), "requestImage", Toast.LENGTH_SHORT).show();
     }
 
     private void onImageClicked(TextView holder, ImageView imageHolder, ImageView deleteImage, Uri uri) {
@@ -202,7 +218,6 @@ public class CreateEventFirstView extends BaseView<EmptyPresenter> {
         imageHolder.setVisibility(View.VISIBLE);
         Glide.with(getContext()).load(uri).into(imageHolder);
         deleteImage.setVisibility(View.VISIBLE);
-        Toast.makeText(getContext(), "onImageClicked", Toast.LENGTH_SHORT).show();
     }
 
     private void onDeleteClicked(TextView holder, ImageView deleteImage, ImageView imageHolder, int index) {
@@ -244,6 +259,81 @@ public class CreateEventFirstView extends BaseView<EmptyPresenter> {
         titleEt = (EditText) view.findViewById(R.id.create_event_first_title_et);
     }
 
+    private void loadVies() {
+
+        descriptionEt.setText(event.description());
+        titleEt.setText(event.title());
+        String[] tags = event.tags();
+        for (String tag : tags) {
+            TagView tagView = new TagView(getContext());
+            tagView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.event_tag_shape));
+            tagView.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryBlue));
+            tagView.setText(tag);
+            flexboxLayout.addView(tagView);
+        }
+
+        loadImages();
+    }
+
+
+    private void loadImages() {
+        GlideInstance.loadImageCircle(getContext(), EntityHolder.getInstance().getEntity().profileImageUrl(), mainPicImageView, R.drawable.profile_placeholder);
+        List<Image> images = EntityHolder.getInstance().getEntity().images();
+        if (images.size() > 0) {
+            Image first = images.get(0);
+            setupGlideCallBack(first.getImageUrl(), firstImageImageView, firstPicDelete, firstPicHolder);
+            if(images.size() >= 2) {
+                Image second = images.get(1);
+                if (second != null) {
+                    setupGlideCallBack(second.getImageUrl(), secondImageImageView, secondPicDelete, secondPicHolder);
+                }
+            }
+            if(images.size() >= 3) {
+                Image third = images.get(2);
+                if (third != null) {
+                    setupGlideCallBack(third.getImageUrl(), thirdImageImageView, thirdPicDelete, thirdPicHolder);
+                }
+            }
+            if(images.size() >= 4) {
+                Image fourth = images.get(3);
+                if (fourth != null) {
+                    setupGlideCallBack(fourth.getImageUrl(), fourthImageImageView, fourthPicDelete, fourthPicHolder);
+                }
+            }
+            if(images.size() >= 5) {
+                Image fifth = images.get(4);
+                if (fifth != null) {
+                    setupGlideCallBack(fifth.getImageUrl(), fifthImageImageView, fifthPicDelete, fifthPicHolder);
+                }
+            }
+        }
+
+
+
+
+    }
+
+
+    private void setupGlideCallBack(String url, ImageView imageView, ImageView deleteImage, TextView placeHolder) {
+        Glide.with(getContext()).load(LeapsApplication.BASE_URL + File.separator + url).listener(new RequestListener<String, GlideDrawable>() {
+            @Override
+            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                return false;
+            }
+
+            @Override
+            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                imageView.setVisibility(View.VISIBLE);
+                imageView.setBackground(resource.getCurrent());
+                deleteImage.setVisibility(View.VISIBLE);
+                placeHolder.setText("");
+                placeHolder.setBackground(null);
+                return false;
+            }
+        }).into(imageView);
+    }
+
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -281,9 +371,9 @@ public class CreateEventFirstView extends BaseView<EmptyPresenter> {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Toast.makeText(getContext(), "onActivityResult", Toast.LENGTH_SHORT).show();
 
         if (resultCode == RESULT_OK && data != null) {
+            Uri uriImg=data.getParcelableExtra("result");
             TextView holder = null;
             ImageView deleteImage = null;
             ImageView imageView = null;
@@ -314,13 +404,21 @@ public class CreateEventFirstView extends BaseView<EmptyPresenter> {
                     deleteImage = fifthPicDelete;
                     break;
                 case MAIN_IMAGE:
-                    onMainImageUpdate(requestCode, data.getData());
+                    onMainImageUpdate(requestCode, uriImg);
                     return;
             }
-            images.put(requestCode, data.getData());
-            onImageClicked(holder, imageView, deleteImage, data.getData());
+            images.put(requestCode,uriImg);
+            onImageClicked(holder, imageView, deleteImage, uriImg);
         }
     }
+
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
+    }
+
 
     public boolean checkStoragePermission() {
         if (ContextCompat.checkSelfPermission(getActivity(),

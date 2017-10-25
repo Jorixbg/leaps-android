@@ -3,11 +3,13 @@ package com.example.xcomputers.leaps;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -17,7 +19,9 @@ import android.widget.ProgressBar;
 import com.example.xcomputers.leaps.base.IActivity;
 import com.example.xcomputers.leaps.base.IBaseView;
 import com.example.xcomputers.leaps.homefeed.SearchView;
+import com.example.xcomputers.leaps.homescreen.HomeScreenView;
 import com.example.xcomputers.leaps.splash.SplashView;
+import com.testfairy.TestFairy;
 
 
 public class MainActivity extends AppCompatActivity implements IActivity{
@@ -25,12 +29,15 @@ public class MainActivity extends AppCompatActivity implements IActivity{
     private IBaseView currentFragment;
     private ProgressBar progressBar;
     private FrameLayout container;
+    private boolean doubleBackToExitPressedOnce = false;
+    private boolean isInFront;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         
         super.onCreate(savedInstanceState);
+        TestFairy.begin(this, "7f4fa6d331f494d93cfb3b9e36749aced4263367");
         setContentView(R.layout.activity_main);
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
@@ -47,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements IActivity{
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (currentFragment != null) {
+        if (currentFragment != null && data !=null) {
             ((Fragment) currentFragment).onActivityResult(requestCode, resultCode, data);
         }
     }
@@ -107,11 +114,25 @@ public class MainActivity extends AppCompatActivity implements IActivity{
     @Override
     public void onBackPressed() {
 
+
+        FragmentManager fm = getSupportFragmentManager();
+        IBaseView frag = null;
+        if(fm.getBackStackEntryCount() > 1) {
+            FragmentManager.BackStackEntry backStackEntry2 = fm.getBackStackEntryAt(1);
+            frag = popBackStack(fm, backStackEntry2.getName(), null);
+        }
+
+       if((currentFragment.getClass().getSimpleName().equals("TrainerProfileEditView") || currentFragment.getClass().getSimpleName().equals("UserEditProfileView"))
+               || frag !=null && frag.getClass().getSimpleName().equals("FollowUserView") ){
+           Bundle bundle = new Bundle();
+           bundle.putSerializable("HomeScreenView.OPEN_PROFILE_KEY",null);
+           openFragment(HomeScreenView.class,bundle,false);
+       }
+
         if (currentFragment.onBack()) {
             return;
         }
 
-        FragmentManager fm = getSupportFragmentManager();
 
         if (fm.getBackStackEntryCount() > 1) {
             int topEntryIndex = fm.getBackStackEntryCount() - 1;
@@ -122,8 +143,28 @@ public class MainActivity extends AppCompatActivity implements IActivity{
                     break;
                 }
             }
-        } else {
+        }
+        if(isInFront){
+
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+                supportFinishAfterTransition();
+                return;
+            }
+
+            this.doubleBackToExitPressedOnce = true;
+
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce=false;
+                }
+            }, 2000);
+        }
+        else {
             supportFinishAfterTransition();
+
         }
     }
 
@@ -168,6 +209,19 @@ public class MainActivity extends AppCompatActivity implements IActivity{
         if (currentFragment != null) {
             ((Fragment) currentFragment).onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        isInFront = true;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        isInFront = false;
     }
 
 }

@@ -30,4 +30,14 @@ public class CreateEventService extends BaseService<CreateEventApi> {
     public Observable<Void> uploadMainImage(long eventId, MultipartBody.Part photo){
         return serviceApi.uploadMainImage(photo, eventId);
     }
+
+
+    public Observable<Integer> editEvent(long eventId,String title, String description, long date, long timeFrom, long timeTo, long ownerId,
+                                         double lattitude, double longtitude, double priceFrom, String address, int freeSlots, long dateCreated, List<String> tags){
+        return serviceApi.editEvent(new CreateEventResponse(eventId),new CreateEventRequest(title, description,
+                date, timeFrom, timeTo, ownerId, lattitude, longtitude,
+                priceFrom , address, freeSlots, dateCreated, tags));
+    }
+
+
 }

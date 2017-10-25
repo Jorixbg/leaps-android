@@ -45,7 +45,6 @@ public abstract class BasePresenter {
             Response response = exception.response();
             Converter<ResponseBody, HttpError> converter = (Converter<ResponseBody, HttpError>) GsonConverterFactory.create()
                     .responseBodyConverter(HttpError.class, new Annotation[0], null);
-
             try {
                 message = converter.convert(response.errorBody()).getMessage();
             } catch (IOException e) {

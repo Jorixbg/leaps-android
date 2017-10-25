@@ -14,6 +14,7 @@
         android:textColor="@color/primaryBlue"
         android:textSize="18sp" />
 
+
     <TextView
         android:id="@+id/create_event_second_location_lbl"
         android:layout_width="wrap_content"
@@ -26,21 +27,101 @@
         android:textColor="@color/primaryBlue"
         android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/create_event_location_tv"
+    <LinearLayout
+        android:id="@+id/search_address"
+        android:orientation="horizontal"
         android:background="@drawable/round_blue_edit_text"
+        android:layout_below="@+id/create_event_second_location_lbl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
-        android:textColor="@color/primaryBlue"
-        android:text="City, address"
-        android:textAlignment="center"
-        android:gravity="center"
-        android:layout_below="@+id/create_event_second_location_lbl"
-        android:layout_width="match_parent"
-        android:layout_height="36dp" />
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textColor="@color/primaryBlue"
+            android:drawableStart="@drawable/event_location"
+            android:drawableLeft="@drawable/event_location"/>
+
+
+
+
+        <EditText
+            android:id="@+id/create_event_location_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="15"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textColor="@color/primaryBlue"
+            android:background="@android:color/transparent"
+            android:hint="City, address"
+            android:ellipsize="start"
+            android:imeOptions="actionDone"
+            android:maxLines="1"
+            android:singleLine="true"/>
+
+        </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/search_address"
+        android:layout_above="@+id/create_event_next_btn">
+
+
+
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp">
+
+        </fragment>
+
+        <TextView
+            android:id="@+id/create_event_et"
+            android:layout_centerInParent="true"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/create_event_marker"
+            android:inputType="none"
+            android:background="@android:color/white"
+            android:textColor="@android:color/black"/>
+
+        <TextView
+            android:id="@+id/create_event_marker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/primaryBlue"
+            android:drawableStart="@drawable/event_location"
+            android:drawableLeft="@drawable/event_location"
+            android:layout_centerInParent="true"
+            />
+
+
+    </RelativeLayout>
+
+
+
+
 
     <ImageView
         android:id="@+id/create_event_next_btn"

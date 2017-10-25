@@ -1,7 +1,7 @@
 package com.example.networking.feed.event;
 
 import com.example.networking.feed.trainer.Entity;
-import com.example.networking.login.UserResponse;
+import com.example.networking.test.FilterResponse;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ public class FeedFilterTrainerResponse {
     @SerializedName("total_results")
     private int totalResults;
     @SerializedName("trainers")
-    private List<UserResponse> trainers;
+    private List<FilterResponse> trainers;
 
     public int getTotalResults() {
         return totalResults;

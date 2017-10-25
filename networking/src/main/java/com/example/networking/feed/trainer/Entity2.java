@@ -1,7 +1,6 @@
 package com.example.networking.feed.trainer;
 
 import com.example.networking.feed.event.Event;
-import com.example.networking.test.Followed;
 
 import java.io.Serializable;
 import java.util.List;

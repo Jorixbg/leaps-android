@@ -22,9 +22,13 @@ import java.io.File;
 
 public class GlideInstance {
 
+    private static Uri uriImg;
+    private static Context contextImg;
+
 
     public static void loadImageCircle(Context context, String urlTarget, ImageView view, int placeHolder) {
 
+        contextImg = context;
         if (TextUtils.isEmpty(urlTarget)) {
             urlTarget = " ";
         }else{
@@ -35,6 +39,9 @@ public class GlideInstance {
         RoundedBitmapDrawable circularBitmapDrawable =
                 RoundedBitmapDrawableFactory.create(context.getResources(), picture);
         circularBitmapDrawable.setCircular(true);
+
+
+
 
         Glide.with(context).load(urlTarget).asBitmap()
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
@@ -52,15 +59,17 @@ public class GlideInstance {
     }
 
     public static void loadImageCircle(Context context, Uri uri, ImageView view, int placeHolder) {
-
+        contextImg = context;
         Bitmap picture = BitmapFactory.decodeResource(context.getResources(), placeHolder);
         RoundedBitmapDrawable circularBitmapDrawable =
                 RoundedBitmapDrawableFactory.create(context.getResources(), picture);
         circularBitmapDrawable.setCircular(true);
 
-        Glide.with(context).load(uri).asBitmap()
+        Glide.with(context)
+                .load(uri).asBitmap()
                 .placeholder(circularBitmapDrawable)
-                .centerCrop().into(new BitmapImageViewTarget(view) {
+                .centerCrop()
+                .into(new BitmapImageViewTarget(view) {
             @Override
             protected void setResource(Bitmap resource) {
 
@@ -71,5 +80,8 @@ public class GlideInstance {
             }
         });
     }
+
+
+
 
 }

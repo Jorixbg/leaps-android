@@ -2,11 +2,14 @@ package com.example.xcomputers.leaps.profile.trainerProfile;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -34,10 +37,14 @@ import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.User;
 import com.example.xcomputers.leaps.base.BaseView;
 import com.example.xcomputers.leaps.base.Layout;
+import com.example.xcomputers.leaps.test.CropActivity;
 import com.example.xcomputers.leaps.utils.EntityHolder;
 import com.example.xcomputers.leaps.utils.FilePathDescriptor;
 import com.example.xcomputers.leaps.utils.GlideInstance;
+import com.example.xcomputers.leaps.utils.TagView;
+import com.google.android.flexbox.FlexboxLayout;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -106,12 +113,16 @@ public class TrainerProfileEditView extends BaseView<EditProfilePresenter> {
     private int imageCounter = FIRST_IMAGE;
     private int deleteImageCounter = 0;
     private String auth;
+    private int requestUriId;
+
+    private FlexboxLayout tagsContainer;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         images = new HashMap<>();
         imagesToDelete = new ArrayList<>();
+        auth = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("Authorization", "");
         initViews(view);
         initListeners();
         setInititialData();
@@ -120,6 +131,18 @@ public class TrainerProfileEditView extends BaseView<EditProfilePresenter> {
     private void setInititialData() {
         loadImages();
         Entity entity = EntityHolder.getInstance().getEntity();
+
+        List<String> tags = entity.specialities();
+        for (String tag : tags) {
+            TagView tagView = new TagView(getContext());
+            tagView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.event_tag_shape));
+            tagView.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryBlue));
+            tagView.setText(tag);
+            tagsContainer.addView(tagView);
+        }
+
+
+
         nameEt.setText(entity.firstName() + " " + entity.lastName());
         userNameEt.setText(entity.username());
         List<String> list = new ArrayList<>();
@@ -217,11 +240,8 @@ public class TrainerProfileEditView extends BaseView<EditProfilePresenter> {
     }
 
     private void requestImage(int requestIndex) {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        getActivity().startActivityForResult(Intent.createChooser(intent,
-                "Select Picture"), requestIndex);
+        Intent intent = new Intent(getContext(),CropActivity.class);
+        getActivity().startActivityForResult(intent,requestIndex);
     }
 
     private void onImageClicked(TextView holder, ImageView imageHolder, ImageView deleteImage, Uri uri) {
@@ -239,6 +259,10 @@ public class TrainerProfileEditView extends BaseView<EditProfilePresenter> {
         deleteImage.setVisibility(View.GONE);
         holder.setBackgroundResource(R.drawable.round_blue_edit_text);
         holder.setText("+");
+        if(imagesToDelete.size()>0){
+
+            presenter.deleteImage(auth, imagesToDelete.get(deleteImageCounter).getImageId());
+        }
         if (images.get(index) != null) {
             images.remove(index);
         }
@@ -274,6 +298,7 @@ public class TrainerProfileEditView extends BaseView<EditProfilePresenter> {
         fourthPicDelete = (ImageView) view.findViewById(R.id.create_event_fourth_pic_delete);
         fifthPicHolder = (TextView) view.findViewById(R.id.create_event_fifth_pic_placeholder);
         fifthPicDelete = (ImageView) view.findViewById(R.id.create_event_fifth_pic_delete);
+        tagsContainer = (FlexboxLayout) view.findViewById(R.id.trainer_tags_container);
         doneBtn = (Button) view.findViewById(R.id.done_btn);
     }
 
@@ -357,7 +382,7 @@ public class TrainerProfileEditView extends BaseView<EditProfilePresenter> {
             }
             Entity entity = EntityHolder.getInstance().getEntity();
             showLoading();
-            auth = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("Authorization", "");
+
             int years;
             int price;
             try{
@@ -380,12 +405,20 @@ public class TrainerProfileEditView extends BaseView<EditProfilePresenter> {
                     years,
                     entity.phoneNumber(),
                     price);
+            uploadImage();
+            onBack();
         });
+
+
+
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && data != null) {
+        if (resultCode == RESULT_OK && data != null && requestUriId == 0) {
+
+            Uri uriImg=data.getParcelableExtra("result");
+
             TextView holder = null;
             ImageView deleteImage = null;
             ImageView imageView = null;
@@ -422,12 +455,24 @@ public class TrainerProfileEditView extends BaseView<EditProfilePresenter> {
                     req = FIFTH_IMAGE;
                     break;
                 case MAIN_IMAGE_REQUEST:
-                    onMainImageUpdate(data.getData());
+                    onMainImageUpdate(uriImg);
                     return;
             }
-            images.put(req, data.getData());
-            onImageClicked(holder, imageView, deleteImage, data.getData());
+                images.put(req,uriImg);
+                onImageClicked(holder, imageView, deleteImage, uriImg);
+
+            }
+
+
+
         }
+
+
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
     }
 
     public boolean checkStoragePermission() {
@@ -488,9 +533,18 @@ public class TrainerProfileEditView extends BaseView<EditProfilePresenter> {
             presenter.uploadImage(auth, User.getInstance().getUserId(), getImageFromUri(images.get(imageCounter)));
         } */
         Integer keyToRemove = new Integer(-1);
+        boolean finish = false ;
         for(Map.Entry<Integer, Uri> entry : images.entrySet()){
             keyToRemove = entry.getKey();
+            finish = true;
             presenter.uploadImage(auth, User.getInstance().getUserId(), getImageFromUri(images.get(keyToRemove)));
+        }
+
+        if(finish){
+            Toast.makeText(getContext(), R.string.lbl_profile_edit_success, Toast.LENGTH_SHORT).show();
+            hideLoading();
+            back();
+            return;
         }
 
         if(keyToRemove == -1) {
@@ -531,7 +585,7 @@ public class TrainerProfileEditView extends BaseView<EditProfilePresenter> {
                 if(mainImageUri != null) {
                     presenter.uploadMainImage(auth, User.getInstance().getUserId(), getImageFromUri(mainImageUri));
                 }else{
-                    uploadImage();
+                   // uploadImage();
                 }
             }
         }));

@@ -74,8 +74,9 @@ public class LoginView extends BaseView<LoginPresenter> implements InsideView {
         return false;
     }
 
-    private void onError(Throwable t){
 
+
+    private void onError(Throwable t){
         hideLoading();
         Toast.makeText(getContext(), getString(R.string.lbl_general_error), Toast.LENGTH_SHORT).show();
         getActivity().setResult(Activity.RESULT_CANCELED);

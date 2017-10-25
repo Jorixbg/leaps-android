@@ -1,10 +1,11 @@
 package com.example.networking.login;
 
+import com.example.networking.feed.event.AttendeeResponse;
 import com.example.networking.feed.event.Event;
 import com.example.networking.feed.event.RealEvent;
 import com.example.networking.feed.trainer.Entity;
 import com.example.networking.feed.trainer.Image;
-import com.example.networking.test.Followed;
+import com.example.networking.following.user.Followed;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -176,8 +177,8 @@ public class UserResponse implements Entity {
     }
 
     @Override
-    public List<Event> hosting() {
-        List<Event> list = new ArrayList<>();
+    public List<RealEvent> hosting() {
+        List<RealEvent> list = new ArrayList<>();
         list.addAll(hostingEvents);
         return list;
     }
@@ -186,6 +187,11 @@ public class UserResponse implements Entity {
     public Followed followers() {
         Followed followersObj= followers;
         return followersObj;
+    }
+
+    @Override
+    public List<AttendeeResponse> filter() {
+        return null;
     }
 
     public void setFollowers(Followed followers) {

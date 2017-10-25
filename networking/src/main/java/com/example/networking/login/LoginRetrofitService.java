@@ -16,8 +16,8 @@ interface LoginRetrofitService {
     @POST("/login")
     Call<UserResponse> login(@Body LoginRequest request);
 
-    @GET("/user/{userId}")
-    Observable<UserResponse> getUser(@Path("userId") long userId);
+    @GET("/user/{user_id}")
+    Observable<UserResponse> getUser(@Path("user_id") long userId);
 
     @POST("/login/fb")
     Call<LoginResponse> loginFacebook(@Body FacebookLoginRequest request);

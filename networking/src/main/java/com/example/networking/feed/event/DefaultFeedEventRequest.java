@@ -9,6 +9,6 @@ import java.util.ArrayList;
 public class DefaultFeedEventRequest extends FeedFilterRequest {
 
     public DefaultFeedEventRequest(){
-        super("THIS IS A TEST !!!!", 123.12312, 123.12312,10,new ArrayList<>(), System.currentTimeMillis(), System.currentTimeMillis(), DateSelection.NEXT3);
+        super("THIS IS A TEST !!!!", 123.12312, 123.12312,10,new ArrayList<>(), System.currentTimeMillis(), System.currentTimeMillis(), DateSelection.NEXT3,20,1);
     }
 }

@@ -109,8 +109,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:layout_alignStart="@id/feed_recycler_tag1"
-        android:layout_alignLeft="@+id/feed_recycler_tag1"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:layout_alignTop="@+id/feed_recycler_recurring_icon"
         android:layout_alignBottom="@+id/feed_recycler_recurring_icon"
         android:layout_toRightOf="@+id/feed_recycler_recurring_icon"
@@ -151,10 +151,10 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/feed_recycler_distance_tv"
         android:layout_toLeftOf="@+id/feed_recycler_share_button"
-
-        app:srcCompat="@drawable/follow_event"
         android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
         />
 
     <ImageView
@@ -168,6 +168,8 @@
         app:srcCompat="@drawable/share"
         android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
         />
 
 </RelativeLayout>

@@ -50,7 +50,8 @@ public class RealEvent implements Event {
     @SerializedName("date_created")
     private long created;
     @SerializedName("attending")
-    private Attendee[] attendees;
+    private Attendee attendees;
+
     @SerializedName("images")
     private List<EventImage> imageUrls;
 
@@ -149,13 +150,12 @@ public class RealEvent implements Event {
         return imageUrls;
     }
 
-    @Override
-    public Attendee[] attendees() {
-        return attendees;
+    public Attendee attendees() {
+        Attendee followersObj= attendees;
+        return followersObj;
     }
 
-    @Override
-    public void setAttendees(Attendee[] attendees) {
+    public void setAttendee(Attendee attendees) {
         this.attendees = attendees;
     }
 

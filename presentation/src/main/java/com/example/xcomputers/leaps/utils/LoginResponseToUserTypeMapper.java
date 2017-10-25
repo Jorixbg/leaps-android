@@ -29,6 +29,8 @@ public class LoginResponseToUserTypeMapper {
         user.setHasFreeEvent(response.hasFreeEvent());
         user.setTrainer(response.isTrainer());
         user.setImageUrl(response.profileImageUrl());
+        user.setFollowed(response.followers());
+        user.setHostingEvents(response.hosting());
         if(response.isTrainer()){
             user.setSpecs(response.specialities());
             user.setPhoneNumber(response.phoneNumber());

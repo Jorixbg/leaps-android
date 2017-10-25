@@ -3,7 +3,7 @@ package com.example.networking.feed.trainer;
 import com.example.networking.feed.event.FeedFilterRequest;
 import com.example.networking.feed.event.FeedFilterTrainerResponse;
 import com.example.networking.login.UserResponse;
-import com.example.networking.test.FollowedResponse;
+import com.example.networking.following.user.FollowedResponse;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public interface TrainersApi {
     Observable<FeedFilterTrainerResponse> getTrainers(@Body FeedFilterRequest request);
 
     @GET("/user/{user_id}")
-    Observable<List<UserResponse>> getFollowing(@Path("userId") long userId );
+    Observable<UserResponse> getFollowing(@Path("user_id") long userId );
 
     @GET("/user/trainer/feed")
     Observable<List<FollowedResponse>> getTrainersNoFilter();

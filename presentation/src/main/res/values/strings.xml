@@ -69,6 +69,7 @@
     <string name="lbl_today">Today</string>
     <string name="lbl_next3">Next 3 days</string>
     <string name="lbl_next5">Next 5 days</string>
+    <string name="lbl_all">All</string>
     <string name="lbl_past_events">Past events</string>
     <string name="lbl_tutorial_header_1">Sports rookie or pro athlete?</string>
     <string name="lbl_tutorial_content_1">Doesn\'t matter. Leaps will help you find the best training event for you personally.</string>
@@ -84,8 +85,8 @@
     <string name="lbl_general_error">Something went wrong</string>
     <string name="lbl_reject_spot">Reject spot!</string>
     <string name="lbl_get_spot">Get a spot!</string>
-    <string name="lbl_reject">Reject</string>
-    <string name="lbl_attend">Attend</string>
+    <string name="lbl_reject">UNATTEND</string>
+    <string name="lbl_attend">ATTEND</string>
     <string name="lbl_try_free">Try it for free!</string>
     <string name="lbl_sign_up">Sign up</string>
     <string name="auth_label">Authorization</string>

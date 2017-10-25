@@ -2,22 +2,28 @@ package com.example.xcomputers.leaps.homefeed.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.networking.feed.event.Event;
 import com.example.networking.feed.event.FeedFilterRequest;
 import com.example.xcomputers.leaps.R;
+import com.example.xcomputers.leaps.User;
 import com.example.xcomputers.leaps.base.BaseView;
 import com.example.xcomputers.leaps.base.Layout;
 import com.example.xcomputers.leaps.event.EventActivity;
 import com.example.xcomputers.leaps.event.EventListingActivity;
+import com.example.xcomputers.leaps.event.createEvent.CreateEventActivity;
 import com.example.xcomputers.leaps.homefeed.FeedInsideTab;
+import com.example.xcomputers.leaps.homefeed.HomeFeedContainer;
 import com.example.xcomputers.leaps.homefeed.OnSearchDataCollectedListener;
 import com.example.xcomputers.leaps.homescreen.HomeScreenView;
 import com.example.xcomputers.leaps.utils.SectionedDataHolder;
@@ -42,25 +48,33 @@ public class HomeFeedActivitiesView extends BaseView<HomeFeedActivitiesPresenter
     private RecyclerView recyclerView;
     private List<String> sectionTitles;
     private HomeFeedActivitiesFilterAdapter filterAdapter;
-    private RelativeLayout filterHeader;
     private TextView filterCancel;
     private TextView filterHeaderText;
+    private RelativeLayout filterHeader;
     private FeedFilterRequest request;
     private RecyclerView.OnScrollListener listener;
     private GridLayoutManager layoutManager;
     private RelativeLayout emptyState;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private ImageView createEventBtn;
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         HomeScreenView.getTabLayout().setVisibility(View.VISIBLE);
+        presenter.getFollowFutureEvent(PreferenceManager.getDefaultSharedPreferences(view.getContext()).getString("Authorization",""));
         emptyState = (RelativeLayout) view.findViewById(R.id.empty_state);
         recyclerView = (RecyclerView) view.findViewById(R.id.home_feed_activities_recycler);
         filterHeader = (RelativeLayout) view.findViewById(R.id.filter_header);
         filterHeader.setVisibility(View.GONE);
         filterCancel = (TextView) filterHeader.findViewById(R.id.feed_header_lbl);
         filterHeaderText = (TextView) filterHeader.findViewById(R.id.home_feed_header_name);
+        createEventBtn = (ImageView) view.findViewById(R.id.home_cal_create_event_btn);
+        LayoutInflater factory = getLayoutInflater();
 
+        View homeFeedContainerView = factory.inflate(R.layout.home_feed_container_view, null);
+
+
+        //NEW CODE
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeEvents);
         swipeRefreshLayout.setOnRefreshListener(this);
 
@@ -70,26 +84,43 @@ public class HomeFeedActivitiesView extends BaseView<HomeFeedActivitiesPresenter
         sectionTitles.add(getString(R.string.lbl_selected_events));
 
         showLoading();
+
+        if (!User.getInstance().isTrainer()) {
+            createEventBtn.setVisibility(View.GONE);
+        } else {
+            createEventBtn.setVisibility(View.VISIBLE);
+            createEventBtn.setOnClickListener(v -> {
+                Intent intent = new Intent(getContext(), CreateEventActivity.class);
+                startActivity(intent);
+            });
+        }
+
+
         if (getArguments() != null) {
             if (FEED_SEARCH_EVENT_KEY.equals(((OnSearchDataCollectedListener) getParentFragment()).getOrigin())) {
+                HomeFeedContainer.getHomeView().findViewById(R.id.feed_header_lbl).setVisibility(View.VISIBLE);
                 presenter.setShouldLoadMore(true);
                 setFilter(((OnSearchDataCollectedListener) getParentFragment()).onSearchDataCollected());
             } else {
                 presenter.getEventsNoFilter(sectionTitles);
             }
         }
-        filterCancel.setOnClickListener(v -> {
-           showLoading();
-            emptyState.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
-            presenter.getEventsNoFilter(sectionTitles);
-            presenter.clearData();
-            filterHeader.setVisibility(View.GONE);
-            recyclerView.removeOnScrollListener(listener);
-            if (getParentFragment() != null) {
-                ((OnSearchDataCollectedListener) getParentFragment()).resetSearch();
-            }
-        });
+        HomeFeedContainer.getHomeView().findViewById(R.id.feed_header_lbl).setOnClickListener(v -> {
+                showLoading();
+                emptyState.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
+                presenter.getEventsNoFilter(sectionTitles);
+                presenter.clearData();
+                filterHeader.setVisibility(View.GONE);
+                recyclerView.removeOnScrollListener(listener);
+                if (getParentFragment() != null) {
+                    ((OnSearchDataCollectedListener) getParentFragment()).resetSearch();
+                }
+            HomeFeedContainer.getHomeView().findViewById(R.id.homescreen_search_tv).setClickable(true);
+            HomeFeedContainer.getHomeView().findViewById(R.id.feed_header_lbl).setVisibility(View.GONE);
+            });
+
+
     }
 
     protected HomeFeedActivitiesPresenter createPresenter() {
@@ -118,7 +149,7 @@ public class HomeFeedActivitiesView extends BaseView<HomeFeedActivitiesPresenter
                 recyclerView.setVisibility(View.VISIBLE);
                 filterHeaderText.setText(sectionedDataHolder.getHeaderForSection(0));
                 if (filterAdapter == null) {
-                    filterAdapter = new HomeFeedActivitiesFilterAdapter(list, event -> {
+                    filterAdapter = new HomeFeedActivitiesFilterAdapter(list,presenter, event -> {
                         Intent intent = new Intent(getContext(), EventActivity.class);
                         intent.putExtra(EVENT_KEY, event);
                         startActivity(intent);
@@ -150,12 +181,26 @@ public class HomeFeedActivitiesView extends BaseView<HomeFeedActivitiesPresenter
             hideLoading();
         }));
 
+
+        subscriptions.add(presenter.getErrorFollowFuturEventObservable().subscribe(this::onError));
+
+
+
     }
+
+    private void onError(Throwable t){
+
+        PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putString("Authorization", null).apply();
+
+
+    }
+
+
 
     private void onSuccess(SectionedDataHolder holder) {
         filterHeader.setVisibility(View.GONE);
         hideLoading();
-        HomeFeedActivitiesAdapter adapter = new HomeFeedActivitiesAdapter(holder, event -> {
+        HomeFeedActivitiesAdapter adapter = new HomeFeedActivitiesAdapter(holder,presenter, event -> {
             Intent intent = new Intent(getContext(), EventActivity.class);
             intent.putExtra(EVENT_KEY, event);
             startActivity(intent);
@@ -196,7 +241,7 @@ public class HomeFeedActivitiesView extends BaseView<HomeFeedActivitiesPresenter
 
     @Override
     public void setFilter(FeedFilterRequest request) {
-       showLoading();
+        showLoading();
         if (request == null) {
             presenter.getEventsNoFilter(sectionTitles);
             return;
@@ -242,7 +287,11 @@ public class HomeFeedActivitiesView extends BaseView<HomeFeedActivitiesPresenter
 
     @Override
     public void onRefresh() {
+        showLoading();
         presenter.getEventsObservable().subscribe(this::onSuccess);
         presenter.getEventsNoFilter(sectionTitles);
+        presenter.getFollowFutureEvent(PreferenceManager.getDefaultSharedPreferences(getContext()).getString("Authorization",""));
+        hideLoading();
     }
 }
+

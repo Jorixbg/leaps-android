@@ -2,7 +2,9 @@ package com.example.xcomputers.leaps.event;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 import com.example.networking.feed.event.Event;
 import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.homefeed.activities.HomeFeedActivitiesFilterAdapter;
+import com.example.xcomputers.leaps.homefeed.activities.HomeFeedActivitiesPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +28,7 @@ import static com.example.xcomputers.leaps.event.EventActivity.EVENT_KEY;
  * Created by xComputers on 12/07/2017.
  */
 
-public class EventListingActivity extends AppCompatActivity {
+public class EventListingActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener{
 
     public static final String EVENT_POPULAR = "EventListingActivity.EVENT_POPULAR";
     public static final String EVENT_SUITED = "EventListingActivity.EVENT_SUITED";
@@ -36,11 +39,13 @@ public class EventListingActivity extends AppCompatActivity {
     private TextView header;
     private HomeFeedActivitiesFilterAdapter adapter;
     private EventsListingPresenter presenter;
+    private HomeFeedActivitiesPresenter presenter2;
     private EventsListingPresenter.Type type;
     private ProgressBar loadingView;
     private RelativeLayout mainContainer;
     private LinearLayoutManager layoutManager;
     private RelativeLayout emptyState;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,12 +58,17 @@ public class EventListingActivity extends AppCompatActivity {
         emptyState = (RelativeLayout) findViewById(R.id.empty_state);
         mainContainer = (RelativeLayout) findViewById(R.id.event_listing_container);
         presenter = new EventsListingPresenter();
+        presenter2 = new HomeFeedActivitiesPresenter();
         recyclerView = (RecyclerView) findViewById(R.id.event_listing_recycler);
         header = (TextView) findViewById(R.id.event_listing_header);
         layoutManager = new LinearLayoutManager(this);
         if (savedInstanceState != null) {
             return;
         }
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeEvents);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        presenter2.getFollowFutureEvent(PreferenceManager.getDefaultSharedPreferences(this).getString("Authorization",""));
+
         //noinspection unchecked
         List<Event> eventsList = (List<Event>) getIntent().getSerializableExtra(EVENT_PAST);
         if (eventsList != null) {
@@ -69,17 +79,7 @@ public class EventListingActivity extends AppCompatActivity {
 
         showLoading();
         setupPresenterCallbacks();
-            if (getIntent().getStringExtra(EVENT_POPULAR) != null) {
-                this.type = EventsListingPresenter.Type.POPULAR;
-                header.setText(getString(R.string.lbl_popular_events));
-            } else if (getIntent().getStringExtra(EVENT_SUITED) != null) {
-                header.setText(getString(R.string.lbl_selected_events));
-                this.type = EventsListingPresenter.Type.SUITED;
-            } else if (getIntent().getStringExtra(EVENT_NEARBY) != null) {
-                this.type = EventsListingPresenter.Type.NEARBY;
-                header.setText(getString(R.string.lbl_events_nearby));
-            }
-            presenter.getEvents(type);
+        eventType();
         }
 
     private RecyclerView.OnScrollListener getListener() {
@@ -108,6 +108,20 @@ public class EventListingActivity extends AppCompatActivity {
         };
     }
 
+    private void eventType(){
+        if (getIntent().getStringExtra(EVENT_POPULAR) != null) {
+            this.type = EventsListingPresenter.Type.POPULAR;
+            header.setText(getString(R.string.lbl_popular_events));
+        } else if (getIntent().getStringExtra(EVENT_SUITED) != null) {
+            header.setText(getString(R.string.lbl_selected_events));
+            this.type = EventsListingPresenter.Type.SUITED;
+        } else if (getIntent().getStringExtra(EVENT_NEARBY) != null) {
+            this.type = EventsListingPresenter.Type.NEARBY;
+            header.setText(getString(R.string.lbl_events_nearby));
+        }
+        presenter.getEvents(type);
+    }
+
     private void setupPresenterCallbacks(){
         presenter.getEventsObservable().subscribe(events -> {
             hideLoading();
@@ -120,7 +134,7 @@ public class EventListingActivity extends AppCompatActivity {
                 adapter.setLoadingState(false);
                 List<Event> data = new ArrayList<Event>();
                 data.addAll(events);
-                adapter.setData(data);
+                setupRecycler(data);
             }
         });
         presenter.getEventsErrorObservable().subscribe(aVoid -> {
@@ -138,13 +152,18 @@ public class EventListingActivity extends AppCompatActivity {
         }else {
             emptyState.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
-            adapter = new HomeFeedActivitiesFilterAdapter(events, event -> {
+            adapter = new HomeFeedActivitiesFilterAdapter(events,presenter2,event -> {
                 Intent intent = new Intent(EventListingActivity.this, EventActivity.class);
                 intent.putExtra(EVENT_KEY, event);
                 startActivity(intent);
+
             });
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(layoutManager);
+        }
+
+        if(swipeRefreshLayout.isRefreshing()){
+            swipeRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -157,4 +176,15 @@ public class EventListingActivity extends AppCompatActivity {
         mainContainer.setVisibility(View.VISIBLE);
         loadingView.setVisibility(View.GONE);
     }
+
+
+    @Override
+    public void onRefresh() {
+        showLoading();
+        eventType();
+        presenter2.getFollowFutureEvent(PreferenceManager.getDefaultSharedPreferences(this).getString("Authorization",""));
+        setupPresenterCallbacks();
+        hideLoading();
+    }
+
 }

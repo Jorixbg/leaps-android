@@ -9,14 +9,15 @@
     <LinearLayout
         android:id="@+id/search_linear"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
+        android:layout_height="39dp"
         android:layout_margin="12dp"
         android:orientation="horizontal">
+
         <EditText
             android:id="@+id/search_tv"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="8"
+            android:layout_weight="12"
             android:background="@drawable/homescreen_search_shape"
             android:drawableLeft="@drawable/ic_action_search"
             android:drawablePadding="8dp"
@@ -31,12 +32,18 @@
             android:textColor="@android:color/white"
             android:textSize="16sp" />
 
-        <ImageView
+        <TextView
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
             android:id="@+id/cancel_search_btn"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            app:srcCompat="@drawable/show_map_btn"/>
+            android:layout_weight="4"
+            android:text="Cancel"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textAllCaps="false"
+            android:textSize="15dp"
+            android:textColor="@android:color/white"/>
 
     </LinearLayout>
 
@@ -103,54 +110,68 @@
 
             </com.google.android.flexbox.FlexboxLayout>
 
-
-            <Button
-                android:id="@+id/search_today_btn"
-                style="@style/Base.Widget.AppCompat.Button.Borderless"
+            <LinearLayout
+                android:id="@+id/button_layout"
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/search_flow_layout"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
-                android:text="Today"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white" />
+                android:layout_below="@id/search_flow_layout">
 
-            <Button
-                android:id="@+id/search_next_3_btn"
-                style="@style/Base.Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/search_flow_layout"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="32dp"
-                android:text="Next 3 days"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white" />
+                <Button
+                    android:id="@+id/search_today_btn"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="Today"
+                    android:textAllCaps="false"
+                    android:layout_gravity="center"
+                    android:textColor="@android:color/white" />
 
-            <Button
-                android:id="@+id/search_next_5_btn"
-                style="@style/Base.Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_below="@+id/search_flow_layout"
-                android:layout_marginEnd="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
-                android:text="Next 5 days"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white" />
+                <Button
+                    android:id="@+id/search_next_3_btn"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="Next 3 days"
+                    android:textAllCaps="false"
+                    android:layout_gravity="center"
+                    android:textColor="@android:color/white" />
+
+                <Button
+                    android:id="@+id/search_next_5_btn"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:layout_gravity="center"
+                    android:text="Next 5 days"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white" />
+
+                <Button
+                    android:id="@+id/search_all_btn"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:text="@string/lbl_all"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white" />
+
+
+            </LinearLayout>
+
+
+
 
             <com.example.xcomputers.leaps.utils.CustomWhiteButton
                 android:id="@+id/search_btn"
                 android:layout_width="144dp"
                 android:layout_height="40dp"
-                android:layout_below="@id/search_next_3_btn"
+                android:layout_below="@id/button_layout"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/round_white_button_shape"

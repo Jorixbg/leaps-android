@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.networking.feed.event.CreateEventService;
+import com.example.networking.feed.event.RealEvent;
 import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.User;
 import com.example.xcomputers.leaps.base.IBaseView;
@@ -45,6 +46,8 @@ public class CreateEventActivity extends AppCompatActivity implements ICreateEve
     private String title;
     private String description;
     private double priceFrom;
+    private double latitude;
+    private double longitude;
     private long timeFrom;
     private long timeTo;
     private String address;
@@ -53,6 +56,8 @@ public class CreateEventActivity extends AppCompatActivity implements ICreateEve
     private Map<Integer, Uri> images;
     private CreateEventService service;
     private int imageCounter = 1;
+    private Bundle editBundle;
+    private RealEvent event;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,8 +69,19 @@ public class CreateEventActivity extends AppCompatActivity implements ICreateEve
         service = new CreateEventService();
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         container = (FrameLayout) findViewById(R.id.create_event_container);
-        openFragment(CreateEventFirstView.class, new Bundle());
+        editBundle = getIntent().getBundleExtra("Edit");
+        if(editBundle!=null) {
+            event = (RealEvent) editBundle.getSerializable("Event");
+        }
+        if(event!=null && editBundle !=null){
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("event",event);
+            openFragment(CreateEventFirstView.class, bundle);
+        }
+        else {
 
+            openFragment(CreateEventFirstView.class, new Bundle());
+        }
     }
 
     public <View extends IBaseView> void openFragment(Class<View> clazz, Bundle arguments) {
@@ -176,7 +192,10 @@ public class CreateEventActivity extends AppCompatActivity implements ICreateEve
     }
 
     @Override
-    public void collectData() {
+    public void collectData(double latitude, double longitude, String address) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.address = address;
         openFragment(CreateEventThirdView.class, new Bundle());
     }
 
@@ -189,6 +208,32 @@ public class CreateEventActivity extends AppCompatActivity implements ICreateEve
 
     @Override
     public void collectData(long eventTime) {
+        if(editBundle!=null && event!=null){
+            long eventId = event.eventId();
+            this.timeFrom = eventTime;
+            showLoading();
+            Map<String, RequestBody> params = new HashMap<>();
+            File photo = new File(FilePathDescriptor.getPath(this, images.get(1)));
+            RequestBody mainImageBody = RequestBody.create(MediaType.parse("image/*"), photo);
+            //TODO images needs to be event_image_url
+            MultipartBody.Part pic = MultipartBody.Part.createFormData("image", photo.getName(), mainImageBody);
+            service.addHeader("Authorization", PreferenceManager.getDefaultSharedPreferences(this).getString("Authorization", ""));
+            service.editEvent(eventId,title, description, eventTime, eventTime, 0, User.getInstance().getUserId(),
+                    latitude, longitude, priceFrom, address, freeSlots, new Date().getTime(), tags)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(createEventResponse -> {
+
+                        uploadMainImage(eventId, pic);
+
+                    }, throwable -> {
+                        hideLoading();
+                        Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+
+
+
+        }
         this.timeFrom = eventTime;
         showLoading();
         Map<String, RequestBody> params = new HashMap<>();
@@ -198,7 +243,7 @@ public class CreateEventActivity extends AppCompatActivity implements ICreateEve
         MultipartBody.Part pic = MultipartBody.Part.createFormData("image", photo.getName(), mainImageBody);
         service.addHeader("Authorization", PreferenceManager.getDefaultSharedPreferences(this).getString("Authorization", ""));
         service.createEvent(title, description, eventTime, eventTime, 0, User.getInstance().getUserId(),
-                User.getInstance().getLattitude(), User.getInstance().getLongtitude(), priceFrom, "Sofia", freeSlots, new Date().getTime(), tags)
+                latitude, longitude, priceFrom, address, freeSlots, new Date().getTime(), tags)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(createEventResponse -> {

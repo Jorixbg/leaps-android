@@ -5,8 +5,6 @@ import com.example.networking.feed.trainer.Image;
 import com.example.networking.login.UserResponse;
 import com.example.networking.profile.UpdateProfileRequest;
 import com.example.networking.profile.UpdateProfileService;
-import com.example.networking.test.FollowingService;
-import com.example.xcomputers.leaps.User;
 import com.example.xcomputers.leaps.base.BasePresenter;
 import com.example.xcomputers.leaps.utils.EntityHolder;
 

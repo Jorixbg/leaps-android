@@ -51,6 +51,7 @@ public class HomeFeedContainer extends BaseView<EmptyPresenter> implements OnSea
     private int currentPosition;
     private TextView searchView;
     private ImageView showMapBtn;
+    private static View view1;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,7 +61,7 @@ public class HomeFeedContainer extends BaseView<EmptyPresenter> implements OnSea
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        HomeScreenView.getTabLayout().setVisibility(View.VISIBLE);
+        view1 = view;
         fragments = new HashMap<>();
         request = (FeedFilterRequest) getArguments().getSerializable(SEARCH_RESULT_KEY);
         searchView = (TextView) view.findViewById(R.id.homescreen_search_tv);
@@ -97,18 +98,33 @@ public class HomeFeedContainer extends BaseView<EmptyPresenter> implements OnSea
         } else {
             searchView.setText(getString(R.string.homescreen_search_bar_lbl));
         }
-        view.findViewById(R.id.homescreen_head).setOnClickListener(v -> {
+
+       view.findViewById(R.id.feed_header_lbl).setVisibility(View.GONE);
+
+
+       searchView.setOnClickListener(v -> {
+
+           searchView.setClickable(false);
             Bundle bundle = new Bundle();
-            String value = "";
-            if (tabs.getSelectedTabPosition() == POSITION_EVENTS) {
-                value = FEED_SEARCH_EVENT_KEY;
-            } else if (tabs.getSelectedTabPosition() == POSITION_TRAINERS) {
-                value = FEED_SEARCH_TRAINER_KEY;
-            }
+                String value = "";
+                if (tabs.getSelectedTabPosition() == POSITION_EVENTS) {
+                    value = FEED_SEARCH_EVENT_KEY;
+                } else if (tabs.getSelectedTabPosition() == POSITION_TRAINERS) {
+                    value = FEED_SEARCH_TRAINER_KEY;
+                }
             bundle.putString(FEED_SEARCH_ORIGIN_KEY, value);
+
             HomeScreenView.getTabLayout().setVisibility(View.GONE);
-            openFragment(SearchView.class, new Bundle(),true);
-        });
+            openFragment(SearchView.class, bundle);
+       });
+
+
+
+
+    }
+
+    public static View getHomeView(){
+        return view1;
     }
 
     private String getTime(FeedFilterRequest.DateSelection dateSelection) {
@@ -122,6 +138,9 @@ public class HomeFeedContainer extends BaseView<EmptyPresenter> implements OnSea
                 break;
             case NEXT5:
                 time = getString(R.string.lbl_next5);
+                break;
+            case ALL:
+                time = getString(R.string.lbl_all);
                 break;
         }
         return time;
@@ -241,11 +260,12 @@ public class HomeFeedContainer extends BaseView<EmptyPresenter> implements OnSea
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (fragments.get(0) != null) {
+        if (fragments.get(0) != null && data !=null) {
             ((Fragment) fragments.get(0)).onActivityResult(requestCode, resultCode, data);
         }
-        if (fragments.get(1) != null) {
+        if (fragments.get(1) != null && data != null) {
             ((Fragment) fragments.get(1)).onActivityResult(requestCode, resultCode, data);
         }
     }
+
 }

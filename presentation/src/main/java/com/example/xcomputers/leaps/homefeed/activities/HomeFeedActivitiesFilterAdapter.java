@@ -1,5 +1,8 @@
 package com.example.xcomputers.leaps.homefeed.activities;
 
+import android.app.Activity;
+import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -16,6 +18,8 @@ import com.example.networking.feed.event.RealEvent;
 import com.example.xcomputers.leaps.LeapsApplication;
 import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.utils.GlideInstance;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 
 import java.io.File;
 import java.util.Calendar;
@@ -34,10 +38,13 @@ public class HomeFeedActivitiesFilterAdapter extends RecyclerView.Adapter<Recycl
     private List<Event> data;
     private HomeFeedActivitiesAdapter.OnEventClickListener listener;
     private boolean isLoading;
+    private Event event;
+    private HomeFeedActivitiesPresenter presenter;
 
-    public HomeFeedActivitiesFilterAdapter(List<Event> data, HomeFeedActivitiesAdapter.OnEventClickListener listener) {
+    public HomeFeedActivitiesFilterAdapter(List<Event> data, HomeFeedActivitiesPresenter presenter, HomeFeedActivitiesAdapter.OnEventClickListener listener) {
         this.listener = listener;
         this.data = data;
+        this.presenter = presenter;
     }
 
     public void setData(List<Event> holder){
@@ -52,6 +59,7 @@ public class HomeFeedActivitiesFilterAdapter extends RecyclerView.Adapter<Recycl
         }else{
             this.data.remove(this.data.size() - 1);
         }
+
     }
 
     public boolean getLoadState(){
@@ -74,8 +82,15 @@ public class HomeFeedActivitiesFilterAdapter extends RecyclerView.Adapter<Recycl
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         switch (getItemViewType(position)){
             case VIEW_TYPE_ITEM:
-                Event event = data.get(position);
+                event = data.get(position);
                 MainVH mainHolder = (MainVH) holder;
+                if(mainHolder.isClicked()){
+                    mainHolder.followBtn.setImageResource(R.drawable.follow_event);
+                }
+                else {
+                    mainHolder.followBtn.setImageResource(R.drawable.unfollow_event);
+                }
+
                 GlideInstance.loadImageCircle(mainHolder.itemPic.getContext(), event.ownerPicUrl(), mainHolder.itemPic, R.drawable.profile_placeholder);
                 Glide.with(mainHolder.eventPic.getContext()).load(LeapsApplication.BASE_URL + File.separator + event.imageUrl()).diskCacheStrategy(DiskCacheStrategy.RESULT).placeholder(R.drawable.event_placeholder).into(mainHolder.eventPic);
                 mainHolder.itemName.setText(event.ownerName());
@@ -93,6 +108,7 @@ public class HomeFeedActivitiesFilterAdapter extends RecyclerView.Adapter<Recycl
                         mainHolder.itemTag2.setVisibility(View.INVISIBLE);
                     }
                 }
+                mainHolder.followBtn.setImageResource(R.drawable.unfollow_event);
                 Calendar eventTime = Calendar.getInstance();
                 eventTime.setTime(event.timeFrom());
                 mainHolder.itemDate.setText(
@@ -102,7 +118,6 @@ public class HomeFeedActivitiesFilterAdapter extends RecyclerView.Adapter<Recycl
                                 + eventTime.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault()));
 
                 //TODO mainHolder.itemDistance;
-                //TODO mainHolder.shareBtn;
                 if (event.priceFrom() > 0) {
                     mainHolder.itemPrice.setBackground(ContextCompat.getDrawable(mainHolder.itemPrice.getContext(), R.drawable.round_white_button_shape));
                     mainHolder.itemPrice.setAllCaps(false);
@@ -113,6 +128,24 @@ public class HomeFeedActivitiesFilterAdapter extends RecyclerView.Adapter<Recycl
                     mainHolder.itemPrice.setText(R.string.lbl_free);
                 }
 
+
+                boolean clicked = false;
+
+                List<RealEvent> eventList = presenter.getRealEventList();
+                if(eventList !=null) {
+                    for (int i = 0; i < eventList.size(); i++) {
+                        if (event.eventId() == eventList.get(i).eventId()) {
+                            mainHolder.followBtn.setImageResource(R.drawable.follow_event);
+                            mainHolder.setClicked(true);
+                            clicked = true;
+                            break;
+                        }
+                    }
+                    if (!clicked) {
+                        mainHolder.followBtn.setImageResource(R.drawable.unfollow_event);
+                        mainHolder.setClicked(false);
+                    }
+                }
 
 
                 break;
@@ -150,6 +183,7 @@ public class HomeFeedActivitiesFilterAdapter extends RecyclerView.Adapter<Recycl
         private TextView itemDistance;
         private ImageView shareBtn;
         private ImageView followBtn;
+        private boolean isClicked;
         private TextView itemPrice;
         private ImageView eventPic;
 
@@ -168,18 +202,69 @@ public class HomeFeedActivitiesFilterAdapter extends RecyclerView.Adapter<Recycl
             shareBtn = (ImageView) itemView.findViewById(R.id.feed_recycler_share_button);
             itemPrice = (TextView) itemView.findViewById(R.id.feed_recycler_price);
             followBtn = (ImageView) itemView.findViewById(R.id.feed_recycler_follow_button);
+            shareBtn = (ImageView) itemView.findViewById(R.id.feed_recycler_share_button);
             followBtn.setOnClickListener(this);
+            shareBtn.setOnClickListener(this);
             //followBtn.setOnClickListener(view -> Toast.makeText(view.getContext(),getAdapterPosition()+" ",Toast.LENGTH_SHORT).show());
 
 
         }
 
+        public boolean isClicked() {
+            return isClicked;
+        }
+
+        public void setClicked(boolean clicked) {
+            isClicked = clicked;
+        }
+
+
         @Override
         public void onClick(View view) {
-            //  listener.onEventClicked(data.get(getAdapterPosition()));
+            int position = getAdapterPosition();
             if (view.getId() == followBtn.getId()){
-                Toast.makeText(view.getContext(), "ITEM PRESSED = " + String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT).show();
+                final long followingEventId = data.get(position).eventId();
+                presenter.followingEvent(PreferenceManager.getDefaultSharedPreferences(view.getContext()).getString("Authorization", ""), followingEventId);
+                presenter.getFollowFutureEvent(PreferenceManager.getDefaultSharedPreferences(view.getContext()).getString("Authorization",""));
+                checkForFollowing();
+
+            } if(view.getId() == shareBtn.getId()){
+                String imgUrl = event.imageUrl();
+
+                ShareLinkContent shareLinkContent = new ShareLinkContent.Builder()
+                        .setContentTitle(event.title())
+                        .setContentDescription(event.description())
+                        .setContentUrl(Uri.parse("http://ec2-35-157-240-40.eu-central-1.compute.amazonaws.com:8888/"+imgUrl))
+                        .build();
+
+
+                ShareDialog.show((Activity) view.getContext(), shareLinkContent);
+
+
+            }
+            if(view.getId() != followBtn.getId() && view.getId() != shareBtn.getId()){
+                listener.onEventClicked(data.get(getAdapterPosition()));
+
             }
         }
+
+
+
+        public void checkForFollowing(){
+            if (!isClicked) {
+                followBtn.setImageResource(R.drawable.follow_event);
+                isClicked=true;
+
+            }
+            else {
+                followBtn.setImageResource(R.drawable.unfollow_event);
+                isClicked=false;
+            }
+        }
+
     }
+
+
+
+
 }

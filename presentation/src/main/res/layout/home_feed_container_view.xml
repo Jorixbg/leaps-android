@@ -11,23 +11,45 @@
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:background="@drawable/head">
-        <TextView
-            android:id="@+id/homescreen_search_tv"
+
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="10"
-            android:drawableLeft="@drawable/ic_action_search"
-            android:drawableStart="@drawable/ic_action_search"
-            android:drawablePadding="8dp"
-            android:layout_centerInParent="true"
-            android:layout_margin="12dp"
-            android:paddingStart="12dp"
-            android:paddingLeft="12dp"
-            android:gravity="center_vertical"
-            android:text="@string/homescreen_search_bar_lbl"
-            android:textSize="16sp"
-            android:textColor="@android:color/white"
-            android:background="@drawable/homescreen_search_shape" />
+            android:layout_weight="10">
+
+            <TextView
+                android:id="@+id/homescreen_search_tv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:drawableLeft="@drawable/ic_action_search"
+                android:drawableStart="@drawable/ic_action_search"
+                android:drawablePadding="8dp"
+                android:layout_centerInParent="true"
+                android:layout_margin="12dp"
+                android:paddingStart="12dp"
+                android:paddingLeft="12dp"
+                android:gravity="center_vertical"
+                android:text="@string/homescreen_search_bar_lbl"
+                android:textSize="16sp"
+                android:textColor="@android:color/white"
+                android:background="@drawable/homescreen_search_shape" />
+
+        <TextView
+            android:id="@+id/feed_header_lbl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:padding="10dp"
+            android:drawableStart="@drawable/clear_filter"
+            android:drawableLeft="@drawable/clear_filter"
+            android:gravity="center"/>
+
+        </RelativeLayout>
+
 
         <ImageView
             android:id="@+id/show_map_btn"
@@ -41,6 +63,9 @@
     <android.support.design.widget.TabLayout
         android:id="@+id/home_feed_tabs"
         android:layout_width="match_parent"
+        app:tabMode="fixed"
+        app:tabMaxWidth="0dp"
+        app:tabGravity="fill"
         android:layout_height="38dp">
 
     </android.support.design.widget.TabLayout>
@@ -52,5 +77,6 @@
         android:layout_height="match_parent">
 
     </android.support.v4.view.ViewPager>
+
 
 </LinearLayout>

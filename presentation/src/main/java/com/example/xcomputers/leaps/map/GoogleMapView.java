@@ -6,26 +6,27 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.AbsListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.networking.feed.event.FeedEventsResponse;
 import com.example.networking.feed.event.RealEvent;
 import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.base.BaseView;
 import com.example.xcomputers.leaps.base.Layout;
 import com.example.xcomputers.leaps.homefeed.activities.HomeFeedActivitiesPresenter;
+import com.example.xcomputers.leaps.test.MyItemDecoration;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -58,33 +59,43 @@ public class GoogleMapView extends BaseView<HomeFeedActivitiesPresenter> impleme
     private GoogleApiClient mLocationClient;
     private LocationListener mListener;
     private Marker marker;
+    private Marker markerCurrent;
     private Marker previousMarker;
     private Location currentLocation;
     private Geocoder geocoder;
-    private Button searchBtn;
     private LinearLayoutManager layoutManager;
     private RecyclerView eventRecycler;
     private static final int ERROR_DIALOG_REQUEST = 9001;
     private List<RealEvent> eventList;
     private MyAdapter adapter;
+    private int firstVisiblePosition;
+    private List<Marker> markerList;
+    private TextView close;
+    private MyItemDecoration myItemDecoration;
+    private boolean isClicked;
 
-    private List<String> sectionTitles;
-
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        searchBtn = (Button) view.findViewById(R.id.search_btn);
+//        close.findViewById(R.id.close_map_tv);
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         eventRecycler = (RecyclerView) view.findViewById(R.id.my_recycler_view);
         geocoder = new Geocoder(getContext());
         eventList = new ArrayList<>();
+        markerList = new ArrayList<>();
 
 
-
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(eventRecycler.getContext(),
+        /*DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(eventRecycler.getContext(),
                 layoutManager.getOrientation());
-        eventRecycler.addItemDecoration(dividerItemDecoration);
+
+        eventRecycler.addItemDecoration(dividerItemDecoration);*/
+
+
+        myItemDecoration = new MyItemDecoration(getContext());
+
+
+
 
         if(servicesOK()) {
             initMap();
@@ -96,9 +107,54 @@ public class GoogleMapView extends BaseView<HomeFeedActivitiesPresenter> impleme
                 .build();
         mLocationClient.connect();
 
-        searchBtn.setOnClickListener(v -> {
 
+        eventRecycler.addOnScrollListener(new RecyclerView.OnScrollListener(){
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
+                double lat = eventList.get(firstVisiblePosition).latitude();
+                double lon = eventList.get(firstVisiblePosition).longtitude();
+
+                LatLng latLng = new LatLng(lat, lon);
+
+                    Marker currentMarker = null;
+                    for (int i = 0; i < markerList.size(); i++) {
+                        markerList.get(i).setVisible(true);
+                        boolean marker1 = markerList.get(i).getPosition().latitude == latLng.latitude;
+                        if (marker1) {
+                            currentMarker = markerList.get(i);
+                        }
+                    }
+
+                    if (dx < 0) {
+                        gotoLocation(lat, lon, 15);
+                        changeMarkerColor(currentMarker);
+                    } else {
+                        gotoLocation(lat, lon, 15);
+                        changeMarkerColor(currentMarker);
+                    }
+                }
+
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
+                    //Do something
+                } else if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    // Do something
+                } else if (newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE ) {
+                } else {
+                    // Do something
+                }
+            }
         });
+
+
 
     }
 
@@ -128,38 +184,53 @@ public class GoogleMapView extends BaseView<HomeFeedActivitiesPresenter> impleme
     public void onMapReady(GoogleMap map) {
         mMap = map;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        gotoLocation(23.3219,42.6977,15);
 
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
 
             @Override
             public boolean onMarkerClick(Marker marker) {
-
                 showClickedMarker(marker);
                 return  false;
 
             }
         });
-
     }
 
 
     private void showClickedMarker(Marker marker){
-        if(previousMarker!=null){
-            previousMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-        }
-        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-        previousMarker=marker;
-        for (int i =0 ; i<eventList.size();i++){
-            if (marker.getTitle().equalsIgnoreCase(eventList.get(i).title())){
-                layoutManager.scrollToPosition(i);
-                break;
+       if(previousMarker != marker) {
+            if (previousMarker != null) {
+                previousMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.event_location));
             }
+            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.clicked_event_location));
+            previousMarker = marker;
+            for (int i = 0; i < eventList.size(); i++) {
+                if (marker.getTitle().equalsIgnoreCase(eventList.get(i).title())) {
+                    layoutManager.scrollToPosition(i);
+                    break;
+                }
+            }
+        }
+        else {
+            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.clicked_event_location));
         }
     }
 
+
+    private void changeMarkerColor(Marker marker1){
+        if(marker1 !=null) {
+            if(previousMarker != marker1) {
+                if (previousMarker != null) {
+                    previousMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.event_location));
+                }
+                marker1.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.clicked_event_location));
+                previousMarker = marker1;
+            }
+
+        }
+
+    }
 
     private void gotoLocation(double lan, double lng, float zoom) {
         LatLng latLng = new LatLng(lan, lng);
@@ -182,34 +253,9 @@ public class GoogleMapView extends BaseView<HomeFeedActivitiesPresenter> impleme
         currentLocation = LocationServices.FusedLocationApi
                 .getLastLocation(mLocationClient);
 
-        presenter.getEventsMap(currentLocation.getLatitude(),currentLocation.getLatitude());
+        gotoLocation(currentLocation.getLatitude(),currentLocation.getLongitude(),15);
+        presenter.getEventsNearByMap(currentLocation.getLatitude(),currentLocation.getLongitude());
 
-       /* if(currentLocation!=null) {
-            LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-            Log.e("LAT",currentLocation.getLatitude()+"");
-            Log.e("LAT",currentLocation.getLongitude()+"");
-            if (marker != null) {
-                marker.remove();
-            }
-
-            List<Address> listAddresses = null;
-            try {
-                listAddresses = gc.getFromLocation(currentLocation.getLatitude(), currentLocation.getLongitude(), 1);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            String state = listAddresses.get(0).getAdminArea();
-
-            MarkerOptions options = new MarkerOptions()
-                    .title(state)
-                    .position(latLng)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-            options.snippet(listAddresses.get(0).getCountryName());
-
-            marker = mMap.addMarker(options);
-            CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latLng, 15);
-            mMap.moveCamera(update);
-        }*/
     }
 
     @Override
@@ -234,7 +280,6 @@ public class GoogleMapView extends BaseView<HomeFeedActivitiesPresenter> impleme
 
         List<LatLng> listAddresses = new ArrayList<>();
 
-
         for(int i=0;i<eventList.size()-1;i++){
             double latitude = eventList.get(i).latitude();
             double longitude = eventList.get(i).longtitude();
@@ -243,18 +288,18 @@ public class GoogleMapView extends BaseView<HomeFeedActivitiesPresenter> impleme
             MarkerOptions options = new MarkerOptions()
                     .title(eventList.get(i).title())
                     .position(listAddresses.get(i))
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.event_location))
+                    .visible(false);
             options.snippet(addresses.get(0).getCountryName());
 
             marker = mMap.addMarker(options);
+            markerList.add(marker);
             mMap.addMarker(options);
         }
 
-
-
-
-
     }
+
+
 
 
     @Override
@@ -268,17 +313,13 @@ public class GoogleMapView extends BaseView<HomeFeedActivitiesPresenter> impleme
         subscriptions.add(presenter.getErrorEventMapObservable().subscribe(this::onError));
     }
 
-    private void followingSuccess(FeedEventsResponse realEvent){
-        eventList = realEvent.getNearBy();
-
-
-        Log.e("Tag",eventList.get(0).ownerName()+"");
-        Log.e("Tag",eventList.get(1).ownerName()+"");
-        Log.e("Tag",eventList.get(2).ownerName()+"");
+    private void followingSuccess(List<RealEvent> realEvent){
+        eventList = realEvent;
 
         adapter = new MyAdapter(getContext(),eventList);
         SnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(eventRecycler);
+        eventRecycler.addItemDecoration(myItemDecoration);
         eventRecycler.setAdapter(adapter);
         eventRecycler.setLayoutManager(layoutManager);
 

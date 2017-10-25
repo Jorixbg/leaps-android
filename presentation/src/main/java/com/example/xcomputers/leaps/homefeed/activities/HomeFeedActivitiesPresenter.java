@@ -1,15 +1,18 @@
 package com.example.xcomputers.leaps.homefeed.activities;
 
 
+import android.util.Log;
+
 import com.example.networking.feed.event.FeedEventsResponse;
 import com.example.networking.feed.event.FeedEventsService;
 import com.example.networking.feed.event.FeedFilterRequest;
 import com.example.networking.feed.event.RealEvent;
-import com.example.networking.test.FollowingService;
+import com.example.networking.following.FollowingService;
 import com.example.xcomputers.leaps.User;
 import com.example.xcomputers.leaps.base.BasePresenter;
 import com.example.xcomputers.leaps.utils.SectionedDataHolder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
@@ -28,8 +31,13 @@ public class HomeFeedActivitiesPresenter extends BasePresenter {
     private FollowingService followService;
     private Subject<RealEvent, RealEvent> followingSubject;
     private Subject<Throwable, Throwable> errorFollowingSubject;
-    private Subject<FeedEventsResponse, FeedEventsResponse> getEventMapSubject;
+    private Subject<RealEvent, RealEvent> unfollowingSubject;
+    private Subject<Throwable, Throwable> errorUnfollowingSubject;
+    private Subject<List<RealEvent>, List<RealEvent>> getEventMapSubject;
     private Subject<Throwable, Throwable> errorEventMapSubject;
+    private Subject<RealEvent, RealEvent> getFollowFutureEventSubject;
+    private Subject<Throwable, Throwable> errorFollowFutureEventSubject;
+
 
     private FeedEventsService service = new FeedEventsService();
     private Subject<SectionedDataHolder, SectionedDataHolder> dataSubject;
@@ -41,6 +49,8 @@ public class HomeFeedActivitiesPresenter extends BasePresenter {
     private boolean shouldLoadMore = true;
     private int page = 1;
 
+    private static List<RealEvent> realEventList;
+
     public HomeFeedActivitiesPresenter() {
 
         //New code
@@ -49,29 +59,66 @@ public class HomeFeedActivitiesPresenter extends BasePresenter {
         errorFollowingSubject = PublishSubject.create();
         getEventMapSubject = PublishSubject.create();
         errorEventMapSubject = PublishSubject.create();
+        unfollowingSubject = PublishSubject.create();
+        errorUnfollowingSubject = PublishSubject.create();
+        getFollowFutureEventSubject = PublishSubject.create();
+        errorFollowFutureEventSubject = PublishSubject.create();
 
         dataSubject = PublishSubject.create();
         filterSubject = PublishSubject.create();
         filterErrorSubject = PublishSubject.create();
         eventsErrorSubject = PublishSubject.create();
         dataHolder = new SectionedDataHolder();
+        realEventList = new ArrayList<>();
+    }
+
+    public void getFollowFutureEvent(String auth){
+        service.addHeader("Authorization", auth);
+        service.getFollowFutureEvent()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(realEvent->{
+                    service.removeHeader("Authorization");
+                   realEventList=realEvent;
+                }, throwable -> {
+                    service.removeHeader("Authorization");
+                    errorHandler().call(throwable);
+                    errorFollowFutureEventSubject.onNext(throwable);
+                });
+
+
     }
 
     //Method for following events
     public void followingEvent(String auth, long eventId){
         followService.addHeader("Authorization", auth);
-        followService.FollowingEvent(User.getInstance().getUserId(),eventId)
+        followService.FollowingEvent(eventId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(realEvent->{
                     service.removeHeader("Authorization");
+                    Log.e("Tags2","Follow");
+                }, throwable -> {
+                    service.removeHeader("Authorization");
+                    errorHandler().call(throwable);
+                    unfollowingEvent(auth,eventId);
+                    errorFollowingSubject.onNext(null);
+                    Log.e("Tags2","Error Follow");
+                });
+    }
+
+    public void unfollowingEvent(String auth, long eventId){
+        followService.addHeader("Authorization", auth);
+        followService.UnfollowingEvent(eventId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(realEvent->{
+                    service.removeHeader("Authorization");
+                    Log.e("Tags2","UNFollow");
                 }, throwable -> {
                     service.removeHeader("Authorization");
                     errorHandler().call(throwable);
                     errorFollowingSubject.onNext(null);
+                    Log.e("Tags2","Error UNFollow");
                 });
     }
-
-
 
     //This is need to reset the state of the presenter when a new search is applied
     public void setShouldLoadMore(boolean shouldLoadMore){
@@ -106,8 +153,8 @@ public class HomeFeedActivitiesPresenter extends BasePresenter {
     }
 
 
-    //method to be fixed
-    public void getEventsMap(double lat,double lon){
+    //todo method to be fixed
+   /* public void getEventsMap(double lat,double lon){
         service.getEvents(String.valueOf(lat),String.valueOf(lon))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(realEvent ->{
@@ -118,7 +165,7 @@ public class HomeFeedActivitiesPresenter extends BasePresenter {
                     errorHandler().call(throwable);
                     errorEventMapSubject.onNext(null);
                 });
-    }
+    }*/
 
     public void getEventsNoFilter(List<String> sectionTitles) {
         this.sectionTitles = sectionTitles;
@@ -128,6 +175,22 @@ public class HomeFeedActivitiesPresenter extends BasePresenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onSuccess, this::onFailure);
+    }
+
+
+    public void getEventsNearByMap(double lat,double lon){
+        service.getEvents("nearby", page, String.valueOf(lat),String.valueOf(lon))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(realEvent ->{
+                    getEventMapSubject.onNext(realEvent);
+                    service.removeHeader("Authorization");
+                }, throwable -> {
+                    service.removeHeader("Authorization");
+                    errorHandler().call(throwable);
+                    errorEventMapSubject.onNext(null);
+                });
+
+
     }
 
     private void onSuccess(FeedEventsResponse response) {
@@ -145,6 +208,12 @@ public class HomeFeedActivitiesPresenter extends BasePresenter {
         service.removeHeader("Authorization");
     }
 
+    public List<RealEvent> getRealEventList() {
+        return realEventList;
+    }
+
+
+
     //Observable for following an event
     public Observable<RealEvent> getFollowingObservable(){
         return followingSubject.asObservable().observeOn(AndroidSchedulers.mainThread());
@@ -154,11 +223,30 @@ public class HomeFeedActivitiesPresenter extends BasePresenter {
     public Observable<Throwable> getErrorFollowingObservable(){
         return errorFollowingSubject.asObservable().observeOn(AndroidSchedulers.mainThread());
     }
-    public Observable<FeedEventsResponse> getEventMapObservable(){
-        return getEventMapSubject.asObservable().observeOn(AndroidSchedulers.mainThread());
+    //Observable for following an event
+    public Observable<RealEvent> getFollowFuturEventObservable(){
+        return getFollowFutureEventSubject.asObservable().observeOn(AndroidSchedulers.mainThread());
     }
 
     //Observable for error form following an event
+    public Observable<Throwable> getErrorFollowFuturEventObservable(){
+        return errorFollowFutureEventSubject.asObservable().observeOn(AndroidSchedulers.mainThread());
+    }
+
+    //Observable for following an event
+    public Observable<RealEvent> getUnfollowingObservable(){
+        return unfollowingSubject.asObservable().observeOn(AndroidSchedulers.mainThread());
+    }
+
+    //Observable for error form following an event
+    public Observable<Throwable> getErrorUnfollowingObservable(){
+        return errorUnfollowingSubject.asObservable().observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<List<RealEvent>> getEventMapObservable(){
+        return getEventMapSubject.asObservable().observeOn(AndroidSchedulers.mainThread());
+    }
+
     public Observable<Throwable> getErrorEventMapObservable(){
         return errorEventMapSubject.asObservable().observeOn(AndroidSchedulers.mainThread());
     }

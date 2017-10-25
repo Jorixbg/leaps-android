@@ -3,6 +3,8 @@ package com.example.networking.feed.event;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by xComputers on 02/07/2017.
@@ -10,31 +12,48 @@ import java.io.Serializable;
 
 public class Attendee implements Serializable {
 
-    private static final long serialVersionUID = 2887315518377172621L;
 
-    @SerializedName("user_id")
-    private long userId;
-    @SerializedName("user_name")
-    private String name;
-    @SerializedName("user_image_url")
-    private String imageUrl;
+    @SerializedName("followed")
+    private List<AttendeeResponse> followed;
+    @SerializedName("others")
+    private List<AttendeeResponse> others;
 
-    public long getUserId() {
-        return userId;
+    private List<AttendeeResponse> allUsers;
+
+
+
+    public Attendee(List<AttendeeResponse> followed, List<AttendeeResponse> others) {
+        this.followed = followed;
+        this.others = others;
     }
 
-    public String getName() {
-        return name;
+    public List<AttendeeResponse> getFollowed() {
+        return followed;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public void setFollowed(List<AttendeeResponse> followed) {
+        this.followed = followed;
     }
 
-    public Attendee(long userId, String name, String imageUrl) {
-        this.userId = userId;
-        this.name = name;
-        this.imageUrl = imageUrl;
+    public List<AttendeeResponse> getOthers() {
+        return others;
+    }
+
+    public void setOthers(List<AttendeeResponse> others) {
+        this.others = others;
+    }
+
+    public List<AttendeeResponse> getAllUsers() {
+
+
+        allUsers = new ArrayList<>();
+        allUsers.addAll(followed);
+        allUsers.addAll(others);
+
+        return allUsers;
+    }
+    public void setAllUsers(List<AttendeeResponse> allUsers) {
+        this.allUsers = allUsers;
     }
 }
 

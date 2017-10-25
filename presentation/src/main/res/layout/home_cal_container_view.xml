@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
         android:id="@+id/calendar_spinner_layout"
@@ -23,6 +24,9 @@
         android:layout_below="@+id/calendar_spinner_layout"
         android:id="@+id/home_cal_tabs"
         android:layout_width="match_parent"
+        app:tabMode="fixed"
+        app:tabMaxWidth="0dp"
+        app:tabGravity="fill"
         android:layout_height="38dp">
 
     </android.support.design.widget.TabLayout>

@@ -31,4 +31,6 @@ public class FeedEventsService extends BaseService<FeedEventsApi>{
 
     public Observable<List<RealEvent>> getSuited(int page){return serviceApi.getSuited(page);}
 
+    public Observable<List<RealEvent>> getFollowFutureEvent(){return serviceApi.getFollowingFutureEvent();}
+
 }

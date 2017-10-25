@@ -4,6 +4,7 @@ import com.example.networking.feed.event.FeedFilterRequest;
 import com.example.networking.feed.event.FeedFilterTrainerResponse;
 import com.example.networking.feed.trainer.Entity;
 import com.example.networking.feed.trainer.TrainersService;
+import com.example.networking.login.UserResponse;
 import com.example.xcomputers.leaps.User;
 import com.example.xcomputers.leaps.base.BasePresenter;
 
@@ -25,7 +26,7 @@ class FeedTrainersPresenter extends BasePresenter {
     private TrainersService service = new TrainersService();
     private Subject<List<Entity>, List<Entity>> trainersSubject;
     private Subject<FeedFilterTrainerResponse, FeedFilterTrainerResponse> trainersFilterSubject;
-    private Subject<List<Entity>, List<Entity>> followingSubject;
+    private Subject<UserResponse, UserResponse> followingSubject;
     private Subject<Void, Void> generalErrorSubject;
     private List<Entity> trainers;
     private boolean shouldLoadMore = true;
@@ -90,9 +91,7 @@ class FeedTrainersPresenter extends BasePresenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(userResponse -> {
-                    List<Entity> list = new ArrayList<>();
-                    list.addAll(userResponse);
-                    followingSubject.onNext(list);
+                    followingSubject.onNext(userResponse);
                     service.removeHeader("Authorization");
                 }, throwable -> {
                     errorHandler().call(throwable);
@@ -110,7 +109,7 @@ class FeedTrainersPresenter extends BasePresenter {
         return trainersFilterSubject.asObservable().observeOn(AndroidSchedulers.mainThread());
     }
 
-    Observable<List<Entity>> getUsersFollowing(){
+    Observable<UserResponse> getUsersFollowing(){
         return followingSubject.asObservable().observeOn(AndroidSchedulers.mainThread());
     }
 

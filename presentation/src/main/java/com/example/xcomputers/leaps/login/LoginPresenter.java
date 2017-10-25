@@ -2,8 +2,8 @@ package com.example.xcomputers.leaps.login;
 
 import com.example.networking.base.HttpError;
 import com.example.networking.login.LoginRequest;
-import com.example.networking.login.UserResponse;
 import com.example.networking.login.LoginService;
+import com.example.networking.login.UserResponse;
 import com.example.xcomputers.leaps.base.BasePresenter;
 import com.example.xcomputers.leaps.utils.EntityHolder;
 import com.example.xcomputers.leaps.utils.LoginResponseToUserTypeMapper;

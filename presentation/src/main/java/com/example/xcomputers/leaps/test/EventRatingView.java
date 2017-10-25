@@ -1,16 +1,19 @@
 package com.example.xcomputers.leaps.test;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,16 +23,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.networking.feed.event.Event;
 import com.example.networking.feed.trainer.Image;
+import com.example.networking.test.RateId;
 import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.base.BaseView;
-import com.example.xcomputers.leaps.base.EmptyPresenter;
 import com.example.xcomputers.leaps.base.Layout;
-import com.example.xcomputers.leaps.utils.EntityHolder;
 import com.example.xcomputers.leaps.utils.FilePathDescriptor;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,41 +46,41 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Subscription;
 
-import static android.app.Activity.RESULT_OK;
-
 /**
  * Created by Ivan on 9/18/2017.
  */
 @Layout(layoutId = R.layout.rate_event_page)
-public class EventRatingView extends BaseView<EmptyPresenter> {
+public class EventRatingView extends BaseView<EventRatingPresenter> {
 
     private static final int REQUEST_STORAGE = 3456;
     private static final int FIRST_IMAGE = 1;
-
-    private static final int FIRST_IMAGE_REQUEST = 20;
-
+    private static final int FIRST_IMAGE_REQUEST = 2;
 
     private RatingBar ratingBar;
     private EditText  comment;
     private Button pictureBtn;
-    private ImageView addComment;
+    private ImageView addCommentBtn;
     private ImageView commentDeleteImage;
     private ImageView commentImage;
     private List<Image> imagesToDelete;
     private Map<Integer, Uri> images;
     private int imageRequest = -1;
-    private float rating = 0;
+    private int rating = 0;
+    private Event event;
+    private Uri uri;
+    private  int req = -1;
+    private int rateId = 0;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         images = new HashMap<>();
+        event = (Event) getArguments().getSerializable("eventObj");
         imagesToDelete = new ArrayList<>();
         initViews(view);
         initListeners();
 
     }
-
 
     private void checkPermissionAndRequestImage(int imageRequest) {
         if (checkStoragePermission()) {
@@ -84,11 +91,8 @@ public class EventRatingView extends BaseView<EmptyPresenter> {
     }
 
     private void requestImage(int requestIndex) {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        getActivity().startActivityForResult(Intent.createChooser(intent,
-                "Select Picture"), requestIndex);
+        Intent intent = new Intent(getContext(),CropActivity.class);
+        getActivity().startActivityForResult(intent,requestIndex);
     }
 
     private void onImageClicked(TextView holder, ImageView imageHolder, ImageView deleteImage, Uri uri) {
@@ -110,13 +114,12 @@ public class EventRatingView extends BaseView<EmptyPresenter> {
         }
     }
 
-
     private void initViews(View view) {
 
         ratingBar = (RatingBar) view.findViewById(R.id.ratingBarEvent);
         comment = (EditText) view.findViewById(R.id.txtComment);
         pictureBtn = (Button) view.findViewById(R.id.comment_picture);
-        addComment = (ImageView) view.findViewById(R.id.add_comment_btn);
+        addCommentBtn = (ImageView) view.findViewById(R.id.add_comment_btn);
         commentImage = (ImageView) view.findViewById(R.id.comment_imageView) ;
         commentDeleteImage = (ImageView) view.findViewById(R.id.comment_pictre_delete);
     }
@@ -127,23 +130,21 @@ public class EventRatingView extends BaseView<EmptyPresenter> {
         ratingBar = null;
         comment = null;
         pictureBtn = null;
-        addComment = null;
+        addCommentBtn = null;
         commentImage = null;
     }
 
     private void initListeners() {
 
         commentDeleteImage.setOnClickListener(v -> {
-            if (EntityHolder.getInstance().getEntity().images().size() > 0) {
-                imagesToDelete.add(EntityHolder.getInstance().getEntity().images().get(0));
-            }
-            onDeleteClicked(pictureBtn, commentDeleteImage, commentImage, FIRST_IMAGE);
+                        onDeleteClicked(pictureBtn, commentDeleteImage, commentImage, FIRST_IMAGE);
         });
 
+        pictureBtn.setOnClickListener(v -> {
+            checkPermissionAndRequestImage(FIRST_IMAGE_REQUEST);
+        });
 
-        pictureBtn.setOnClickListener(v -> checkPermissionAndRequestImage(FIRST_IMAGE_REQUEST));
-
-        addComment.setOnClickListener(v -> {
+        addCommentBtn.setOnClickListener(v -> {
           if (TextUtils.isEmpty(comment.getText().toString())){
                 Toast.makeText(getContext(), "Please enter a comment", Toast.LENGTH_SHORT).show();
                 return;
@@ -153,31 +154,48 @@ public class EventRatingView extends BaseView<EmptyPresenter> {
               return;
           }
           else {
-              rating = ratingBar.getRating();
+              rating = (int) ratingBar.getRating();
               Toast.makeText(getContext(),
                       String.valueOf(rating), Toast.LENGTH_LONG).show();
           }
-            openFragment(EventCommentPage.class, new Bundle());
+            Calendar c = Calendar.getInstance();
 
+            SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+            String formattedDate = df.format(c.getTime());
+
+            Date d = null;
+            try {
+                d = df.parse(formattedDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            long milliseconds = d.getTime();
+
+            presenter.rateEvent(PreferenceManager.getDefaultSharedPreferences(getContext()).getString("Authorization", ""),
+                    event.eventId(),rating,comment.getText().toString(),milliseconds);
         });
-
-
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && data != null) {
-            TextView holder = null;
-            ImageView deleteImage = null;
-            ImageView imageView = null;
-            int req = -1;
+
+        if (requestCode ==2&& data != null) {
+            if(resultCode == Activity.RESULT_OK){
+                uri=data.getParcelableExtra("result");
+                Log.e("Uri",uri+"");
+                TextView holder = null;
+                ImageView deleteImage = null;
+                ImageView imageView = null;
                     holder = pictureBtn;
                     deleteImage = commentDeleteImage;
                     imageView = commentImage;
                     req = FIRST_IMAGE;
-
-            images.put(req, data.getData());
-            onImageClicked(holder, imageView,deleteImage, data.getData());
+                images.put(req, uri);
+                onImageClicked(holder, imageView,deleteImage,uri);
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
         }
     }
 
@@ -234,23 +252,6 @@ public class EventRatingView extends BaseView<EmptyPresenter> {
         }
     }
 
-   private void uploadImage() {
-       /* if (images.get(imageCounter) != null) {
-            presenter.uploadImage(auth, User.getInstance().getUserId(), getImageFromUri(images.get(imageCounter)));
-        }
-        Integer keyToRemove = new Integer(-1);
-        for(Map.Entry<Integer, Uri> entry : images.entrySet()){
-            keyToRemove = entry.getKey();
-            presenter.uploadImage(auth, User.getInstance().getUserId(), getImageFromUri(images.get(keyToRemove)));
-        }
-
-        if(keyToRemove == -1) {
-            Toast.makeText(getContext(), R.string.lbl_profile_edit_success, Toast.LENGTH_SHORT).show();
-            hideLoading();
-            back();
-            return;
-        }*/
-    }
 
     private MultipartBody.Part getImageFromUri(Uri uri){
         File photo = new File(FilePathDescriptor.getPath(getContext(), uri));
@@ -260,12 +261,29 @@ public class EventRatingView extends BaseView<EmptyPresenter> {
     }
 
     @Override
-    protected EmptyPresenter createPresenter() {
-        return new EmptyPresenter();
+    protected EventRatingPresenter createPresenter() {
+        return new EventRatingPresenter();
     }
 
     @Override
     protected void addSubscriptions(List<Subscription> subscriptions) {
-
+        subscriptions.add(presenter.getRateIdObservable().subscribe(this::getRateId));
+        subscriptions.add(presenter.getImageObservable().subscribe(this::getImage));
     }
+
+    private void getRateId(RateId integer){
+        rateId = integer.getRateId();
+        if(rateId!=0){
+            presenter.uploadMainImage(PreferenceManager.getDefaultSharedPreferences(getContext()).getString("Authorization", ""),rateId,getImageFromUri(uri));
+        }
+    }
+
+    private void getImage(Image image){
+        Image imageU = image;
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("eventObj",event);
+        openFragment(EventCommentPage.class, bundle, true);
+    }
+
 }

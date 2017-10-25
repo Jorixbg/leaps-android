@@ -83,7 +83,7 @@ public class ProfileListView extends BaseView<ProfileListPresenter> {
         Class clazz = User.getInstance().isTrainer() ? TrainerProfilePreview.class : UserProfilePreview.class;
         profilePic.setOnClickListener(v -> openFragment(clazz, new Bundle(), true));
         Class editClass = User.getInstance().isTrainer() ? TrainerProfileEditView.class : UserEditProfileView.class;
-        editProfileBtn.setOnClickListener(v -> openFragment(editClass, new Bundle(), true));
+
     }
 
 

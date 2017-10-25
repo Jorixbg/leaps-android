@@ -1,6 +1,7 @@
 package com.example.xcomputers.leaps.test;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,12 +10,19 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.networking.feed.trainer.Entity;
+import com.example.networking.test.EventRatingResponse;
+import com.example.xcomputers.leaps.LeapsApplication;
 import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.utils.EntityHolder;
 import com.example.xcomputers.leaps.utils.GlideInstance;
 
+import java.io.File;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Ivan on 9/21/2017.
@@ -22,14 +30,19 @@ import java.util.List;
 
 public class CommentEventAdapter extends RecyclerView.Adapter<CommentEventAdapter.ViewHolder> {
 
-    private List<EventComment> comments;
+
+    private static List<EventRatingResponse> comments;
     private Context context;
     private Entity user ;
+    private EventRatingPresenter presenter;
+    private int pageNumber = 1;
+    private long eventId;
 
-    public CommentEventAdapter(Context context, List<EventComment> comments){
+    public CommentEventAdapter(Context context,EventRatingPresenter presenter,long eventId, List<EventRatingResponse> comments){
         this.comments = comments;
         this.context = context;
-
+        this.presenter = presenter;
+        this.eventId = eventId;
          user = EntityHolder.getInstance().getEntity();
 
     }
@@ -46,12 +59,24 @@ public class CommentEventAdapter extends RecyclerView.Adapter<CommentEventAdapte
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         //Todo onBindView
-        EventComment comment = comments.get(position);
-        holder.userName.setText(comment.getUserName());
-        holder.userComment.setText(comment.getUserComment());
-        holder.date.setText(comment.getDate());
+        EventRatingResponse comment = comments.get(position);
+        holder.userName.setText(comment.getOwnerName());
+        holder.userComment.setText(comment.getComment());
+        holder.date.setText(returnDate(comment.getDate()) );
         holder.ratingBar.setRating(comment.getRating());
         GlideInstance.loadImageCircle(context, user.profileImageUrl(), holder.userImage, R.drawable.profile_placeholder);
+        Glide.with(holder.itemView.getContext())
+                .load(LeapsApplication.BASE_URL + File.separator + comment.getCommentImageUrl())
+                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                .placeholder(R.drawable.event_placeholder)
+                .into(holder.commentImage);
+
+
+       if((++position)%20 == 0 && comments.size()%20 == 0){
+            pageNumber++;
+            presenter.getComment(PreferenceManager.getDefaultSharedPreferences(holder.itemView.getContext()).getString("Authorization", ""),
+                    eventId, pageNumber, 20);
+       }
 
     }
 
@@ -82,4 +107,23 @@ public class CommentEventAdapter extends RecyclerView.Adapter<CommentEventAdapte
 
         }
     }
+
+
+    private String returnDate(long mil){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(mil);
+        int mYear = calendar.get(Calendar.YEAR);
+        int mMonth = calendar.get(Calendar.MONTH);
+        int mDay = calendar.get(Calendar.DAY_OF_MONTH);
+        String date = String.format(Locale.getDefault(), "%d.%d.%d", mDay, mMonth + 1, mYear);
+        return date;
+    }
+
+
+    public static void setComments(List<EventRatingResponse> comments) {
+        CommentEventAdapter.comments.addAll(comments);
+
+    }
+
+
 }

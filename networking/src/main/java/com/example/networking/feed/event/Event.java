@@ -8,7 +8,7 @@ import java.util.List;
  * Created by xComputers on 14/06/2017.
  */
 
-public interface Event extends Serializable{
+public interface Event extends Serializable {
 
     long eventId();
     long ownerId();
@@ -28,6 +28,5 @@ public interface Event extends Serializable{
     String imageUrl();
     String[] tags();
     List<EventImage> images();
-    Attendee[] attendees();
-    void setAttendees(Attendee[] attendees);
+    Attendee attendees();
 }

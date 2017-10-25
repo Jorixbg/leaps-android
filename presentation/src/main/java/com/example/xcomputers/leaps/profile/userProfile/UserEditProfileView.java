@@ -29,6 +29,7 @@ import com.example.xcomputers.leaps.User;
 import com.example.xcomputers.leaps.base.BaseView;
 import com.example.xcomputers.leaps.base.Layout;
 import com.example.xcomputers.leaps.profile.trainerProfile.EditProfilePresenter;
+import com.example.xcomputers.leaps.test.CropActivity;
 import com.example.xcomputers.leaps.utils.EntityHolder;
 import com.example.xcomputers.leaps.utils.FilePathDescriptor;
 import com.example.xcomputers.leaps.utils.GlideInstance;
@@ -136,17 +137,21 @@ public class UserEditProfileView extends BaseView<EditProfilePresenter> {
                 entity.description(),
                 aboutMeET.getText().toString(),
                 0, "", 0);
+        onBack();
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == IMAGE_REQUEST) {
-                mainImageUri = data.getData();
+                Uri uriImg=data.getParcelableExtra("result");
+                mainImageUri = uriImg;
                 GlideInstance.loadImageCircle(getContext(), mainImageUri, profilePicImageView, R.drawable.profile_placeholder);
             }
         }
     }
+
+
 
     private void checkPermissionAndRequestImage(int imageRequest) {
         if (checkStoragePermission()) {
@@ -214,11 +219,8 @@ public class UserEditProfileView extends BaseView<EditProfilePresenter> {
     }
 
     private void requestImage(int requestIndex) {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        getActivity().startActivityForResult(Intent.createChooser(intent,
-                "Select Picture"), requestIndex);
+        Intent intent = new Intent(getContext(),CropActivity.class);
+        getActivity().startActivityForResult(intent,requestIndex);
     }
 
     private void initViews(View view) {
@@ -262,10 +264,6 @@ public class UserEditProfileView extends BaseView<EditProfilePresenter> {
                     }
                     presenter.uploadMainImage(auth, User.getInstance().getUserId(), getImageFromUri(mainImageUri));
                 }));
-
-
-
-
 
         subscriptions.add(presenter.getUploadMainPicObservable().subscribe(image -> {
             User.getInstance().setImageUrl(image.getImageUrl());

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center|left">
-    <LinearLayout
+    <RelativeLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,10 +24,26 @@
             android:id="@+id/follow_user_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/follow_user_imageView"
+            android:layout_toEndOf="@+id/follow_user_imageView"
+            android:layout_marginTop="15dp"
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:text="Ivan Petrov"/>
-    </LinearLayout>
+
+        <Button
+            android:id="@+id/follow_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginTop="5dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/following_button_unclicked"/>
+
+
+    </RelativeLayout>
 
     <View
         android:id="@+id/divider1"

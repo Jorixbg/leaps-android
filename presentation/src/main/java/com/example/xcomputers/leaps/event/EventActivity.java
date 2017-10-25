@@ -1,9 +1,15 @@
 package com.example.xcomputers.leaps.event;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -11,11 +17,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
@@ -24,22 +32,47 @@ import android.widget.Toast;
 
 import com.example.networking.base.HttpError;
 import com.example.networking.feed.event.Attendee;
+import com.example.networking.feed.event.AttendeeResponse;
 import com.example.networking.feed.event.Event;
 import com.example.networking.feed.event.EventAttendService;
 import com.example.networking.feed.event.EventImage;
+import com.example.networking.feed.event.FeedEventsService;
+import com.example.networking.feed.event.RealEvent;
+import com.example.networking.following.FollowingService;
+import com.example.networking.test.EventRateService;
+import com.example.networking.test.EventRatingResponse;
 import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.User;
 import com.example.xcomputers.leaps.base.IActivity;
 import com.example.xcomputers.leaps.base.IBaseView;
+import com.example.xcomputers.leaps.event.createEvent.CreateEventActivity;
+import com.example.xcomputers.leaps.test.EventCommentPage;
 import com.example.xcomputers.leaps.test.EventRatingView;
+import com.example.xcomputers.leaps.test.FollowUserView;
 import com.example.xcomputers.leaps.trainer.TrainerActivity;
 import com.example.xcomputers.leaps.utils.CustomTextView;
 import com.example.xcomputers.leaps.utils.GlideInstance;
 import com.example.xcomputers.leaps.utils.TagView;
 import com.example.xcomputers.leaps.welcome.WelcomeActivity;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 import com.google.android.flexbox.FlexboxLayout;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -63,12 +96,13 @@ import static com.example.xcomputers.leaps.trainer.TrainerActivity.ENTITY_ID_KEY
  * Created by xComputers on 10/07/2017.
  */
 
-public class EventActivity extends AppCompatActivity implements IActivity {
+public class EventActivity extends AppCompatActivity implements IActivity, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
 
     public static final String EVENT_KEY = "EventView.EVENT_KEY";
     public static final int EVENT_REQUEST_CODE = 5;
     public static final int LOGIN_REQUEST_CODE = 9593;
+    private static final int ERROR_DIALOG_REQUEST = 9001;
 
     private TextView dateTimeTV;
     private ImageView ownerPic;
@@ -95,33 +129,337 @@ public class EventActivity extends AppCompatActivity implements IActivity {
     private TextView footerTV;
     private Button footerBtn;
     private EventAttendService service;
+    private EventRateService commentService;
     private RelativeLayout containerLayout;
     private FrameLayout container;
     private ProgressBar progressBar;
     private Event event;
     private RatingBar rating;
     private IBaseView currentFragment;
+    private LinearLayout attendesImages;
+    private List<EventRatingResponse> eventComments;
+    private Button editBtn;
+    private Button deleteBtn;
+    private ImageView followBtn;
+    private ImageView shareBtn;
+    private boolean isClicked;
+    private FollowingService followingService;
+    private FeedEventsService feedEventsService;
+    private List<RealEvent> realEventList;
+    private GoogleMap mMap;
+    private GoogleApiClient mLocationClient;
+    private Marker marker;
+    private Geocoder geocoder;
+    boolean hasCommeted;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.event_view);
+        followingService = new FollowingService();
+        feedEventsService = new FeedEventsService();
+        commentService = new EventRateService();
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
+        followingFutureEvent();
         initViews();
         service = new EventAttendService();
         event = (Event) getIntent().getSerializableExtra(EVENT_KEY);
-        rating.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-               openFragment(EventRatingView.class, new Bundle());
-               hideLoading();
-               return false;
-            }
+        eventComments = new ArrayList<>();
+        getEvent();
+        getComment();
+        createMap();
+        //initRating();
+
+        attendesImages.setOnClickListener(v->{
+            Bundle bundle = new Bundle();
+                if(event.attendees().getOthers()!=null) {
+                    bundle.putSerializable("attendeeOther", (Serializable) event.attendees().getOthers());
+                    bundle.putString("event","event");
+                }
+                if(event.attendees().getFollowed() !=null) {
+                    bundle.putSerializable("attendeeFollowed", (Serializable) event.attendees().getFollowed());
+                    bundle.putString("event","event");
+                }
+
+            openFragment(FollowUserView.class, bundle);
+            hideLoading();
         });
 
-        setupEvent(event);
+        followBtn.setOnClickListener(v->{
+            followingEventFromActivity();
+        });
+
+
+
+
+
+        shareBtn.setOnClickListener(v->{
+            String imgUrl = event.imageUrl();
+
+            ShareLinkContent shareLinkContent = new ShareLinkContent.Builder()
+                    .setContentTitle(event.title())
+                    .setContentDescription(event.description())
+                    .setContentUrl(Uri.parse("http://ec2-35-157-240-40.eu-central-1.compute.amazonaws.com:8888/"+imgUrl))
+                    .build();
+
+            ShareDialog.show(this, shareLinkContent);
+        });
+
+
+        String[] tags = event.tags();
+        for (String tag : tags) {
+            TagView tagView = new TagView(this);
+            tagView.setBackground(ContextCompat.getDrawable(this, R.drawable.event_tag_shape));
+            tagView.setTextColor(ContextCompat.getColor(this, R.color.primaryBlue));
+            tagView.setText(tag);
+            tagsContainer.addView(tagView);
+        }
+
+
+        if(!PreferenceManager.getDefaultSharedPreferences(this).getString("Authorization", "").isEmpty()) {
+            for (int i = 0; i < User.getInstance().getHostingEvents().size(); i++) {
+                if (event.eventId() == User.getInstance().getHostingEvents().get(i).eventId()) {
+                    editBtn.setVisibility(View.VISIBLE);
+                    deleteBtn.setVisibility(View.VISIBLE);
+                    break;
+                }
+            }
+        }
+
+        editBtn.setOnClickListener(v->{
+            editEvent();
+        });
+
+        deleteBtn.setOnClickListener(v->{
+            deleteEvent();
+            onBackPressed();
+
+        });
+
+    }
+
+
+    private void createMap(){
+
+        geocoder = new Geocoder(this);
+
+        if(servicesOK()) {
+            initMap();
+        }
+
+        mLocationClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+        mLocationClient.connect();
+
+    }
+
+
+    private void initMap() {
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.event_map);
+        mapFragment.getMapAsync(this);
+
+    }
+
+    public boolean servicesOK() {
+
+        int isAvailable = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+
+        if (isAvailable == ConnectionResult.SUCCESS) {
+            return true;
+        } else if (GooglePlayServicesUtil.isUserRecoverableError(isAvailable)) {
+            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(isAvailable, this, ERROR_DIALOG_REQUEST);
+            dialog.show();
+        } else {
+            Toast.makeText(this, "CAN'T CONNECT TO MAPPING SERVICE", Toast.LENGTH_SHORT).show();
+        }
+        return false;
+    }
+    @Override
+    public void onMapReady(GoogleMap map) {
+        mMap = map;
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        mMap.getUiSettings().setScrollGesturesEnabled(false);
+        mMap.getUiSettings().setCompassEnabled(false);
+        mMap.getUiSettings().setRotateGesturesEnabled(false);
+        mMap.getUiSettings().setTiltGesturesEnabled(false);
+        mMap.getUiSettings().setZoomControlsEnabled(false);
+        mMap.getUiSettings().setZoomGesturesEnabled(false);
+
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+
+
+                return  false;
+
+            }
+        });
+    }
+
+
+    private void gotoLocation(double lan, double lng, float zoom) {
+        LatLng latLng = new LatLng(lan, lng);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latLng, zoom);
+        mMap.moveCamera(update);
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+
+
+        gotoLocation(event.latitude(),event.longtitude(),12);
+
+
+            LatLng latLng = new LatLng(event.latitude(), event.longtitude());
+            if (marker != null) {
+                marker.remove();
+            }
+
+
+            MarkerOptions options = new MarkerOptions()
+                    .position(latLng)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+
+            marker = mMap.addMarker(options);
+            CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+            mMap.moveCamera(update);
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    private void followingEventFromActivity(){
+
+        followingService.addHeader("Authorization", PreferenceManager.getDefaultSharedPreferences(this).getString("Authorization", ""));
+        followingService.FollowingEvent(event.eventId())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(realEvent->{
+                    service.removeHeader("Authorization");
+
+                    followingFutureEvent();
+                    Log.e("Tags2","Follow");
+                }, throwable -> {
+                    service.removeHeader("Authorization");
+                    unfollowingEventFromActivity();
+                    Log.e("Tags2","Error Follow");
+                });
+
+
+
+    }
+
+    private void unfollowingEventFromActivity(){
+        followingService.addHeader("Authorization", PreferenceManager.getDefaultSharedPreferences(this).getString("Authorization", ""));
+        followingService.UnfollowingEvent(event.eventId())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(realEvent->{
+                        service.removeHeader("Authorization");
+                        Log.e("Tags2","UNFollow");
+                    }, throwable -> {
+                        service.removeHeader("Authorization");
+                        followingFutureEvent();
+                        Log.e("Tags2","Error UNFollow");
+                    });
+
+    }
+
+    private void followingFutureEvent(){
+        feedEventsService.addHeader("Authorization", PreferenceManager.getDefaultSharedPreferences(this).getString("Authorization", ""));
+        feedEventsService.getFollowFutureEvent()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(realEvent->{
+                        service.removeHeader("Authorization");
+                        realEventList=realEvent;
+                        checkFollowingEvent();
+                    }, throwable -> {
+                        service.removeHeader("Authorization");
+                    });
+
+
+
+    }
+
+    private void checkFollowingEvent(){
+        boolean clicked = false;
+        if(realEventList !=null) {
+            for (int i = 0; i < realEventList.size(); i++) {
+                if (event.eventId() == realEventList.get(i).eventId()) {
+                    followBtn.setImageResource(R.drawable.follow_event);
+                    clicked = true;
+                    break;
+                }
+            }
+        }
+        if (!clicked) {
+            followBtn.setImageResource(R.drawable.unfollow_event);
+        }
+    }
+
+    private void initRating(){
+        if(hasCommeted){
+            rating.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("eventObj", event);
+                    bundle.putSerializable("eventComment", (ArrayList<EventRatingResponse>)eventComments);
+                    openFragment(EventCommentPage.class, bundle);
+                    hideLoading();
+                    return false;
+                }
+            });
+
+        }
+        else {
+            rating.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("eventObj", event);
+                    openFragment(EventRatingView.class, bundle);
+                    hideLoading();
+                    return false;
+                }
+            });
+        }
+    }
+
+    private boolean searchForUser() {
+        for(int i =0;i<eventComments.size();i++){
+            if(eventComments.get(i).getUserId() == User.getInstance().getUserId()){
+                return true;
+            }
+        }
+
+
+
+        return false;
+
     }
 
 
@@ -129,6 +467,7 @@ public class EventActivity extends AppCompatActivity implements IActivity {
     public void onBackPressed() {
         super.onBackPressed();
         showLoading();
+        getEvent();
     }
 
     private void setupEvent(Event event) {
@@ -145,6 +484,7 @@ public class EventActivity extends AppCompatActivity implements IActivity {
         }
         images.addAll(imageUrls);
 
+
         setupFooter();
 
         //new Code
@@ -157,6 +497,7 @@ public class EventActivity extends AppCompatActivity implements IActivity {
                 return;
             }
             Intent intent = new Intent(this, TrainerActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra(ENTITY_ID_KEY, event.ownerId());
             startActivity(intent);
         });
@@ -184,30 +525,23 @@ public class EventActivity extends AppCompatActivity implements IActivity {
                 + " - "
                 + format.format(event.timeTo()));
         aboutTv.setText(event.description());
-        String[] tags = event.tags();
-        for (String tag : tags) {
-            TagView tagView = new TagView(this);
-            tagView.setBackground(ContextCompat.getDrawable(this, R.drawable.event_tag_shape));
-            tagView.setTextColor(ContextCompat.getColor(this, R.color.primaryBlue));
-            tagView.setText(tag);
-            tagsContainer.addView(tagView);
-        }
+
         if (PreferenceManager.getDefaultSharedPreferences(this).contains(getString(R.string.auth_label))) {
             attendaceMockup.setVisibility(View.GONE);
             eventLocationMockup.setVisibility(View.GONE);
             attendaceContainer.setVisibility(View.VISIBLE);
-            Attendee[] atendees = event.attendees();
-            attendeesNumber.setText(atendees.length + "");
+            Attendee atendees = event.attendees();
+            attendeesNumber.setText(atendees.getAllUsers().size() + "");
             freeSlots.setText(event.freeSlots() + "");
-            for (int i = 0; i < atendees.length; i++) {
+            for (int i = 0; i < atendees.getAllUsers().size(); i++) {
                 if (i == 7) {
                     break;
                 }
-                Attendee attendee = atendees[i];
+                AttendeeResponse attendee = atendees.getAllUsers().get(i);
                 if (attendee == null) {
                     continue;
                 }
-                GlideInstance.loadImageCircle(this, attendee.getImageUrl(), getImageForAttendee(i), R.drawable.profile_placeholder);
+                GlideInstance.loadImageCircle(this, attendee.getProfileImage(), getImageForAttendee(i), R.drawable.profile_placeholder);
             }
         } else {
             attendaceMockup.setVisibility(View.VISIBLE);
@@ -220,8 +554,8 @@ public class EventActivity extends AppCompatActivity implements IActivity {
 
         if (PreferenceManager.getDefaultSharedPreferences(this).contains(getString(R.string.auth_label))) {
             boolean attending = false;
-            for (int i = 0; i < event.attendees().length; i++) {
-                Attendee attendee = event.attendees()[i];
+            for (int i = 0; i < event.attendees().getAllUsers().size(); i++) {
+                AttendeeResponse attendee = event.attendees().getAllUsers().get(i);
                 if (User.getInstance().getUserId() == attendee.getUserId()) {
                     attending = true;
                     break;
@@ -277,6 +611,11 @@ public class EventActivity extends AppCompatActivity implements IActivity {
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         rating = (RatingBar) findViewById(R.id.ratingBar);
         container = (FrameLayout) findViewById(R.id.container);
+        attendesImages = (LinearLayout) findViewById(R.id.event_attendance_image_container);
+        editBtn = (Button) findViewById(R.id.edit_button_event);
+        deleteBtn = (Button) findViewById(R.id.delete_button_event);
+        followBtn = (ImageView) findViewById(R.id.feed_recycler_follow_button);
+        shareBtn = (ImageView) findViewById(R.id.feed_recycler_share_button);
     }
 
 
@@ -348,8 +687,67 @@ public class EventActivity extends AppCompatActivity implements IActivity {
         }
     }
 
+    private void getEvent(){
+        hideLoading();
+        service.getEventId(event.eventId(),
+                PreferenceManager.getDefaultSharedPreferences(this).getString(getResources().getString(R.string.auth_label), ""))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(realEvent -> {
+                    service.removeHeader("Authorization");
+                    this.event = realEvent.get(0);
+                    setupEvent(event);
+                    showLoading();
+                }, throwable -> {
+                   Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    service.removeHeader(getString(R.string.auth_label));
+                    showLoading();
+                });
+    }
+
+
+    private void editEvent(){
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("Event",event);
+        Intent intent = new Intent(this, CreateEventActivity.class);
+        intent.putExtra("Edit", bundle);
+        startActivity(intent);
+    }
+
+
+    private void deleteEvent(){
+        String auth =  PreferenceManager.getDefaultSharedPreferences(this).getString(getResources().getString(R.string.auth_label), "");
+        service.addHeader("Authorization",auth);
+        commentService.deleteEvent(event.eventId())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(eventRatingResponses -> {
+                    service.removeHeader("Authorization");
+                }, throwable -> {
+                    Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    service.removeHeader(getString(R.string.auth_label));
+                });
+
+
+    }
+
+
+    private void getComment(){
+        String auth =  PreferenceManager.getDefaultSharedPreferences(this).getString(getResources().getString(R.string.auth_label), "");
+        service.addHeader("Authorization",auth);
+        commentService.getComment(event.eventId(),1,20)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(eventRatingResponses -> {
+                    eventComments = eventRatingResponses;
+                    hasCommeted = searchForUser();
+                    initRating();
+                    service.removeHeader("Authorization");
+                }, throwable -> {
+                    Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    service.removeHeader(getString(R.string.auth_label));
+                });
+    }
+
     private void attendEvent() {
-        showLoading();
         service.attendEvent(User.getInstance().getUserId(),
                 event.eventId(),
                 PreferenceManager.getDefaultSharedPreferences(this).getString(getResources().getString(R.string.auth_label), ""))
@@ -357,11 +755,10 @@ public class EventActivity extends AppCompatActivity implements IActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(realEvent -> {
                     service.removeHeader(getString(R.string.auth_label));
-                    hideLoading();
                     Toast.makeText(this, R.string.success_lbl, Toast.LENGTH_SHORT).show();
                     this.event = realEvent;
                     this.tagsContainer.removeAllViewsInLayout();
-                    setupEvent(event);
+                    getEvent();
                 }, throwable -> {
                     if (throwable instanceof HttpException) {
                         HttpException exception = (HttpException) throwable;
@@ -377,7 +774,6 @@ public class EventActivity extends AppCompatActivity implements IActivity {
                         }
                     }
                     service.removeHeader(getString(R.string.auth_label));
-                    hideLoading();
                 });
     }
 
@@ -392,9 +788,6 @@ public class EventActivity extends AppCompatActivity implements IActivity {
     }
 
     private void unattendEvent() {
-
-        showLoading();
-
         clearAttendees();
         service.unattendEvent(User.getInstance().getUserId(),
                 event.eventId(),
@@ -402,9 +795,9 @@ public class EventActivity extends AppCompatActivity implements IActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(realEvent -> {
-                    List<Attendee> list = new ArrayList<Attendee>();
-                    for(int i = 0; i < event.attendees().length ; i++){
-                        Attendee attendee = event.attendees()[i];
+                    List<AttendeeResponse> list = new ArrayList<AttendeeResponse>();
+                    for(int i = 0; i < event.attendees().getAllUsers().size() ; i++){
+                        AttendeeResponse attendee = event.attendees().getAllUsers().get(i);
                         if(attendee == null){
                             continue;
                         }
@@ -412,13 +805,11 @@ public class EventActivity extends AppCompatActivity implements IActivity {
                             list.add(attendee);
                         }
                     }
-                    event.setAttendees(list.toArray(new Attendee[list.size()]));
+                    event.attendees().setAllUsers(list);
                     service.removeHeader(getString(R.string.auth_label));
                     this.tagsContainer.removeAllViewsInLayout();
-                    setupEvent(event);
-                    hideLoading();
+                    getEvent();
                 }, throwable -> {
-                    hideLoading();
                     Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
                     service.removeHeader(getString(R.string.auth_label));
                 });
@@ -454,6 +845,7 @@ public class EventActivity extends AppCompatActivity implements IActivity {
             currentFragment = (IBaseView) fragmentToOpen;
         }
     }
+
     protected IBaseView popBackStack(android.support.v4.app.FragmentManager fragmentManager, String fragmentViewName, Bundle args) {
 
         Fragment fragment = fragmentManager.findFragmentByTag(fragmentViewName);
