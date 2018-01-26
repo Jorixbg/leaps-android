@@ -1,10 +1,13 @@
 package com.example.xcomputers.leaps.registration.registrationscreens;
 
 import android.app.DatePickerDialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.Toast;
 
 import com.example.xcomputers.leaps.R;
@@ -39,6 +42,11 @@ public class RegistrationBirthdayScreen extends BaseView<EmptyPresenter> impleme
     private String birthDay;
     private IRegistrationContainer container;
     private long birthDayTimeStamp;
+    private Calendar calendar = Calendar.getInstance();
+
+
+    private DatePickerDialog birthdayDialog;
+    private DatePickerDialog.OnDateSetListener mBirthdaySetListener;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -61,7 +69,15 @@ public class RegistrationBirthdayScreen extends BaseView<EmptyPresenter> impleme
                 calendarTV.setText(birthDay);
             }
         }
-        calendarTV.setOnClickListener(v -> showCalendar(DEFAULT_YEAR, DEFAULT_MONTH, DEFAULT_DAY));
+        calendarTV.setOnClickListener(v -> {
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            birthdayDialog = new DatePickerDialog(getContext(), android.R.style.Theme_Holo_Light_Dialog_MinWidth, mBirthdaySetListener, year, month, day);
+            birthdayDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            birthdayDialog.show();
+        });
         nextBtn.setOnClickListener(v -> {
            if(birthDay == null || birthDay.isEmpty()){
                Toast.makeText(getContext(), "Please provide a valid date of birth", Toast.LENGTH_SHORT).show();
@@ -73,6 +89,27 @@ public class RegistrationBirthdayScreen extends BaseView<EmptyPresenter> impleme
         cancelBtn.setOnClickListener(v -> {
             getActivity().finish();
         });
+
+
+        mBirthdaySetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                Calendar userAge = Calendar.getInstance();
+                userAge.set(year, month++, day);
+                Calendar minAdultAge = Calendar.getInstance();
+                minAdultAge.add(Calendar.YEAR, -18);
+                if (minAdultAge.before(userAge)) {
+                    Toast.makeText(getContext(), R.string.error_not_adult, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                //birthDay = (String.format("%s %s %s", String.valueOf(year1), String.valueOf(month1), String.valueOf(day1)));
+                birthDayTimeStamp = userAge.getTimeInMillis();
+                birthDay = (String.format("%s.%s.%s",  String.valueOf(day),String.valueOf(month),String.valueOf(year)));
+                calendarTV.setText(birthDay);
+            }
+        };
+
+
     }
 
     @Override
@@ -80,22 +117,6 @@ public class RegistrationBirthdayScreen extends BaseView<EmptyPresenter> impleme
         return container.onBack();
     }
 
-    private void showCalendar(int year, int month, int day){
-
-        new DatePickerDialog(getContext(), (datePicker, year1, month1, day1) -> {
-            Calendar userAge = Calendar.getInstance();
-            userAge.set(year1, month1, day1);
-            Calendar minAdultAge = Calendar.getInstance();
-            minAdultAge.add(Calendar.YEAR, -18);
-            if (minAdultAge.before(userAge)) {
-                Toast.makeText(getContext(), getString(R.string.error_not_adult), Toast.LENGTH_SHORT).show();
-                return;
-            }
-            birthDay = (String.format("%s %s %s", String.valueOf(year1), String.valueOf(month1 + 1), String.valueOf(day1)));
-            birthDayTimeStamp = userAge.getTimeInMillis();
-            calendarTV.setText(birthDay);
-        }, year, month, day).show();
-    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

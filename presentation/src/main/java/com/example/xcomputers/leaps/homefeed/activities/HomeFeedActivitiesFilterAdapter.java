@@ -22,7 +22,10 @@ import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -84,6 +87,18 @@ public class HomeFeedActivitiesFilterAdapter extends RecyclerView.Adapter<Recycl
             case VIEW_TYPE_ITEM:
                 event = data.get(position);
                 MainVH mainHolder = (MainVH) holder;
+
+
+                if(!PreferenceManager.getDefaultSharedPreferences(mainHolder.itemView.getContext()).contains("Authorization")){
+                    mainHolder.shareBtn.setVisibility(View.GONE);
+                    mainHolder.followBtn.setVisibility(View.GONE);
+                }
+                else {
+                    mainHolder.shareBtn.setVisibility(View.VISIBLE);
+                    mainHolder.followBtn.setVisibility(View.VISIBLE);
+                }
+
+
                 if(mainHolder.isClicked()){
                     mainHolder.followBtn.setImageResource(R.drawable.follow_event);
                 }
@@ -111,13 +126,26 @@ public class HomeFeedActivitiesFilterAdapter extends RecyclerView.Adapter<Recycl
                 mainHolder.followBtn.setImageResource(R.drawable.unfollow_event);
                 Calendar eventTime = Calendar.getInstance();
                 eventTime.setTime(event.timeFrom());
+
+                Date date = event.timeFrom();
+                DateFormat formatter = new SimpleDateFormat("HH:mm");
+                String dateFormatted = formatter.format(date);
+
                 mainHolder.itemDate.setText(
                         eventTime.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault())
                                 + " "
                                 + eventTime.get(Calendar.DAY_OF_MONTH)
-                                + eventTime.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault()));
+                                + " "
+                                + eventTime.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault())
+                                + ",  "
+                                + dateFormatted
+                                + ",  "
+                                + eventTime.get(Calendar.YEAR)
+                                + " ");
 
-                //TODO mainHolder.itemDistance;
+                int distance = Math.round(event.distance());
+
+                mainHolder.itemDistance.setText(String.valueOf(distance) + " km");
                 if (event.priceFrom() > 0) {
                     mainHolder.itemPrice.setBackground(ContextCompat.getDrawable(mainHolder.itemPrice.getContext(), R.drawable.round_white_button_shape));
                     mainHolder.itemPrice.setAllCaps(false);

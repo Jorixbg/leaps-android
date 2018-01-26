@@ -2,10 +2,13 @@ package com.example.xcomputers.leaps.profile.trainerProfile;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -15,12 +18,16 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,11 +40,12 @@ import com.example.networking.feed.trainer.Entity;
 import com.example.networking.feed.trainer.Image;
 import com.example.networking.login.UserResponse;
 import com.example.xcomputers.leaps.LeapsApplication;
+import com.example.xcomputers.leaps.MainActivity;
 import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.User;
 import com.example.xcomputers.leaps.base.BaseView;
 import com.example.xcomputers.leaps.base.Layout;
-import com.example.xcomputers.leaps.test.CropActivity;
+import com.example.xcomputers.leaps.crop.CropActivity;
 import com.example.xcomputers.leaps.utils.EntityHolder;
 import com.example.xcomputers.leaps.utils.FilePathDescriptor;
 import com.example.xcomputers.leaps.utils.GlideInstance;
@@ -51,6 +59,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import okhttp3.MediaType;
@@ -114,32 +123,107 @@ public class TrainerProfileEditView extends BaseView<EditProfilePresenter> {
     private int deleteImageCounter = 0;
     private String auth;
     private int requestUriId;
-
     private FlexboxLayout tagsContainer;
+    private List<String> tagList;
+    private  Entity entity;
+
+
+    private DatePickerDialog birthdayDialog;
+    private DatePickerDialog.OnDateSetListener mBirthdaySetListener;
+
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         images = new HashMap<>();
         imagesToDelete = new ArrayList<>();
+        tagList = new ArrayList<>();
         auth = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("Authorization", "");
         initViews(view);
         initListeners();
         setInititialData();
+        setupFlexBox();
     }
+
+
+
+    private void setupFlexBox() {
+
+        List<String> tags = entity.specialities();
+        for (String tag : tags) {
+            TagView tagView = createTag(tag);
+            tagView.toggle(R.drawable.event_tag_shape, R.drawable.round_blue_tag_shape);
+            tagList.add(tagView.getText().toString());
+            setupTagListener(tagView);
+            tagsContainer.addView(tagView);
+        }
+        TagView tagView = createTag("+");
+        tagView.setOnClickListener(v -> onTagAdd());
+        tagsContainer.addView(tagView);
+    }
+
+    private void setupTagListener(TagView tagView) {
+        tagView.setOnClickListener(v -> {
+            tagView.toggle(R.drawable.event_tag_shape, R.drawable.round_blue_tag_shape);
+            if (tagView.isSelected()) {
+                tagList.add(tagView.getText().toString());
+            } else {
+                tagList.remove(tagView.getText().toString());
+            }
+        });
+    }
+
+    private TagView createTag(String text) {
+        TagView tagView = new TagView(getContext());
+        tagView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.event_tag_shape));
+        tagView.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryBlue));
+        tagView.setText(text);
+        return tagView;
+    }
+
+    private void onTagAdd() {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        dialogBuilder.setTitle(R.string.lbl_tag_prompt_name);
+        final EditText tag = new EditText(getContext());
+
+        tag.setInputType(InputType.TYPE_CLASS_TEXT);
+        LinearLayout ll = new LinearLayout(getContext());
+        ll.setOrientation(LinearLayout.VERTICAL);
+        ll.addView(tag);
+        dialogBuilder.setView(ll);
+
+        dialogBuilder.setCancelable(false);
+        dialogBuilder.setPositiveButton(R.string.ok, (dialog, id) -> {
+            String tagText = tag.getText().toString();
+            if (!TextUtils.isEmpty(tagText)) {
+                TagView tagView = createTag(tagText);
+                setupTagListener(tagView);
+                tagsContainer.addView(tagView, tagsContainer.getChildCount() - 1);
+            } else {
+                Toast.makeText(getContext(), R.string.error_empty_tag, Toast.LENGTH_SHORT).show();
+            }
+            ((MainActivity) getActivity()).hideKeyboard();
+        });
+        dialogBuilder.setNegativeButton(R.string.cancel, ((dialog, which) -> dialog.dismiss()));
+        AlertDialog alert = dialogBuilder.create();
+        alert.show();
+
+    }
+
+
 
     private void setInititialData() {
         loadImages();
-        Entity entity = EntityHolder.getInstance().getEntity();
+        entity = EntityHolder.getInstance().getEntity();
 
-        List<String> tags = entity.specialities();
+        /*List<String> tags = entity.specialities();
         for (String tag : tags) {
             TagView tagView = new TagView(getContext());
             tagView.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.event_tag_shape));
             tagView.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryBlue));
             tagView.setText(tag);
             tagsContainer.addView(tagView);
-        }
+        }*/
 
 
 
@@ -151,27 +235,46 @@ public class TrainerProfileEditView extends BaseView<EditProfilePresenter> {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.profile_spinner_item, list);
         arrayAdapter.setDropDownViewResource(R.layout.profile_spinner_item);
         genderSpinner.setAdapter(arrayAdapter);
+        if(entity.gender()!=null && !entity.gender().isEmpty()) {
+            genderSpinner.setSelection(0, false);
+        }
         genderSpinner.setSelection("m".equals(entity.gender()) ? 0 : 1, false);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date(entity.birthDay()));
         birthDayTv.setText(calendar.get(Calendar.DAY_OF_MONTH) + "." + (calendar.get(Calendar.MONTH)+1) + "." + calendar.get(Calendar.YEAR));
         birthDayStamp = entity.birthDay();
         birthDayTv.setOnClickListener(v -> {
-            new DatePickerDialog(getContext(), (datePicker, year1, month1, day1) -> {
+
+
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            birthdayDialog = new DatePickerDialog(getContext(), android.R.style.Theme_Holo_Light_Dialog_MinWidth, mBirthdaySetListener, year, month, day);
+            birthdayDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            birthdayDialog.show();
+
+        });
+
+        mBirthdaySetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 Calendar userAge = Calendar.getInstance();
-                userAge.set(year1, month1++, day1);
+                userAge.set(year, month++, day);
                 Calendar minAdultAge = Calendar.getInstance();
                 minAdultAge.add(Calendar.YEAR, -18);
                 if (minAdultAge.before(userAge)) {
                     Toast.makeText(getContext(), R.string.error_not_adult, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Toast.makeText(getContext(), month1+"", Toast.LENGTH_SHORT).show();
                 //birthDay = (String.format("%s %s %s", String.valueOf(year1), String.valueOf(month1), String.valueOf(day1)));
                 birthDayStamp = userAge.getTimeInMillis();
-                birthDayTv.setText((String.format("%s.%s.%s",  String.valueOf(day1),String.valueOf(month1),String.valueOf(year1))));
-            }, 1990, 2, 1).show();
-        });
+                birthDayTv.setText((String.format("%s.%s.%s",  String.valueOf(day),String.valueOf(month),String.valueOf(year))));
+
+
+            }
+        };
+
         locationEt.setText(entity.address());
         aboutMeET.setText(entity.longDescription());
         yearsEt.setText(String.valueOf(entity.yearsOfTraining()));
@@ -284,7 +387,7 @@ public class TrainerProfileEditView extends BaseView<EditProfilePresenter> {
         priceEt = (EditText) view.findViewById(R.id.price_et);
         firstImageImageView = (ImageView) view.findViewById(R.id.first_image_imageView);
         secondImageImageView = (ImageView) view.findViewById(R.id.second_image_imageView);
-        thirdImageImageView = (ImageView) view.findViewById(R.id._third_image_imageView);
+        thirdImageImageView = (ImageView) view.findViewById(R.id.third_image_imageView);
         fourthImageImageView = (ImageView) view.findViewById(R.id.fourth_image_imageView);
         fifthImageImageView = (ImageView) view.findViewById(R.id.fifth_image_imageView);
         mainPicImageView = (ImageView) view.findViewById(R.id.create_event_main_pic_imageView);
@@ -397,14 +500,16 @@ public class TrainerProfileEditView extends BaseView<EditProfilePresenter> {
                     userNameEt.getText().toString(),
                     genderSpinner.getSelectedItemPosition() == 0 ? "m" : "f",
                     locationEt.getText().toString(),
-                    User.getInstance().getMaxDistance(), nameEt.getText().toString().split(" ")[0],
+                    User.getInstance().getMaxDistance(),
+                    nameEt.getText().toString().split(" ")[0],
                     nameEt.getText().toString().split(" ")[1],
                     birthDayStamp,
                     entity.description(),
                     aboutMeET.getText().toString(),
                     years,
                     entity.phoneNumber(),
-                    price);
+                    price,
+                    tagList);
             uploadImage();
             onBack();
         });

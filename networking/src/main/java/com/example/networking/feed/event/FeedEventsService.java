@@ -33,4 +33,6 @@ public class FeedEventsService extends BaseService<FeedEventsApi>{
 
     public Observable<List<RealEvent>> getFollowFutureEvent(){return serviceApi.getFollowingFutureEvent();}
 
+    public Observable<List<RealEvent>> getFollowFuturePastEvent(){return serviceApi.getFollowingPastEvent();}
+
 }

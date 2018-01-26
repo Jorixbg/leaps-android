@@ -29,4 +29,11 @@ public interface Event extends Serializable {
     String[] tags();
     List<EventImage> images();
     Attendee attendees();
+    float rating();
+    int reviews();
+    float distance();
+
+
+
+
 }

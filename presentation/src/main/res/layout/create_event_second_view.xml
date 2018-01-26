@@ -41,6 +41,7 @@
         android:layout_marginTop="16dp">
 
         <TextView
+            android:id="@+id/search_icon_map"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
@@ -55,7 +56,7 @@
 
 
 
-        <EditText
+        <com.example.xcomputers.leaps.event.createEvent.SearchEditText
             android:id="@+id/create_event_location_tv"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -68,7 +69,8 @@
             android:ellipsize="start"
             android:imeOptions="actionDone"
             android:maxLines="1"
-            android:singleLine="true"/>
+            android:singleLine="true"
+            android:inputType="textCapSentences"/>
 
         </LinearLayout>
 
@@ -103,8 +105,10 @@
             android:layout_height="wrap_content"
             android:layout_above="@+id/create_event_marker"
             android:inputType="none"
-            android:background="@android:color/white"
-            android:textColor="@android:color/black"/>
+            android:background="@drawable/border"
+            android:textColor="@color/primaryBlue"
+            android:layout_marginBottom="3dp"
+            />
 
         <TextView
             android:id="@+id/create_event_marker"

@@ -43,7 +43,7 @@ class RegistrationPresenter extends BasePresenter {
         errorSubject = PublishSubject.create();
     }
 
-    void register(String email, String password, String firstName, String lastName, long birthDay, String fbId, String googleId){
+    void register(String email, String password, String firstName, String lastName, long birthDay, String fbId, String googleId,String firebaseToken){
         if(fbId != null) {
             service.register(email, password, firstName, lastName, birthDay, fbId).enqueue(new Callback<RegistrationResponse>() {
                 @Override
@@ -68,7 +68,21 @@ class RegistrationPresenter extends BasePresenter {
                     registerSubject.onError(null);
                 }
             });
-        }else{
+        }else if (firebaseToken!=null){
+            service.register(email, password, firstName, lastName, birthDay,firebaseToken,true).enqueue(new Callback<RegistrationResponse>() {
+            @Override
+            public void onResponse(Call<RegistrationResponse> call, Response<RegistrationResponse> response) {
+                onRegSuccess(response);
+            }
+            @Override
+            public void onFailure(Call<RegistrationResponse> call, Throwable t) {
+                errorHandler().call(t);
+                errorSubject.onNext("");
+            }
+        });
+
+        }
+        else{
             service.register(email, password, firstName, lastName, birthDay).enqueue(new Callback<RegistrationResponse>() {
                 @Override
                 public void onResponse(Call<RegistrationResponse> call, Response<RegistrationResponse> response) {

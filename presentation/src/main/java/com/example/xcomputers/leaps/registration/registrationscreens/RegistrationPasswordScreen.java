@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.base.BaseView;
@@ -49,11 +48,13 @@ public class RegistrationPasswordScreen extends BaseView<EmptyPresenter> impleme
         }
         nextBtn.setOnClickListener(v -> {
             if (passET.getText().toString().isEmpty()) {
-                Toast.makeText(getContext(), "Please provide a non empty password", Toast.LENGTH_SHORT).show();
+                passET.setError("Please provide a non empty password");
+                passET.requestFocus();
                 return;
             }
             if (!Pattern.matches("^(?=.*[a-zA-Z0-9])(?=.*[!@#$%&*()_+<>?{}~]).{6,}$", passET.getText().toString())) {
-                Toast.makeText(getContext(), "Please provide a valid password", Toast.LENGTH_SHORT).show();
+                passET.setError("Please provide a valid password");
+                passET.requestFocus();
                 return;
             }
 

@@ -61,7 +61,7 @@ public class HomeFeedActivitiesView extends BaseView<HomeFeedActivitiesPresenter
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         HomeScreenView.getTabLayout().setVisibility(View.VISIBLE);
-        presenter.getFollowFutureEvent(PreferenceManager.getDefaultSharedPreferences(view.getContext()).getString("Authorization",""));
+        presenter.getFollowFutureEvent(PreferenceManager.getDefaultSharedPreferences(view.getContext()).getString("Authorization", ""));
         emptyState = (RelativeLayout) view.findViewById(R.id.empty_state);
         recyclerView = (RecyclerView) view.findViewById(R.id.home_feed_activities_recycler);
         filterHeader = (RelativeLayout) view.findViewById(R.id.filter_header);
@@ -72,7 +72,6 @@ public class HomeFeedActivitiesView extends BaseView<HomeFeedActivitiesPresenter
         LayoutInflater factory = getLayoutInflater();
 
         View homeFeedContainerView = factory.inflate(R.layout.home_feed_container_view, null);
-
 
         //NEW CODE
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeEvents);
@@ -105,22 +104,25 @@ public class HomeFeedActivitiesView extends BaseView<HomeFeedActivitiesPresenter
                 presenter.getEventsNoFilter(sectionTitles);
             }
         }
-        HomeFeedContainer.getHomeView().findViewById(R.id.feed_header_lbl).setOnClickListener(v -> {
+        if (HomeFeedContainer.getCurrentPosition() == 0) {
+            HomeFeedContainer.getHomeView().findViewById(R.id.feed_header_lbl).setOnClickListener(v -> {
                 showLoading();
                 emptyState.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.VISIBLE);
-                presenter.getEventsNoFilter(sectionTitles);
                 presenter.clearData();
+                presenter.getEventsObservable().subscribe(this::onSuccess);
+                presenter.getEventsNoFilter(sectionTitles);
                 filterHeader.setVisibility(View.GONE);
                 recyclerView.removeOnScrollListener(listener);
                 if (getParentFragment() != null) {
                     ((OnSearchDataCollectedListener) getParentFragment()).resetSearch();
                 }
-            HomeFeedContainer.getHomeView().findViewById(R.id.homescreen_search_tv).setClickable(true);
-            HomeFeedContainer.getHomeView().findViewById(R.id.feed_header_lbl).setVisibility(View.GONE);
+                HomeFeedContainer.getHomeView().findViewById(R.id.homescreen_search_tv).setClickable(true);
+                HomeFeedContainer.getHomeView().findViewById(R.id.feed_header_lbl).setVisibility(View.GONE);
             });
 
 
+        }
     }
 
     protected HomeFeedActivitiesPresenter createPresenter() {
@@ -293,5 +295,18 @@ public class HomeFeedActivitiesView extends BaseView<HomeFeedActivitiesPresenter
         presenter.getFollowFutureEvent(PreferenceManager.getDefaultSharedPreferences(getContext()).getString("Authorization",""));
         hideLoading();
     }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(HomeScreenView.getString() != null && HomeScreenView.getString().equalsIgnoreCase("null")){
+
+        }
+        else {
+
+        }
+    }
+
 }
 

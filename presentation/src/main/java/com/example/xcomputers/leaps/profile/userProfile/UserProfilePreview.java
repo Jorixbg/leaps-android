@@ -5,19 +5,20 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.networking.feed.event.AttendeeResponse;
 import com.example.networking.feed.event.Event;
+import com.example.networking.feed.event.RealEvent;
 import com.example.networking.feed.trainer.Entity;
 import com.example.networking.login.UserResponse;
 import com.example.xcomputers.leaps.MainActivity;
@@ -27,11 +28,13 @@ import com.example.xcomputers.leaps.base.BaseView;
 import com.example.xcomputers.leaps.base.Layout;
 import com.example.xcomputers.leaps.event.EventActivity;
 import com.example.xcomputers.leaps.event.EventListingActivity;
+import com.example.xcomputers.leaps.homefeed.activities.HomeFeedActivitiesPresenter;
 import com.example.xcomputers.leaps.profile.ProfileListPresenter;
 import com.example.xcomputers.leaps.profile.SettingsView;
 import com.example.xcomputers.leaps.profile.becomeTrainer.BecomeTrainerActivity;
 import com.example.xcomputers.leaps.profile.trainerProfile.TrainerProfileEditView;
-import com.example.xcomputers.leaps.test.FollowUserView;
+import com.example.xcomputers.leaps.profile.trainerProfile.TrainerProfilePreview;
+import com.example.xcomputers.leaps.follow.FollowUserView;
 import com.example.xcomputers.leaps.trainer.UserEventsAdapter;
 import com.example.xcomputers.leaps.utils.EntityHolder;
 import com.example.xcomputers.leaps.utils.GlideInstance;
@@ -72,15 +75,19 @@ public class UserProfilePreview extends BaseView<ProfileListPresenter> {
     private TextView descriptionTv;
     private TextView showPastBtn;
     private List<Event> pastEvents;
+    private List<RealEvent> followingEvents;
     private RelativeLayout userViewRL;
     private RelativeLayout userViewSettingsRL;
     private TextView aboutMeTxt;
+    private HomeFeedActivitiesPresenter homeFeedPresenter;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initFields(view);
         user = EntityHolder.getInstance().getEntity();
+        homeFeedPresenter = new HomeFeedActivitiesPresenter();
+        followingEvents = new ArrayList<>();
         if(getArguments().getSerializable("user") !=null) {
             user = (Entity) getArguments().getSerializable("user");
 
@@ -179,7 +186,6 @@ public class UserProfilePreview extends BaseView<ProfileListPresenter> {
                 bundle.putSerializable("service", presenter.getFollowingService());
                 bundle.putString("user","");
             }
-            Log.e("UserView ", user.followers().getFollowers().size()+"");
             openFragment(FollowUserView.class, bundle,true);
 
         });
@@ -221,7 +227,7 @@ public class UserProfilePreview extends BaseView<ProfileListPresenter> {
             intent.putExtra(EVENT_PAST, (Serializable) pastEvents);
             startActivity(intent);
         });
-        UserEventsAdapter eventsAdapter = new UserEventsAdapter(events, event -> {
+        UserEventsAdapter eventsAdapter = new UserEventsAdapter(events,followingEvents,homeFeedPresenter, event -> {
             Intent intent = new Intent(getContext(), EventActivity.class);
             intent.putExtra(EVENT_KEY, event);
             startActivity(intent);
@@ -257,7 +263,6 @@ public class UserProfilePreview extends BaseView<ProfileListPresenter> {
         followingBtn.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.following_button_clicked));
         followingBtn.setText("FOLLOWED");
         followingBtn.setTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
-        Toast.makeText(getContext(),"userFollowingSuccess!",Toast.LENGTH_SHORT).show();
         initUser(userResponse);
 
 
@@ -277,8 +282,21 @@ public class UserProfilePreview extends BaseView<ProfileListPresenter> {
 
     private void onErrorUnFollowing(Throwable t){
         hideLoading();
-        Toast.makeText(getContext(),"Something went wrong!",Toast.LENGTH_SHORT).show();
     }
 
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(BecomeTrainerActivity.isFlag()) {
+
+            Fragment newFragment = new TrainerProfilePreview();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+            transaction.replace(R.id.profile_container, newFragment);
+            transaction.addToBackStack(null);
+
+            transaction.commit();
+        }
+    }
 }

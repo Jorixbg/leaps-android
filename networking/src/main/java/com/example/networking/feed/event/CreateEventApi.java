@@ -1,6 +1,9 @@
 package com.example.networking.feed.event;
 
 
+import com.example.networking.test.CreateRecurringEventRequest;
+import com.example.networking.test.CreateRecurringEventResponse;
+import com.example.networking.test.UpdateEventRequest;
 
 import okhttp3.MultipartBody;
 import retrofit2.http.Body;
@@ -20,6 +23,9 @@ public interface CreateEventApi {
     @PUT("/event/create")
     Observable<CreateEventResponse> createEvent(@Body CreateEventRequest request);
 
+    @PUT("/event/create/repeat")
+    Observable<CreateRecurringEventResponse> createRecurringEvent(@Body CreateRecurringEventRequest request);
+
     @Multipart
     @PUT("/pic/event")
     Observable<Void> uploadImage(@Part MultipartBody.Part photo, @Part("event_id") long eventId);
@@ -30,6 +36,6 @@ public interface CreateEventApi {
 
 
     @POST("/event/update")
-    Observable<Integer> editEvent(@Body CreateEventResponse response,@Body CreateEventRequest request);
+    Observable<Integer> editEvent(@Body UpdateEventRequest request);
 
 }

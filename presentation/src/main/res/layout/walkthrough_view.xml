@@ -45,11 +45,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAllCaps="false"
+        android:padding="10dp"
         android:textColor="@color/primaryBlue"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:drawableRight="@drawable/arrow_right"
-        android:text="@string/next" />
+        android:drawableRight="@drawable/ic_action_next"
+        android:text="@string/next"
+        android:textStyle="bold"/>
 
 </RelativeLayout>

@@ -216,8 +216,8 @@
 
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
-            android:drawableEnd="@drawable/arrow_right"
-            android:drawableRight="@drawable/arrow_right"
+            android:drawableEnd="@drawable/ic_action_next"
+            android:drawableRight="@drawable/ic_action_next"
             android:layout_below="@+id/divider1"
             android:gravity="center"
             android:text="@string/lbl_show_past"

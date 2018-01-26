@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.networking.feed.event.Event;
 import com.example.networking.feed.event.FeedFilterEventResponse;
@@ -76,7 +75,6 @@ public class EventFilterView extends BaseView<HomeFeedActivitiesPresenter> imple
 
         filterCancel.setOnClickListener(v -> {
             showLoading();
-            Toast.makeText(getContext(), "Hello ", Toast.LENGTH_SHORT).show();
             emptyState.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
             presenter.getEventsNoFilter(sectionTitles);

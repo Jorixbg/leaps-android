@@ -27,17 +27,15 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.example.networking.feed.event.EventImage;
 import com.example.networking.feed.event.RealEvent;
-import com.example.networking.feed.trainer.Image;
 import com.example.xcomputers.leaps.LeapsApplication;
 import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.TagsHolder;
 import com.example.xcomputers.leaps.base.BaseView;
 import com.example.xcomputers.leaps.base.EmptyPresenter;
 import com.example.xcomputers.leaps.base.Layout;
-import com.example.xcomputers.leaps.test.CropActivity;
-import com.example.xcomputers.leaps.utils.EntityHolder;
-import com.example.xcomputers.leaps.utils.GlideInstance;
+import com.example.xcomputers.leaps.crop.CropActivity;
 import com.example.xcomputers.leaps.utils.TagView;
 import com.google.android.flexbox.FlexboxLayout;
 
@@ -175,10 +173,12 @@ public class CreateEventFirstView extends BaseView<EmptyPresenter> {
     private void initListeners() {
         nextBtn.setOnClickListener(v -> {
             if (TextUtils.isEmpty(titleEt.getText().toString())) {
-                Toast.makeText(getContext(), R.string.error_event_title, Toast.LENGTH_SHORT).show();
+                titleEt.setError("Please provide a non empty title for your event");
+                titleEt.requestFocus();
             } else if (TextUtils.isEmpty(descriptionEt.getText().toString())) {
-                Toast.makeText(getContext(), R.string.error_event_description, Toast.LENGTH_SHORT).show();
-            } else if (images.get(MAIN_IMAGE) == null) {
+                descriptionEt.setError("Please provide a non empty description for your event");
+                descriptionEt.requestFocus();
+            } else if (images.get(MAIN_IMAGE) == null && getActivity()==null) {
                 Toast.makeText(getContext(), R.string.error_event_picture, Toast.LENGTH_SHORT).show();
             } else {
                 ((ICreateEventActivity) getActivity()).collectData(images, titleEt.getText().toString(), descriptionEt.getText().toString(), tagList);
@@ -239,7 +239,7 @@ public class CreateEventFirstView extends BaseView<EmptyPresenter> {
         nextBtn = (ImageView) view.findViewById(R.id.create_event_next_btn);
         firstImageImageView = (ImageView) view.findViewById(R.id.first_image_imageView);
         secondImageImageView = (ImageView) view.findViewById(R.id.second_image_imageView);
-        thirdImageImageView = (ImageView) view.findViewById(R.id._third_image_imageView);
+        thirdImageImageView = (ImageView) view.findViewById(R.id.third_image_imageView);
         fourthImageImageView = (ImageView) view.findViewById(R.id.fourth_image_imageView);
         fifthImageImageView = (ImageView) view.findViewById(R.id.fifth_image_imageView);
         mainPic = (TextView) view.findViewById(R.id.create_event_main_pic_placeholder);
@@ -277,31 +277,36 @@ public class CreateEventFirstView extends BaseView<EmptyPresenter> {
 
 
     private void loadImages() {
-        GlideInstance.loadImageCircle(getContext(), EntityHolder.getInstance().getEntity().profileImageUrl(), mainPicImageView, R.drawable.profile_placeholder);
-        List<Image> images = EntityHolder.getInstance().getEntity().images();
+        List<EventImage> images = event.images();
         if (images.size() > 0) {
-            Image first = images.get(0);
-            setupGlideCallBack(first.getImageUrl(), firstImageImageView, firstPicDelete, firstPicHolder);
+            EventImage first = images.get(0);
+            setupGlideCallBack(first.getImageUrl(), mainPicImageView, null, mainPic);
             if(images.size() >= 2) {
-                Image second = images.get(1);
+                EventImage second = images.get(1);
+                if (second != null) {
+                    setupGlideCallBack(first.getImageUrl(), firstImageImageView, firstPicDelete, firstPicHolder);
+                }
+            }
+            if(images.size() >= 3) {
+                EventImage second = images.get(2);
                 if (second != null) {
                     setupGlideCallBack(second.getImageUrl(), secondImageImageView, secondPicDelete, secondPicHolder);
                 }
             }
-            if(images.size() >= 3) {
-                Image third = images.get(2);
+            if(images.size() >= 4) {
+                EventImage third = images.get(3);
                 if (third != null) {
                     setupGlideCallBack(third.getImageUrl(), thirdImageImageView, thirdPicDelete, thirdPicHolder);
                 }
             }
-            if(images.size() >= 4) {
-                Image fourth = images.get(3);
+            if(images.size() >= 5) {
+                EventImage fourth = images.get(4);
                 if (fourth != null) {
                     setupGlideCallBack(fourth.getImageUrl(), fourthImageImageView, fourthPicDelete, fourthPicHolder);
                 }
             }
-            if(images.size() >= 5) {
-                Image fifth = images.get(4);
+            if(images.size() >= 6) {
+                EventImage fifth = images.get(5);
                 if (fifth != null) {
                     setupGlideCallBack(fifth.getImageUrl(), fifthImageImageView, fifthPicDelete, fifthPicHolder);
                 }
@@ -325,7 +330,9 @@ public class CreateEventFirstView extends BaseView<EmptyPresenter> {
             public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                 imageView.setVisibility(View.VISIBLE);
                 imageView.setBackground(resource.getCurrent());
-                deleteImage.setVisibility(View.VISIBLE);
+                if(imageView != mainPicImageView) {
+                    deleteImage.setVisibility(View.VISIBLE);
+                }
                 placeHolder.setText("");
                 placeHolder.setBackground(null);
                 return false;

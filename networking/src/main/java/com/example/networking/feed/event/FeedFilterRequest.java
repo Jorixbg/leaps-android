@@ -34,7 +34,7 @@ public class FeedFilterRequest implements Serializable{
     public enum DateSelection {TODAY, NEXT3, NEXT5,ALL}
 
     public FeedFilterRequest(String address, Double longtitude, Double latitude, int distance,List<String> tags, long minStartTime, long maxStartDate, DateSelection time,
-                             int limit, int offset) {
+                               int limit, int offset) {
         this.address = address;
         this.longtitude = longtitude;
         this.latitude = latitude;
@@ -46,6 +46,11 @@ public class FeedFilterRequest implements Serializable{
         this.limit = limit;
         this.offset = offset;
     }
+
+
+
+
+
 
     public void setLimit(int limit) {
         this.limit = limit;

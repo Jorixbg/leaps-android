@@ -45,10 +45,12 @@ public class RegistrationEmailScreen extends BaseView<EmptyPresenter>  implement
         }
         nextBtn.setOnClickListener(v -> {
             if(emailET.getText().toString().isEmpty()){
-                Toast.makeText(getContext(), "Please provide a non empty email address", Toast.LENGTH_SHORT).show();
+                emailET.setError("Please provide a non empty email address");
+                emailET.requestFocus();
                 return;
             } else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(emailET.getText().toString()).matches()){
-                Toast.makeText(getContext(), "Please provide a valid email address", Toast.LENGTH_SHORT).show();
+                emailET.setError("Please provide a valid email address");
+                emailET.requestFocus();
                 return;
             }
             container.gatherData(emailET.getText().toString());

@@ -14,11 +14,11 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.networking.feed.event.RealEvent;
 import com.example.networking.test.AddressLocation;
 import com.example.networking.test.Coordinates;
 import com.example.xcomputers.leaps.R;
@@ -49,7 +49,7 @@ public class CreateEventSecondView extends BaseView<CoordinatesPresenter> implem
     private static final int ERROR_DIALOG_REQUEST = 9001;
 
     private ImageView nextBtn;
-    private EditText searchAddress;
+    private SearchEditText searchAddress;
     private double latitude;
     private double longitude;
     private String address = "Sofia";
@@ -61,9 +61,13 @@ public class CreateEventSecondView extends BaseView<CoordinatesPresenter> implem
     private Geocoder geocoder;
     private Location currentLocation;
     private AddressLocation finalAddress;
+    private AddressLocation finalAddressEdit;
+    private RealEvent event;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+
+
 
         geocoder = new Geocoder(getContext());
         if(servicesOK()) {
@@ -80,30 +84,60 @@ public class CreateEventSecondView extends BaseView<CoordinatesPresenter> implem
         nextBtn = (ImageView) view.findViewById(R.id.create_event_next_btn);
         showAddress = (TextView) view.findViewById(R.id.create_event_et);
         nextBtn.setOnClickListener(v -> {
-            if (TextUtils.isEmpty(address) ){
-                Toast.makeText(getContext(), R.string.error_event_title, Toast.LENGTH_SHORT).show();
-            } else {
+            if (TextUtils.isEmpty(searchAddress.getText().toString()) ){
+                searchAddress.setError("Please provide a non empty address for your event");
+                searchAddress.requestFocus();
+            }
+            else {
                 ((ICreateEventActivity) getActivity()).collectData(latitude,longitude,searchAddress.getText()+"");
             }
         });
 
-        searchAddress = (EditText) view.findViewById(R.id.create_event_location_tv);
+        searchAddress = (SearchEditText) view.findViewById(R.id.create_event_location_tv);
         searchAddress.setImeOptions(EditorInfo.IME_ACTION_DONE);
         searchAddress.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    finalAddress = new AddressLocation(searchAddress.getText().toString());
-                    presenter.getCoordinates(finalAddress);
-
+                if (searchAddress.getText() != null && !searchAddress.equals("")&& !TextUtils.isEmpty(searchAddress.getText().toString())) {
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        finalAddress = new AddressLocation(searchAddress.getText().toString());
+                        presenter.getCoordinates(finalAddress);
+                    }
+                    return false;
                 }
+                else {
+                    searchAddress.setError("Please provide a non empty address");
+                }
+
                 return false;
             }
         });
 
 
+        searchAddress.setKeyImeChangeListener(new SearchEditText.KeyImeChange(){
+            @Override
+            public void onKeyIme(int keyCode, KeyEvent event)
+            {
+                if (searchAddress.getText() != null && !searchAddress.equals("") && !TextUtils.isEmpty(searchAddress.getText().toString())) {
+                    if (KeyEvent.KEYCODE_BACK == event.getKeyCode()) {
+                        finalAddress = new AddressLocation(searchAddress.getText().toString());
+                        presenter.getCoordinates(finalAddress);
+                    }
+                }
+            }});
 
+        event = (RealEvent) getArguments().getSerializable("event");
+        if(event !=null){
+            loadVies();
+        }
     }
+
+    private void loadVies() {
+        searchAddress.setText(event.address());
+        finalAddressEdit = new AddressLocation(searchAddress.getText().toString());
+        presenter.getCoordinates(finalAddressEdit);
+    }
+
 
     private void findLocation(String address) {
         //mMap.clear();
@@ -285,7 +319,12 @@ public class CreateEventSecondView extends BaseView<CoordinatesPresenter> implem
         hideLoading();
         latitude = coordinates.getLatitude();
         longitude = coordinates.getLongitude();
-        address = finalAddress.getAddress();
+        if(finalAddressEdit!=null){
+            address = finalAddressEdit.getAddress();
+        }
+        else {
+            address = finalAddress.getAddress();
+        }
         findLocation(address);
 
     }

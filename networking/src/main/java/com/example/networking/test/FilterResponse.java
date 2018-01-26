@@ -1,6 +1,5 @@
 package com.example.networking.test;
 
-import com.example.networking.feed.event.AttendeeResponse;
 import com.example.networking.feed.event.Event;
 import com.example.networking.feed.event.RealEvent;
 import com.example.networking.feed.trainer.Entity;
@@ -43,6 +42,8 @@ public class FilterResponse implements Entity {
     private String lastName;
     @SerializedName("birthday")
     private long birthDay;
+    @SerializedName("firebase_token")
+    private String firebase_token;
     @SerializedName("description")
     private String description;
     @SerializedName("free_event")
@@ -66,7 +67,23 @@ public class FilterResponse implements Entity {
     @SerializedName("hosting_events")
     private List<RealEvent> hostingEvents;
     @SerializedName("followed_by")
-    private List<AttendeeResponse> filter;
+    private Followed filter;
+    @SerializedName("rating")
+    private float rating;
+    @SerializedName("reviews")
+    private int reviews;
+
+
+    @Override
+    public float rating() {
+        return rating;
+    }
+
+    @Override
+    public int reviews() {
+        return reviews;
+    }
+
 
     @Override
     public int userId() {
@@ -116,6 +133,11 @@ public class FilterResponse implements Entity {
     @Override
     public long birthDay() {
         return birthDay;
+    }
+
+    @Override
+    public String firebaseToken() {
+        return firebase_token;
     }
 
     @Override
@@ -189,14 +211,13 @@ public class FilterResponse implements Entity {
     }
 
 
-    public List<AttendeeResponse> filter() {
-
-        List<AttendeeResponse> list = new ArrayList<>();
-        list.addAll(filter);
-        return list;
+    public Followed filter() {
+        Followed filterObj= filter;
+        return filter;
     }
 
-    public void setFilter(List<AttendeeResponse> filter) {
+
+    public void setFilter(Followed followers) {
         this.filter = filter;
     }
 

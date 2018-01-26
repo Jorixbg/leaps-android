@@ -1,6 +1,7 @@
 package com.example.xcomputers.leaps.map;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,11 +13,14 @@ import com.bumptech.glide.Glide;
 import com.example.networking.feed.event.RealEvent;
 import com.example.xcomputers.leaps.LeapsApplication;
 import com.example.xcomputers.leaps.R;
+import com.example.xcomputers.leaps.event.EventActivity;
 
 import java.io.File;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+
+import static com.example.xcomputers.leaps.event.EventActivity.EVENT_KEY;
 
 /**
  * Created by Ivan on 9/8/2017.
@@ -26,6 +30,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.NewViewHolder> {
 
     private List<RealEvent> eventite;
     private Context context;
+    private  RealEvent event;
+    private int firstVisible = 0;
 
     public MyAdapter(Context context, List<RealEvent> eventite) {
         this.eventite = eventite;
@@ -43,7 +49,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.NewViewHolder> {
 
     @Override
     public void onBindViewHolder(NewViewHolder holder, final int position) {
-        RealEvent event = eventite.get(position);
+        event = eventite.get(position);
         eventite.get(position).setPosition(position);
         Glide.with(holder.itemPic.getContext())
                 .load(LeapsApplication.BASE_URL + File.separator + event.imageUrl())
@@ -60,6 +66,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.NewViewHolder> {
                 + String.format(Locale.getDefault(), "%02d",calendar.get(Calendar.MINUTE)));
 
 
+        if (position == firstVisible) {
+            holder.indicator.setVisibility(View.VISIBLE);
+            holder.indicator.setBackgroundColor(holder.itemView.getResources().getColor(R.color.full_indicator));
+        }
+        else {
+            holder.indicator.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -73,6 +86,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.NewViewHolder> {
         private ImageView itemPic;
         private TextView itemTitle;
         private TextView itemDetails;
+        private TextView indicator;
 
 
         NewViewHolder(View itemView) {
@@ -81,13 +95,23 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.NewViewHolder> {
             itemPic = (ImageView) itemView.findViewById(R.id.cal_recycler_item_pic);
             itemTitle = (TextView) itemView.findViewById(R.id.cal_recycler_item_title);
             itemDetails = (TextView) itemView.findViewById(R.id.cal_recycler_item_details);
+            indicator = itemView.findViewById(R.id.map_recycler_indicator);
 
         }
 
         @Override
         public void onClick(View view) {
+                Intent intent = new Intent(itemView.getContext(), EventActivity.class);
+                intent.putExtra(EVENT_KEY, eventite.get(getAdapterPosition()));
+                itemView.getContext().startActivity(intent);
 
         }
+    }
+
+    public void changeItem(int position){
+        firstVisible = position;
+        notifyItemChanged(firstVisible);
+        notifyDataSetChanged();
     }
 
 

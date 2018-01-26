@@ -11,7 +11,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 26
         versionCode 3
-        versionName "1.2"
+        versionName "3.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         jackOptions {
             enabled true
@@ -43,14 +43,14 @@ dependencies {
         //for autoscrollview
         exclude module: 'support-v4'
     }
-    compile "com.android.support:appcompat-v7:26.0.2"
+    //    compile "com.android.support:recyclerview-v7:${support}"
+    //   compile "com.android.support:design:${support}"
+    compile project(':networking')
+    compile 'com.android.support:appcompat-v7:26.0.2'
     compile 'com.android.support:support-core-utils:26.0.2'
     compile 'com.android.support:design:26.0.2'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    //    compile "com.android.support:recyclerview-v7:${support}"
-    //   compile "com.android.support:design:${support}"
     compile 'testfairy:testfairy-android-sdk:1.+@aar'
-    compile project(':networking')
     compile 'com.inkapplications.viewpageindicator:library:2.4.3'
     compile 'me.relex:circleindicator:1.2.2@aar'
     compile 'com.github.bumptech.glide:glide:3.7.0'
@@ -64,5 +64,13 @@ dependencies {
     compile 'com.theartofdev.edmodo:android-image-cropper:2.5.0'
     compile 'com.google.android.gms:play-services-maps:11.0.4'
     compile 'com.google.android.gms:play-services-location:11.0.4'
+    compile 'com.android.support:support-v4:26.0.2'
+    compile 'com.google.maps.android:android-maps-utils:0.4+'
+    compile 'com.google.android:flexbox:0.3.1'
+    compile 'com.google.firebase:firebase-database:11.0.4'
+    compile 'com.google.firebase:firebase-auth:11.0.4'
+    compile 'com.google.firebase:firebase-messaging:11.0.4'
+
     testCompile 'junit:junit:4.12'
 }
+apply plugin: 'com.google.gms.google-services'

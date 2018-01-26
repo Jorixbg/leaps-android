@@ -16,6 +16,7 @@ import com.example.xcomputers.leaps.forgotpassword.ForgotPasswordView;
 import com.example.xcomputers.leaps.utils.CustomEditText;
 import com.example.xcomputers.leaps.welcome.ILoginContainer;
 import com.example.xcomputers.leaps.welcome.InsideView;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.List;
 
@@ -40,10 +41,21 @@ public class LoginView extends BaseView<LoginPresenter> implements InsideView {
         passwordEt = (CustomEditText) view.findViewById(R.id.login_password_et);
         forgotPassBtn = (Button) view.findViewById(R.id.forgot_password_button);
         signInBtn = (Button) view.findViewById(R.id.sign_in_button);
+        String firebaseToken = FirebaseInstanceId.getInstance().getToken();
         forgotPassBtn.setOnClickListener(v -> openFragment(ForgotPasswordView.class, null));
         signInBtn.setOnClickListener(v -> {
+            if(userNameEt.getText().toString().isEmpty()){
+                userNameEt.setError("Please provide a non empty username");
+                userNameEt.requestFocus();
+                return;
+            }
+            if (passwordEt.getText().toString().isEmpty()) {
+                userNameEt.setError("Please provide a non empty last name");
+                userNameEt.requestFocus();
+                return;
+            }
             showLoading();
-            presenter.login(userNameEt.getText().toString(), passwordEt.getText().toString());
+            presenter.login(userNameEt.getText().toString(), passwordEt.getText().toString(),firebaseToken);
         });
     }
 
@@ -67,14 +79,13 @@ public class LoginView extends BaseView<LoginPresenter> implements InsideView {
         hideLoading();
         getActivity().setResult(Activity.RESULT_OK);
         getActivity().finish();
+
     }
 
     @Override
     public boolean onBack() {
         return false;
     }
-
-
 
     private void onError(Throwable t){
         hideLoading();

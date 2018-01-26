@@ -12,10 +12,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.AppCompatSpinner;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.xcomputers.leaps.R;
@@ -24,7 +23,6 @@ import com.example.xcomputers.leaps.base.BaseView;
 import com.example.xcomputers.leaps.base.EmptyPresenter;
 import com.example.xcomputers.leaps.base.Layout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import rx.Subscription;
@@ -39,12 +37,20 @@ import static com.example.xcomputers.leaps.homecalendar.HomeCalendarUserView.UPC
  * Created by xComputers on 18/06/2017.
  */
 @Layout(layoutId = R.layout.home_cal_container_view)
-public class HomeCalendarContainer extends BaseView<EmptyPresenter> {
+public class HomeCalendarContainer extends BaseView<EmptyPresenter> implements SwipeRefreshLayout.OnRefreshListener {
 
     private ViewPager pager;
     private TabLayout tabs;
     private HomeCalendarPagerAdapter adapter;
     private AppCompatSpinner spinner;
+    private String type ;
+    private int pos;
+    private TextView hostingTV;
+    private TextView attendingTV;
+    private boolean clicked;
+
+    private SwipeRefreshLayout swipeRefreshLayout;
+
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -52,31 +58,43 @@ public class HomeCalendarContainer extends BaseView<EmptyPresenter> {
         pager = (ViewPager) view.findViewById(R.id.home_cal_pager);
         tabs = (TabLayout) view.findViewById(R.id.home_cal_tabs);
         spinner = (AppCompatSpinner) view.findViewById(R.id.calendar_spinner);
+        hostingTV = (TextView) view.findViewById(R.id.hosting_tv);
+        attendingTV = (TextView) view.findViewById(R.id.attending_tv);
+        swipeRefreshLayout=(SwipeRefreshLayout) view.findViewById(R.id.swipeCalendarAttendingEvents);
+        swipeRefreshLayout.setOnRefreshListener(this);
+
         if (!User.getInstance().isTrainer()) {
             view.findViewById(R.id.calendar_spinner).setVisibility(GONE);
         }
-        List<String> list = new ArrayList<>();
-        list.add("Attending");
-        list.add("Hosting");
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.spinner_item, list);
-        arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
-        changeSpinnerArrowColor();
-        spinner.setAdapter(arrayAdapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                adapter = new HomeCalendarPagerAdapter(getChildFragmentManager());
-                pager.setAdapter(adapter);
-                tabs.setupWithViewPager(pager);
-                addTabs();
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                //Empty
-            }
+        attendingTV.setOnClickListener(v->{
+            attendingTV.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.round_white_button_shape_right));
+            attendingTV.setTextColor(ContextCompat.getColor(getContext(),R.color.primaryBlue));
+            hostingTV.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.round_transparent_button_left));
+            hostingTV.setTextColor(ContextCompat.getColor(getContext(),R.color.colorWhite));
+            adapter = new HomeCalendarPagerAdapter(getChildFragmentManager());
+            clicked = false;
+            pager.setAdapter(adapter);
+            tabs.setupWithViewPager(pager);
+
+
         });
-        spinner.setSelection(0, false);
+
+        hostingTV.setOnClickListener(v->{
+            hostingTV.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.round_white_button_shape_left));
+            hostingTV.setTextColor(ContextCompat.getColor(getContext(),R.color.primaryBlue));
+            attendingTV.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.round_transparent_button_right));
+            attendingTV.setTextColor(ContextCompat.getColor(getContext(),R.color.colorWhite));
+            clicked = true;
+            adapter = new HomeCalendarPagerAdapter(getChildFragmentManager());
+            pager.setAdapter(adapter);
+            tabs.setupWithViewPager(pager);
+
+        });
+
+        attendingTV.performClick();
+        addTabs();
+
     }
 
     private void changeSpinnerArrowColor(){
@@ -112,6 +130,12 @@ public class HomeCalendarContainer extends BaseView<EmptyPresenter> {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 super.onTabSelected(tab);
+                if(tab.getPosition() == 0){
+                    type = UPCOMING_ARGUMENT;
+                }
+                else {
+                    type = PAST_ARGUMENT;
+                }
                 if(tab.getCustomView() != null) {
                     ((TextView) tab.getCustomView()).setTextColor(ContextCompat.getColor(getContext(), R.color.primaryBlue));
                 }
@@ -120,6 +144,7 @@ public class HomeCalendarContainer extends BaseView<EmptyPresenter> {
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
                 super.onTabUnselected(tab);
+                pos = tab.getPosition();
                 if(tab.getCustomView() != null) {
                     ((TextView) tab.getCustomView()).setTextColor(ContextCompat.getColor(getContext(), R.color.inactive_blue));
                 }
@@ -141,17 +166,24 @@ public class HomeCalendarContainer extends BaseView<EmptyPresenter> {
 
         public HomeCalendarPagerAdapter(FragmentManager fm) {
             super(fm);
+            if(swipeRefreshLayout.isRefreshing()){
+                swipeRefreshLayout.setRefreshing(false);
+            }
         }
+
+
 
         @Override
         public Fragment getItem(int position) {
-            switch (position) {
-                case 1:
-                    return HomeCalendarUserView.newInstance(PAST_ARGUMENT, spinner.getSelectedItemPosition() == 0 ? ATTENDING_ARGUMENT : HOSTING_ARGUMENT);
-                case 0:
-                default:
-                    return HomeCalendarUserView.newInstance(UPCOMING_ARGUMENT, spinner.getSelectedItemPosition() == 0 ? ATTENDING_ARGUMENT : HOSTING_ARGUMENT);
-            }
+
+                switch (position) {
+                    case 1:
+                        return HomeCalendarUserView.newInstance(PAST_ARGUMENT, clicked == false ? ATTENDING_ARGUMENT : HOSTING_ARGUMENT);
+                    case 0:
+                    default:
+                        return HomeCalendarUserView.newInstance(UPCOMING_ARGUMENT, clicked == false ? ATTENDING_ARGUMENT : HOSTING_ARGUMENT);
+                }
+
         }
 
         @Override
@@ -169,5 +201,40 @@ public class HomeCalendarContainer extends BaseView<EmptyPresenter> {
         public int getCount() {
             return 2;
         }
+
+
     }
+
+   @Override
+    public void onResume() {
+        super.onResume();
+            if(type!=null && type.equalsIgnoreCase(PAST_ARGUMENT)){
+                pos = 1;
+            }
+            if(type!=null && type.equalsIgnoreCase(UPCOMING_ARGUMENT)){
+                pos = 0;
+            }
+            adapter = new HomeCalendarPagerAdapter(getChildFragmentManager());
+            pager.setAdapter(adapter);
+
+            TabLayout.Tab tab = tabs.getTabAt(pos);
+            tab.select();
+    }
+
+    @Override
+    public void onRefresh() {
+        if(type!=null && type.equalsIgnoreCase(PAST_ARGUMENT)){
+            pos = 1;
+        }
+        if(type!=null && type.equalsIgnoreCase(UPCOMING_ARGUMENT)){
+            pos = 0;
+        }
+        adapter = new HomeCalendarPagerAdapter(getChildFragmentManager());
+        pager.setAdapter(adapter);
+
+        TabLayout.Tab tab = tabs.getTabAt(pos);
+        tab.select();
+
+    }
+
 }

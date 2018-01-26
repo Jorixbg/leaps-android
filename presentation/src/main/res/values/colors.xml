@@ -2,12 +2,20 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#003264</color>
+    <color name="colorAccent">#021931</color>
     <color name="primaryBlue">#003264</color>
     <color name="whiteAlpha">#8FFF</color>
+    <color name="colorWhite">#FFFFFF</color>
     <color name="light_blue">#0CA8E0</color>
     <color name="inactive_blue">#80003264</color>
     <color name="dirty_white">#F1F1F1</color>
     <color name="empty_indicator">#003264</color>
     <color name="full_indicator">#FF3C32</color>
+    <color name="colorGrey">#808080</color>
+    <color name="colorPrimaryMarker">#3F51B5</color>
+    <color name="colorEmptyStar">#ccd6e0</color>
+    <color name="receivedMsgBack">#e0e0e0</color>
+    <color name="receivedMsgFont">#0f3e6d</color>
+    <color name="fade_blue">#f8fdff</color>
+
 </resources>

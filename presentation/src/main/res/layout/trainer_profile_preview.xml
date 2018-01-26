@@ -31,7 +31,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <android.support.v7.widget.RecyclerView
+                <android.support.v4.view.ViewPager
                     android:id="@+id/trainer_image_horizontall_scroll"
                     android:layout_width="match_parent"
                     android:layout_height="160dp" />
@@ -62,7 +62,7 @@
                     android:gravity="center_vertical"
                     android:textAllCaps="true"
                     android:textColor="@android:color/white"
-                    android:textSize="22sp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -78,7 +78,21 @@
                     android:layout_toRightOf="@+id/trainer_name"
                     android:gravity="center"
                     android:textColor="@android:color/white"
-                    android:textSize="12sp" />
+                    android:textSize="10sp" />
+
+
+                <com.viewpagerindicator.CirclePageIndicator
+                    android:id="@+id/event_indicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="15dp"
+                    android:layout_marginTop="10dp"
+                    app:radius="4dp"
+                    app:pageColor="@color/colorWhite"
+                    app:strokeColor="@color/light_blue"
+                    app:fillColor="@color/light_blue"
+                    android:layout_toRightOf="@+id/trainer_title"
+                    android:layout_toEndOf="@+id/trainer_title"
+                    android:layout_above="@+id/rating_layout"/>
 
 
                 <LinearLayout
@@ -94,7 +108,7 @@
                         android:id="@+id/trainer_rating_bar"
                         style="?android:attr/ratingBarStyleSmall"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="20dp"
                         android:layout_marginBottom="10dp"
                         android:layout_marginLeft="10dp"
                         android:layout_marginStart="10dp"
@@ -102,7 +116,7 @@
                         android:isIndicator="true"
                         android:numStars="5"
                         android:stepSize="1"
-                        android:theme="@style/RatingBar" />
+                        android:theme="@style/RatingBarRegistered" />
 
                     <TextView
                         android:id="@+id/rating_counter_tv"
@@ -126,7 +140,7 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="10dp"
-                        android:layout_weight="5"
+                        android:layout_weight="4"
                         android:text="(80 reviews)"
                         android:textColor="@color/primaryBlue" />
 

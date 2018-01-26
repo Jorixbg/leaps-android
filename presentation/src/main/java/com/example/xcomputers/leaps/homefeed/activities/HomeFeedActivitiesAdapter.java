@@ -1,8 +1,11 @@
 package com.example.xcomputers.leaps.homefeed.activities;
 
-import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,15 +18,16 @@ import com.afollestad.sectionedrecyclerview.SectionedRecyclerViewAdapter;
 import com.afollestad.sectionedrecyclerview.SectionedViewHolder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.example.networking.feed.event.Event;
 import com.example.networking.feed.event.RealEvent;
 import com.example.xcomputers.leaps.LeapsApplication;
 import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.utils.GlideInstance;
 import com.example.xcomputers.leaps.utils.SectionedDataHolder;
-import com.facebook.share.model.ShareLinkContent;
-import com.facebook.share.widget.ShareDialog;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -45,6 +49,7 @@ public class HomeFeedActivitiesAdapter extends SectionedRecyclerViewAdapter<Sect
     private Event event;
     private HomeFeedActivitiesPresenter presenter;
     private MainVH mainHolder;
+    private Uri uri;
 
     public HomeFeedActivitiesAdapter(SectionedDataHolder data,HomeFeedActivitiesPresenter presenter, OnEventClickListener listener, OnHeaderClickListener headerClickListener) {
         this.listener = listener;
@@ -81,6 +86,16 @@ public class HomeFeedActivitiesAdapter extends SectionedRecyclerViewAdapter<Sect
     public void onBindViewHolder(SectionedViewHolder holder, int section, int relativePosition, int absolutePosition) {
         mainHolder = (MainVH) holder;
         event = data.getItem(section, relativePosition);
+
+        if(!PreferenceManager.getDefaultSharedPreferences(mainHolder.itemView.getContext()).contains("Authorization")
+                || PreferenceManager.getDefaultSharedPreferences(mainHolder.itemView.getContext()).getString("Authorization", null) == null){
+            mainHolder.shareBtn.setVisibility(View.GONE);
+            mainHolder.followBtn.setVisibility(View.GONE);
+        }
+        else {
+            mainHolder.shareBtn.setVisibility(View.VISIBLE);
+            mainHolder.followBtn.setVisibility(View.VISIBLE);
+        }
 
         if(mainHolder.isClicked()){
             mainHolder.followBtn.setImageResource(R.drawable.follow_event);
@@ -127,7 +142,10 @@ public class HomeFeedActivitiesAdapter extends SectionedRecyclerViewAdapter<Sect
                         + eventTime.get(Calendar.YEAR)
                         + " ");
 
-        //TODO mainHolder.itemDistance;
+        int distance = Math.round(event.distance());
+
+        mainHolder.itemDistance.setText(String.valueOf(distance) + " km");
+
         if (event.priceFrom() > 0) {
             mainHolder.itemPrice.setBackground(ContextCompat.getDrawable(mainHolder.itemPrice.getContext(), R.drawable.round_white_button_shape));
             mainHolder.itemPrice.setAllCaps(false);
@@ -203,7 +221,6 @@ public class HomeFeedActivitiesAdapter extends SectionedRecyclerViewAdapter<Sect
         private TextView itemTag1;
         private TextView itemTag2;
         private TextView itemDate;
-        private ImageView itemRecurringIcon;
         private TextView itemDistance;
         private TextView itemPrice;
         private ImageView eventPic;
@@ -223,7 +240,6 @@ public class HomeFeedActivitiesAdapter extends SectionedRecyclerViewAdapter<Sect
             itemTag1 = (TextView) itemView.findViewById(R.id.feed_recycler_tag1);
             itemTag2 = (TextView) itemView.findViewById(R.id.feed_recycler_tag2);
             itemDate = (TextView) itemView.findViewById(R.id.feed_recycler_date);
-            itemRecurringIcon = (ImageView) itemView.findViewById(R.id.feed_recycler_recurring_icon);
             itemDistance = (TextView) itemView.findViewById(R.id.feed_recycler_distance_tv);
             itemPrice = (TextView) itemView.findViewById(R.id.feed_recycler_price);
             followBtn = (ImageView) itemView.findViewById(R.id.feed_recycler_follow_button);
@@ -256,18 +272,36 @@ public class HomeFeedActivitiesAdapter extends SectionedRecyclerViewAdapter<Sect
                 checkForFollowing();
 
             }
-            if(view.getId() == shareBtn.getId()){
-                String imgUrl = event.imageUrl();
+           if(view.getId() == shareBtn.getId()){
+                String imgUrl = data.getItem(section, relativePos).imageUrl();
+               //  Share to facebook only
 
-                ShareLinkContent shareLinkContent = new ShareLinkContent.Builder()
+            /* ShareLinkContent shareLinkContent = new ShareLinkContent.Builder()
                         .setContentTitle(event.title())
                         .setContentDescription(event.description())
                         .setContentUrl(Uri.parse("http://ec2-35-157-240-40.eu-central-1.compute.amazonaws.com:8888/"+imgUrl))
                         .build();
+               ShareDialog shareDialog = new ShareDialog((Activity) view.getContext());
+               shareDialog.show(shareLinkContent, ShareDialog.Mode.AUTOMATIC);
 
 
-                ShareDialog.show((Activity) view.getContext(), shareLinkContent);
+            Glide.with(view.getContext())
+                       .load(LeapsApplication.BASE_URL + File.separator + imgUrl)
+                       .asBitmap()
+                       .into(new SimpleTarget<Bitmap>(100,100) {
+                           @Override
+                           public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                              uri = getImageUri(view.getContext(),resource);
+                               sendShareIntent(uri,view);
+                               resource.recycle();
+                           }
+                       });*/
 
+               Intent intent =  new Intent(Intent.ACTION_SEND);
+               intent.putExtra(Intent.EXTRA_TEXT, "Check out this event at Leaps! \n" +
+                       data.getItem(section, relativePos).title()+"" + "\nDownload Leaps app now and get first training FREE.");
+               intent.setType("text/plain");
+               view.getContext().startActivity(Intent.createChooser(intent, "Share via..."));
 
             }
             if (view.getId() != followBtn.getId() && view.getId() != shareBtn.getId()){
@@ -287,14 +321,84 @@ public class HomeFeedActivitiesAdapter extends SectionedRecyclerViewAdapter<Sect
                     isClicked=false;
                 }
             }
-
-
-
-
-
     }
 
 
+    private void sendShareIntent(Uri uri,View view){
+        Intent intent =  new Intent(Intent.ACTION_SEND);
+
+       intent.putExtra(Intent.EXTRA_TEXT, "Check out this event at Leaps! \n" +
+               event.title()+"" + "\nDownload Leaps app now and get first training FREE.");
+        intent.setType("text/plain");
+        view.getContext(). startActivity(Intent.createChooser(intent, "Share via..."));
+       /* Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out this event at Leaps! \n" +
+                        event.title()+"");
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        shareIntent.setType("image/*");
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        */
+
+
+        /*PackageManager pm = view.getContext().getPackageManager();
+        Intent mainIntent = new Intent(Intent.ACTION_SEND, null);
+        mainIntent.setType("text/plain");
+        List<ResolveInfo> resolveInfos = pm.queryIntentActivities(mainIntent, 0); // returns all applications which can listen to the SEND Intent
+        for (ResolveInfo info : resolveInfos) {
+            ApplicationInfo applicationInfo = info.activityInfo.applicationInfo;
+
+            //get package name, icon and label from applicationInfo object and display it in your custom layout
+
+            //App icon = applicationInfo.loadIcon(pm);
+            String name  = applicationInfo.loadLabel(pm).toString();
+            String package_name = applicationInfo.packageName;
+            Log.e("Tag name " , name +"");
+            Log.e("Tag package_name " , package_name + "");
+        }
+
+        view.getContext().startActivity(mainIntent);*/
+
+       /* Uri imageUri = uri;
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        //Target whatsapp:
+        shareIntent.setPackage("com.whatsapp");
+        //Add text and then Image URI
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "Hello from Leaps");
+        shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+        shareIntent.setType("image/jpeg");
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        view.getContext().startActivity(shareIntent);*/
+
+
+
+
+      //  view.getContext().startActivity(Intent.createChooser(intent,"compatible apps:"));
+    }
+
+
+
+
+
+    private void sendTextIntent(View view){
+        Intent intent =  new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT, "Check out this event at Leaps! \n" +
+                event.title()+"");
+        intent.setType("text/plain");
+        view.getContext().startActivity(Intent.createChooser(intent,"compatible apps:"));
+    }
+
+
+
+
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+
+        return Uri.parse(path);
+    }
 
     public interface OnEventClickListener {
         void onEventClicked(Event event);

@@ -2,11 +2,12 @@ package com.example.xcomputers.leaps.homefeed;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.example.xcomputers.leaps.homefeed.activities.HomeFeedActivitiesView;
 import com.example.xcomputers.leaps.homefeed.trainers.FeedTrainersView;
 import com.example.xcomputers.leaps.homescreen.HomeScreenView;
 import com.example.xcomputers.leaps.map.GoogleMapContainer;
+import com.example.xcomputers.leaps.welcome.WelcomeActivity;
 
 import java.util.HashMap;
 import java.util.List;
@@ -48,10 +50,12 @@ public class HomeFeedContainer extends BaseView<EmptyPresenter> implements OnSea
     private TabLayout tabs;
     private Map<Integer, FeedInsideTab> fragments;
     private FeedFilterRequest request;
-    private int currentPosition;
+    public static int currentPosition;
     private TextView searchView;
     private ImageView showMapBtn;
     private static View view1;
+    private int pos;
+    private String type;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,10 +71,18 @@ public class HomeFeedContainer extends BaseView<EmptyPresenter> implements OnSea
         searchView = (TextView) view.findViewById(R.id.homescreen_search_tv);
         getArguments().remove(SEARCH_RESULT_KEY);
         showMapBtn = (ImageView) view.findViewById(R.id.show_map_btn);
+
         showMapBtn.setOnClickListener(v->{
 
-            Intent intent = new Intent(getActivity(),GoogleMapContainer.class);
-            startActivity(intent);
+            if(!PreferenceManager.getDefaultSharedPreferences(getContext()).contains("Authorization")
+                    || PreferenceManager.getDefaultSharedPreferences(getContext()).getString("Authorization", null) == null ){
+                Intent intent = new Intent(getActivity(), WelcomeActivity.class);
+                startActivity(intent);
+            }
+            else {
+                Intent intent = new Intent(getActivity(), GoogleMapContainer.class);
+                startActivity(intent);
+            }
 
         });
 
@@ -86,6 +98,9 @@ public class HomeFeedContainer extends BaseView<EmptyPresenter> implements OnSea
             } else if (FEED_SEARCH_TRAINER_KEY.equals(getArguments().getString(FEED_SEARCH_ORIGIN_KEY))) {
                 tabs.getTabAt(POSITION_TRAINERS).select();
             }
+
+
+
         }
         if (request != null) {
             String upTo = getString(R.string.lbl_up_to) + " " + request.getDistance() + getString(R.string.lbl_km);
@@ -154,6 +169,12 @@ public class HomeFeedContainer extends BaseView<EmptyPresenter> implements OnSea
             public void onTabSelected(TabLayout.Tab tab) {
                 super.onTabSelected(tab);
                 currentPosition = tab.getPosition();
+                if(currentPosition == 0){
+                    type = "ACTIVITIES";
+                }
+                else {
+                    type = "TRAINERS";
+                }
                 if (tab.getCustomView() != null)
                     ((TextView) tab.getCustomView()).setTextColor(ContextCompat.getColor(getContext(), R.color.primaryBlue));
             }
@@ -214,7 +235,7 @@ public class HomeFeedContainer extends BaseView<EmptyPresenter> implements OnSea
         searchView.setText(getString(R.string.homescreen_search_bar_lbl));
     }
 
-    private class HomeFeedPagerAdapter extends FragmentPagerAdapter {
+    private class HomeFeedPagerAdapter extends FragmentStatePagerAdapter {
 
         public HomeFeedPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -268,4 +289,34 @@ public class HomeFeedContainer extends BaseView<EmptyPresenter> implements OnSea
         }
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(type!=null && type.equalsIgnoreCase("TRAINERS")){
+            pos = 1;
+        }
+        if(type!=null && type.equalsIgnoreCase("ACTIVITIES")){
+            pos = 0;
+        }
+
+        if(HomeScreenView.getString() != null && HomeScreenView.getString().equalsIgnoreCase("Hello")){
+            }
+            else {
+                pager.setAdapter(new HomeFeedPagerAdapter(getChildFragmentManager()));
+            }
+
+            TabLayout.Tab tab = tabs.getTabAt(pos);
+            tab.select();
+        }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        HomeScreenView.setArguments("null");
+    }
+
+    public static int getCurrentPosition() {
+        return currentPosition;
+    }
 }

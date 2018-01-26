@@ -4,8 +4,9 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/calendar_spinner_layout"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:gravity="center"
@@ -17,8 +18,36 @@
             android:layout_marginLeft="20dp"
             android:layout_centerInParent="true"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"/>
-    </RelativeLayout>
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/hosting_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Hosting"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/attending_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Attending"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"/>
+
+
+
+    </LinearLayout>
 
     <android.support.design.widget.TabLayout
         android:layout_below="@+id/calendar_spinner_layout"
@@ -31,12 +60,20 @@
 
     </android.support.design.widget.TabLayout>
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/home_cal_pager"
-        android:layout_below="@id/home_cal_tabs"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeCalendarAttendingEvents"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@id/home_cal_tabs">
 
-    </android.support.v4.view.ViewPager>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/home_cal_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </android.support.v4.view.ViewPager>
+
+
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </RelativeLayout>

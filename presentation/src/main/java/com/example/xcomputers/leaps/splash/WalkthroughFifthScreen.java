@@ -20,9 +20,9 @@ public class WalkthroughFifthScreen extends AbstractWalkthroughScreen {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putString(HAS_SEEN_TUTORIAL, HAS_SEEN_TUTORIAL).apply();
         nextBtn.setText(R.string.lbl_got_it);
         nextBtn.setOnClickListener( v -> {
-            PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putString(HAS_SEEN_TUTORIAL, HAS_SEEN_TUTORIAL).apply();
             ((IWalkthroughContainer)getParentFragment()).openWelcomeScreen();
         });
         headerTv.setText(R.string.lbl_tutorial_header_5);

@@ -3,6 +3,7 @@ package com.example.networking.test;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Created by Ivan on 9/1/2017.
@@ -90,13 +91,11 @@ public class EventRatingResponse implements Serializable {
         this.commentImageUrl = commentImageUrl;
     }
 
-    public long getDate() {
-        return date;
+    public Date getDate() {
+            return new Date(date);
+
     }
 
-    public void setDate(long date) {
-        this.date = date;
-    }
 
     public long getUserId() {
         return userId;

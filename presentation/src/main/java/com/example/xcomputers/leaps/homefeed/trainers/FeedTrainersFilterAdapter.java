@@ -1,6 +1,7 @@
 package com.example.xcomputers.leaps.homefeed.trainers;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,7 +76,11 @@ public class FeedTrainersFilterAdapter extends RecyclerView.Adapter<RecyclerView
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof TrainersViewHolder){
             ((TrainersViewHolder)holder).bind(data.get(position));
+
+            Log.e("Tag name" ,data.get(position).firstName() + " " +data.get(position).lastName()+"");
         }
+
+        Log.e("Tag no name" ,data.get(position).firstName() + " " +data.get(position).lastName()+"");
     }
 
     @Override

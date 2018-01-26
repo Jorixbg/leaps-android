@@ -3,25 +3,662 @@
    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-    <TextView
-        android:id="@+id/create_event_header"
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:gravity="center"
-        android:text="@string/time_and_date"
-        android:textAllCaps="true"
-        android:textColor="@color/primaryBlue"
-        android:textSize="18sp" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:id="@+id/nestedScrollView">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <TextView
+        <TextView
+            android:id="@+id/create_event_header"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="center"
+            android:text="@string/time_and_date"
+            android:textAllCaps="true"
+            android:textColor="@color/primaryBlue"
+            android:textSize="18sp" />
+
+
+        <TextView
+            android:id="@+id/create_event_repeat_lbl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/create_event_divider1"
+            android:layout_alignStart="@+id/create_event_divider1"
+            android:layout_below="@+id/create_event_header"
+            android:text="Repeat"
+            android:textColor="@color/primaryBlue"
+            android:textStyle="bold" />
+
+            <Switch
+                android:id="@+id/create_event_switch_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/create_event_divider1"
+                android:layout_alignRight="@+id/create_event_divider1"
+                android:layout_below="@+id/create_event_header"
+                android:layout_marginEnd="21dp"
+                android:layout_marginRight="21dp" />
+
+        <View
+            android:id="@+id/create_event_divider1"
+            android:layout_width="match_parent"
+            android:layout_below="@+id/create_event_repeat_lbl"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_height="1px"
+            android:background="@android:color/darker_gray"
+            />
+        <RelativeLayout
+            android:id="@+id/create_event_start_rl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/create_event_divider1">
+
+
+            <TextView
+                android:id="@+id/create_event_start_lbl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="Start"
+                android:textColor="@color/primaryBlue"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/create_event_start_date_lbl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/create_event_divider2"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="30dp"
+                android:layout_marginRight="30dp"/>
+
+
+            <View
+                android:id="@+id/create_event_divider2"
+                android:layout_width="match_parent"
+                android:layout_below="@+id/create_event_start_lbl"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_height="1px"
+                android:background="@android:color/darker_gray"
+                />
+
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/create_event_end_rl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/create_event_start_rl">
+
+            <TextView
+                android:id="@+id/create_event_end_lbl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="End"
+                android:textColor="@color/primaryBlue"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/create_event_end_date_lbl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/create_event_divider3"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="30dp"
+                android:layout_marginRight="30dp" />
+
+
+            <View
+                android:id="@+id/create_event_divider3"
+                android:layout_width="match_parent"
+                android:layout_below="@+id/create_event_end_lbl"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_height="1px"
+                android:background="@android:color/darker_gray"
+                />
+
+
+        </RelativeLayout>
+
+
+      <RelativeLayout
+          android:id="@+id/create_event_frequency_rl"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:layout_below="@+id/create_event_end_rl"
+          android:visibility="gone">
+          <TextView
+              android:id="@+id/create_event_choose_repeat_lbl"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginLeft="16dp"
+              android:layout_marginStart="16dp"
+              android:layout_marginTop="16dp"
+              android:text="Frequency"
+              android:textColor="@color/primaryBlue"
+              android:textStyle="bold" />
+
+          <TextView
+              android:id="@+id/create_event_choose_repeat"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="16dp"
+              android:layout_toLeftOf="@+id/create_event_choose_repeat_arrow"
+              android:layout_toStartOf="@+id/create_event_choose_repeat_arrow"
+              android:layout_marginRight="3dp"
+              android:layout_marginEnd="3dp"
+              android:text="Day"
+              android:textSize="16sp" />
+
+          <ImageView
+              android:id="@+id/create_event_choose_repeat_arrow"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_alignParentEnd="true"
+              android:layout_alignParentRight="true"
+              android:layout_marginEnd="30dp"
+              android:layout_marginRight="30dp"
+              android:layout_alignTop="@+id/create_event_choose_repeat"
+              android:background="@drawable/ic_choose" />
+          <View
+              android:id="@+id/create_event_divider4"
+              android:layout_width="match_parent"
+              android:layout_below="@+id/create_event_choose_repeat_lbl"
+              android:layout_marginTop="16dp"
+              android:layout_height="1px"
+              android:background="@android:color/darker_gray"
+              />
+
+      </RelativeLayout>
+
+      <RelativeLayout
+          android:id="@+id/create_event_daily_rl"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_below="@+id/create_event_frequency_rl"
+          android:visibility="gone">
+
+          <RelativeLayout
+              android:id="@+id/create_event_day_rl"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:background="@color/fade_blue">
+
+              <TextView
+                  android:id="@+id/create_event_day_lbl"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginLeft="16dp"
+                  android:layout_marginStart="16dp"
+                  android:layout_marginTop="32dp"
+                  android:layout_marginBottom="5dp"
+                  android:text="DAILY"
+                  android:textColor="@color/colorGrey"
+                  />
+
+
+              <TextView
+                  android:id="@+id/create_event_day_add"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_alignBottom="@+id/create_event_day_lbl"
+                  android:layout_alignParentEnd="true"
+                  android:layout_alignParentRight="true"
+                  android:layout_marginEnd="30dp"
+                  android:layout_marginRight="30dp"
+                  android:text="+"
+                  android:textColor="@color/full_indicator"
+                  android:textSize="18sp" />
+
+              <View
+                  android:id="@+id/create_event_divider0"
+                  android:layout_width="match_parent"
+                  android:layout_below="@+id/create_event_day_lbl"
+                  android:layout_height="1px"
+                  android:background="@android:color/darker_gray"
+                  />
+
+          </RelativeLayout>
+
+          <android.support.v7.widget.RecyclerView
+              android:id="@+id/create_event_day_time_rv"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="5dp"
+              android:layout_below="@+id/create_event_day_rl" >
+          </android.support.v7.widget.RecyclerView>
+
+      </RelativeLayout>
+
+
+
+        <RelativeLayout
+            android:id="@+id/create_event_week_rl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/create_event_daily_rl"
+            android:visibility="gone">
+
+        <RelativeLayout
+            android:id="@+id/create_event_monday_rl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/fade_blue">
+
+            <TextView
+                android:id="@+id/create_event_monday_lbl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="5dp"
+                android:text="MONDAY"
+                android:textColor="@color/colorGrey"
+                />
+
+
+            <TextView
+                android:id="@+id/create_event_monday_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/create_event_monday_lbl"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="30dp"
+                android:layout_marginRight="30dp"
+                android:text="+"
+                android:textColor="@color/full_indicator"
+                android:textSize="18sp" />
+
+            <View
+                android:id="@+id/create_event_divider5"
+                android:layout_width="match_parent"
+                android:layout_below="@+id/create_event_monday_lbl"
+                android:layout_height="1px"
+                android:background="@android:color/darker_gray"
+                />
+
+        </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/create_event_monday_time_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_below="@+id/create_event_monday_rl" >
+            </android.support.v7.widget.RecyclerView>
+
+        <RelativeLayout
+            android:id="@+id/create_event_tuesday_rl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/create_event_monday_time_rv"
+            android:background="@color/fade_blue">
+
+            <TextView
+                android:id="@+id/create_event_tuesday_lbl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="5dp"
+                android:text="TUESDAY"
+                android:textColor="@color/colorGrey" />
+
+
+            <TextView
+                android:id="@+id/create_event_tuesday_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_above="@+id/create_event_divider6"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="30dp"
+                android:layout_marginRight="30dp"
+                android:text="+"
+                android:textColor="@color/full_indicator"
+                android:textSize="18sp" />
+
+            <View
+                android:id="@+id/create_event_divider6"
+                android:layout_width="match_parent"
+                android:layout_below="@+id/create_event_tuesday_lbl"
+                android:layout_marginTop="5dp"
+                android:layout_height="1px"
+                android:background="@android:color/darker_gray"
+                />
+
+        </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/create_event_tuesday_time_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_below="@+id/create_event_tuesday_rl" >
+            </android.support.v7.widget.RecyclerView>
+
+            <RelativeLayout
+                android:id="@+id/create_event_wednesday_rl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/create_event_tuesday_time_rv"
+                android:background="@color/fade_blue">
+
+                <TextView
+                    android:id="@+id/create_event_wednesday_lbl"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginBottom="5dp"
+                    android:text="WEDNESDAY"
+                    android:textColor="@color/colorGrey" />
+
+                <TextView
+                    android:id="@+id/create_event_wednesday_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:layout_above="@+id/create_event_divider7"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginRight="30dp"
+                    android:text="+"
+                    android:textColor="@color/full_indicator"
+                    android:textSize="18sp" />
+
+                <View
+                    android:id="@+id/create_event_divider7"
+                    android:layout_width="match_parent"
+                    android:layout_below="@+id/create_event_wednesday_lbl"
+                    android:layout_marginTop="5dp"
+                    android:layout_height="1px"
+                    android:background="@android:color/darker_gray"
+                    />
+
+
+            </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/create_event_wednesday_time_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_below="@+id/create_event_wednesday_rl" >
+            </android.support.v7.widget.RecyclerView>
+
+            <RelativeLayout
+                android:id="@+id/create_event_thursday_rl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/create_event_wednesday_time_rv"
+                android:background="@color/fade_blue">
+
+                <TextView
+                    android:id="@+id/create_event_thursday_lbl"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginBottom="5dp"
+                    android:text="THURSDAY"
+                    android:textColor="@color/colorGrey" />
+
+
+                <TextView
+                    android:id="@+id/create_event_thursday_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:layout_above="@+id/create_event_divider8"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginRight="30dp"
+                    android:text="+"
+                    android:textColor="@color/full_indicator"
+                    android:textSize="18sp" />
+
+                <View
+                    android:id="@+id/create_event_divider8"
+                    android:layout_width="match_parent"
+                    android:layout_below="@+id/create_event_thursday_lbl"
+                    android:layout_marginTop="5dp"
+                    android:layout_height="1px"
+                    android:background="@android:color/darker_gray"
+                    />
+
+
+            </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/create_event_thursday_time_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_below="@+id/create_event_thursday_rl" >
+            </android.support.v7.widget.RecyclerView>
+
+        <RelativeLayout
+            android:id="@+id/create_event_friday_rl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/create_event_thursday_time_rv"
+            android:background="@color/fade_blue">
+
+            <TextView
+                android:id="@+id/create_event_friday_lbl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="5dp"
+                android:text="FRIDAY"
+                android:textColor="@color/colorGrey" />
+
+
+            <TextView
+                android:id="@+id/create_event_friday_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_above="@+id/create_event_divider9"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="30dp"
+                android:layout_marginRight="30dp"
+                android:text="+"
+                android:textColor="@color/full_indicator"
+                android:textSize="18sp" />
+
+            <View
+                android:id="@+id/create_event_divider9"
+                android:layout_width="match_parent"
+                android:layout_below="@+id/create_event_friday_lbl"
+                android:layout_marginTop="5dp"
+                android:layout_height="1px"
+                android:background="@android:color/darker_gray"
+                />
+
+        </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/create_event_friday_time_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_below="@+id/create_event_friday_rl" >
+            </android.support.v7.widget.RecyclerView>
+
+        <RelativeLayout
+            android:id="@+id/create_event_saturday_rl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/create_event_friday_time_rv"
+            android:background="@color/fade_blue">
+
+            <TextView
+                android:id="@+id/create_event_saturday_lbl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="5dp"
+                android:text="SATURDAY"
+                android:textColor="@color/colorGrey" />
+
+
+            <TextView
+                android:id="@+id/create_event_saturday_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_above="@+id/create_event_divider10"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="30dp"
+                android:layout_marginRight="30dp"
+                android:text="+"
+                android:textColor="@color/full_indicator"
+                android:textSize="18sp" />
+
+            <View
+                android:id="@+id/create_event_divider10"
+                android:layout_width="match_parent"
+                android:layout_below="@+id/create_event_saturday_lbl"
+                android:layout_marginTop="5dp"
+                android:layout_height="1px"
+                android:background="@android:color/darker_gray"
+                />
+
+
+        </RelativeLayout>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/create_event_saturday_time_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_below="@+id/create_event_saturday_rl" >
+            </android.support.v7.widget.RecyclerView>
+
+
+        <RelativeLayout
+            android:id="@+id/create_event_sunday_rl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/create_event_saturday_time_rv"
+            android:background="@color/fade_blue">
+
+            <TextView
+                android:id="@+id/create_event_sunday_lbl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="5dp"
+                android:text="SUNDAY"
+                android:textColor="@color/colorGrey" />
+
+
+            <TextView
+                android:id="@+id/create_event_sunday_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_above="@+id/create_event_divider11"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="30dp"
+                android:layout_marginRight="30dp"
+                android:text="+"
+                android:textColor="@color/full_indicator"
+                android:textSize="18sp" />
+
+            <View
+                android:id="@+id/create_event_divider11"
+                android:layout_width="match_parent"
+                android:layout_below="@+id/create_event_sunday_lbl"
+                android:layout_marginTop="5dp"
+                android:layout_height="1px"
+                android:background="@android:color/darker_gray"
+                />
+
+        </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/create_event_sunday_time_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_below="@+id/create_event_sunday_rl" >
+            </android.support.v7.widget.RecyclerView>
+
+        </RelativeLayout>
+
+                <com.example.xcomputers.leaps.utils.CustomWhiteButton
+                    android:id="@+id/publish_event_btn"
+                    android:layout_width="256dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/create_event_week_rl"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="14dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="@string/publish_your_event" />
+
+        </RelativeLayout>
+
+
+    </android.support.v4.widget.NestedScrollView>
+
+
+
+
+   <!-- <TextView
         android:id="@+id/create_event_date_lbl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:layout_below="@+id/create_event_header"
+        android:layout_below="@+id/create_event_repeat_lbl"
         android:text="@string/date"
         android:textColor="@color/primaryBlue"
         android:textStyle="bold" />
@@ -70,16 +707,9 @@
         android:paddingLeft="16dp"
         android:layout_below="@+id/create_event_time_lbl"
         android:layout_width="match_parent"
-        android:layout_height="36dp" />
+        android:layout_height="36dp" /> -->
 
 
-<com.example.xcomputers.leaps.utils.CustomWhiteButton
-    android:id="@+id/publish_event_btn"
-    android:text="@string/publish_your_event"
-    android:layout_alignParentBottom="true"
-    android:layout_centerHorizontal="true"
-    android:layout_marginBottom="16dp"
-    android:layout_width="256dp"
-    android:layout_height="wrap_content" />
+
 
 </RelativeLayout>

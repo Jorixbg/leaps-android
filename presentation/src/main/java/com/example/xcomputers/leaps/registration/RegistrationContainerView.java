@@ -58,6 +58,7 @@ public class RegistrationContainerView extends BaseView<RegistrationPresenter> i
     private String password;
     private String fbId;
     private String googleId;
+    private String firebaseToken;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -158,6 +159,7 @@ public class RegistrationContainerView extends BaseView<RegistrationPresenter> i
             case NAMES_VIEW:
                 firstName = data[0];
                 lastName = data[1];
+                firebaseToken = data[2];
                 openFrag(insideViews.get(EMAIL_VIEW), getBundleForClass(EMAIL_VIEW));
                 break;
             case EMAIL_VIEW:
@@ -170,7 +172,7 @@ public class RegistrationContainerView extends BaseView<RegistrationPresenter> i
                 break;
             case BIRTHDAY_VIEW:
                 birthDay = Long.valueOf(data[0]);
-                presenter.register(email, password, firstName, lastName, birthDay, fbId, googleId);
+                presenter.register(email, password, firstName, lastName, birthDay, fbId, googleId,firebaseToken);
                 break;
         }
     }

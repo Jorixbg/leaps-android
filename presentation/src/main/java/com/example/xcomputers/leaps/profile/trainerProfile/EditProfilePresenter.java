@@ -10,6 +10,7 @@ import com.example.xcomputers.leaps.utils.EntityHolder;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.List;
 
 import okhttp3.MultipartBody;
 import okhttp3.ResponseBody;
@@ -63,9 +64,10 @@ public class EditProfilePresenter extends BasePresenter {
                            String longDesc,
                            int yearsOfTraining,
                            String phoneNumber,
-                           int price) {
+                           int price,
+                           List<String> specialties) {
         this.request = new UpdateProfileRequest(userId, userName, email, gender, location,
-                maxDistanceSetting, firstName, lastName, birthDay, desc, longDesc, yearsOfTraining, phoneNumber, price, EntityHolder.getInstance().getEntity().isTrainer());
+                maxDistanceSetting, firstName, lastName, birthDay, desc, longDesc, yearsOfTraining, phoneNumber, price, EntityHolder.getInstance().getEntity().isTrainer(),specialties);
         service.addHeader("Authorization", auth);
         service.updateUser(request)
                 .subscribeOn(Schedulers.io())
@@ -81,6 +83,8 @@ public class EditProfilePresenter extends BasePresenter {
                     userResponse.setLongDescription(request.getLongDesc());
                     userResponse.setYearsOfTraining(request.getYearsOfTraining());
                     userResponse.setSesionPrice(request.getPrice());
+                    userResponse.setTags(request.getSpecialties());
+                    EntityHolder.getInstance().setEntity(userResponse);
                     service.removeHeader("Authorization");
                     updateUserSubject.onNext(null);
                 }, throwable -> {

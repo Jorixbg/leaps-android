@@ -31,6 +31,6 @@ public class BecomeTrainerService extends BaseService<UpdateProfileApi> {
                                           int price) {
 
         return serviceApi.updateUser(new UpdateProfileRequest(userId, userName, email, gender, location,
-                maxDistanceSetting, firstName, lastName, birthDay, desc, longDesc, yearsOfTraining, phoneNumber, price, true));
+                maxDistanceSetting, firstName, lastName, birthDay, desc, longDesc, yearsOfTraining, phoneNumber, price, true,null));
     }
 }

@@ -38,6 +38,7 @@
     <string name="your_birthday">Your birthday?</string>
     <string name="homescreen_tab_home">HOME</string>
     <string name="homescreen_tab_cal">CALENDAR</string>
+    <string name="homescreen_tab_chat">INBOX</string>
     <string name="homescreen_tab_profile">PROFILE</string>
     <string name="homescreen_search_bar_lbl">Sofia • Any Activity • Any Time</string>
     <string name="lbl_recycler_header_see_all">see all</string>
@@ -97,6 +98,7 @@
     <string name="create_event_pic_lbl">Event main picture and cover photos</string>
     <string name="title">Title</string>
     <string name="event_title">Event Title</string>
+    <string name="description">Description</string>
     <string name="type_description">Type description</string>
     <string name="workout_type">Workout type</string>
     <string name="lbl_storage_permission_title">Leaps needs to access storage</string>
@@ -161,4 +163,7 @@
     <string name="no_items_to_show">No items to show</string>
     <string name="following">Following</string>
     <string name="followers">Followers</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -13,7 +13,7 @@
         android:layout_height="168dp" />
 
     <ImageView
-        android:background="@drawable/gradient_overlay"
+        android:background="@drawable/event_gradient"
         android:layout_width="match_parent"
         android:layout_height="168dp" />
 
@@ -98,78 +98,82 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/feed_recycler_tag1"
-        app:srcCompat="@drawable/ic_sync"
         android:layout_alignStart="@id/feed_recycler_tag1"
         android:layout_alignLeft="@+id/feed_recycler_tag1"
         android:layout_marginBottom="8dp"
         />
 
-    <TextView
-        android:id="@+id/feed_recycler_date"
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"
         android:layout_alignTop="@+id/feed_recycler_recurring_icon"
         android:layout_alignBottom="@+id/feed_recycler_recurring_icon"
         android:layout_toRightOf="@+id/feed_recycler_recurring_icon"
         android:layout_toEndOf="@+id/feed_recycler_recurring_icon"
         android:layout_below="@+id/feed_recycler_tag1"
-        android:textStyle="bold"
-        android:textColor="@android:color/white"
-        android:gravity="center"
-        />
+        android:layout_marginTop="5dp">
 
-    <ImageView
-        android:id="@+id/feed_recycler_location_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/feed_recycler_date"
-        android:layout_toRightOf="@+id/feed_recycler_date"
-        android:layout_alignTop="@+id/feed_recycler_date"
-        android:layout_alignBottom="@+id/feed_recycler_date"
-        app:srcCompat="@drawable/ic_location_on" />
 
-    <TextView
-        android:id="@+id/feed_recycler_distance_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/feed_recycler_location_icon"
-        android:layout_alignTop="@+id/feed_recycler_location_icon"
-        android:layout_toRightOf="@+id/feed_recycler_location_icon"
-        android:layout_toEndOf="@+id/feed_recycler_location_icon"
-        android:textColor="@android:color/white"
-        android:textStyle="bold"
-        android:text="2 km"
-        android:gravity="center"
-        />
+        <TextView
+            android:id="@+id/feed_recycler_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:layout_marginTop="6dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:text="Sat 25 Nov, 15:00, 2017 "
+            />
 
-    <ImageView
-        android:id="@+id/feed_recycler_follow_button"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/feed_recycler_distance_tv"
-        android:layout_toLeftOf="@+id/feed_recycler_share_button"
-        android:layout_marginRight="16dp"
-        android:layout_marginEnd="16dp"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        />
+        <ImageView
+            android:id="@+id/feed_recycler_location_icon"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/show_map_btn" />
 
-    <ImageView
-        android:id="@+id/feed_recycler_share_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/feed_recycler_distance_tv"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignBottom="@+id/feed_recycler_distance_tv"
-        app:srcCompat="@drawable/share"
-        android:layout_marginRight="16dp"
-        android:layout_marginEnd="16dp"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        />
+        <TextView
+            android:id="@+id/feed_recycler_distance_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:layout_marginTop="6dp"
+            android:text="2 km"
+            android:gravity="center"
+            android:layout_weight="2"
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"
+            />
+
+        <ImageView
+            android:id="@+id/feed_recycler_follow_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"
+            app:srcCompat="@drawable/unfollow_event"
+            />
+
+        <ImageView
+            android:id="@+id/feed_recycler_share_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="3dp"
+            app:srcCompat="@drawable/share" />
+
+
+    </LinearLayout>
+
+
 
 </RelativeLayout>

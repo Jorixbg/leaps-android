@@ -1,13 +1,13 @@
 package com.example.xcomputers.leaps.profile.trainerProfile;
 
 import android.content.Intent;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -22,16 +22,18 @@ import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.User;
 import com.example.xcomputers.leaps.base.BaseView;
 import com.example.xcomputers.leaps.base.Layout;
-import com.example.xcomputers.leaps.event.EventAdapter;
 import com.example.xcomputers.leaps.profile.ProfileListPresenter;
 import com.example.xcomputers.leaps.profile.SettingsView;
 import com.example.xcomputers.leaps.profile.tutorial.TutorialActivity;
 import com.example.xcomputers.leaps.profile.userProfile.UserEditProfileView;
-import com.example.xcomputers.leaps.test.FollowUserView;
+import com.example.xcomputers.leaps.event.EventViewPagerAdapter;
+import com.example.xcomputers.leaps.follow.FollowUserView;
 import com.example.xcomputers.leaps.utils.CustomTextView;
 import com.example.xcomputers.leaps.utils.EntityHolder;
 import com.example.xcomputers.leaps.utils.GlideInstance;
+import com.viewpagerindicator.CirclePageIndicator;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +50,7 @@ public class TrainerProfilePreview extends BaseView<ProfileListPresenter> {
     private ImageView mainPic;
     private CustomTextView nameTv;
     private TextView usernameTv;
-    private RecyclerView imagesRecycler;
+    private ViewPager imagesRecycler;
     private TextView settings;
     private TextView viewTutorial;
     private TextView logOut;
@@ -61,6 +63,7 @@ public class TrainerProfilePreview extends BaseView<ProfileListPresenter> {
     private TextView ratingCounter;
     private TextView ratingViewers;
     private View view;
+    private CirclePageIndicator pageIndicator;
   //  private Button becomeTrainerbtn;
     //private RelativeLayout becomeTrainerRl;
    // private List<Event> pastEvents;
@@ -80,7 +83,6 @@ public class TrainerProfilePreview extends BaseView<ProfileListPresenter> {
         initFields(view);
         this.view = view;
         Entity trainer1 = EntityHolder.getInstance().getEntity();
-        Log.e("Trainer ", trainer1+"");
         showTrainer(trainer1);
 
     }
@@ -90,7 +92,7 @@ public class TrainerProfilePreview extends BaseView<ProfileListPresenter> {
         mainPic = (ImageView) view.findViewById(R.id.trainer_pic);
         nameTv = (CustomTextView) view.findViewById(R.id.trainer_name);
         usernameTv = (TextView) view.findViewById(R.id.trainer_title);
-        imagesRecycler = (RecyclerView) view.findViewById(R.id.trainer_image_horizontall_scroll);
+        imagesRecycler = (ViewPager) view.findViewById(R.id.trainer_image_horizontall_scroll);
         settings = (TextView) view.findViewById(R.id.profile_list_settings);
         viewTutorial = (TextView) view.findViewById(R.id.profile_list_tutorial);
         logOut = (TextView) view.findViewById(R.id.profile_list_log_out);
@@ -100,9 +102,7 @@ public class TrainerProfilePreview extends BaseView<ProfileListPresenter> {
         rating = (RatingBar) view.findViewById(R.id.trainer_rating_bar);
         ratingCounter = (TextView) view.findViewById(R.id.rating_counter_tv);
         ratingViewers = (TextView) view.findViewById(R.id.rating_review_counter);
-     //   becomeTrainerbtn = (Button) view.findViewById(R.id.profile_listing_become_trainer_btn);
-      //  becomeTrainerbtn.setTypeface(Typeface.createFromAsset(getContext().getAssets(), "fonts/Typoforge Studio - Cervo-Medium.otf"));
-      //  becomeTrainerRl = (RelativeLayout) view.findViewById(R.id.profile_list_become_trainer_rl);
+        pageIndicator = (CirclePageIndicator) view.findViewById(R.id.event_indicator);
 
         //  editProfileBtn = (ImageView) view.findViewById(R.id.profile_list_profile_btn);
        //  ageTv = (TextView) view.findViewById(R.id.trainer_age);
@@ -112,8 +112,7 @@ public class TrainerProfilePreview extends BaseView<ProfileListPresenter> {
        // aboutTv = (TextView) view.findViewById(R.id.trainer_about_tv);
        // showPastBtn = (TextView) view.findViewById(R.id.trainer_show_past_btn);
        // eventsRecycler = (RecyclerView) view.findViewById(R.id.trainer_events_recycler);
-       // followBtn = (Button) view.findViewById(R.id.follow_trainer_btn);
-        //followBtn.setVisibility(View.GONE);
+
     }
 
     @Override
@@ -164,10 +163,6 @@ public class TrainerProfilePreview extends BaseView<ProfileListPresenter> {
             throw new IllegalArgumentException("The trainer is null in " + getClass().getCanonicalName());
         }
 
-        /*if(User.getInstance().isTrainer()){
-            becomeTrainerRl.setVisibility(View.GONE);
-        }*/
-
         presenter.getUser(User.getInstance().getUserId(),PreferenceManager.getDefaultSharedPreferences(getContext()).getString("Authorization", ""));
 
         List<String> imageUrls = new ArrayList<>();
@@ -177,15 +172,15 @@ public class TrainerProfilePreview extends BaseView<ProfileListPresenter> {
         if(imageUrls.isEmpty()){
             view.findViewById(R.id.recycler_placeholder).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.event_placeholder));
         }else {
-            EventAdapter adapter = new EventAdapter(imageUrls);
+            EventViewPagerAdapter adapter = new EventViewPagerAdapter(view.getContext(),getChildFragmentManager(),imageUrls);
             imagesRecycler.setAdapter(adapter);
-            imagesRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+            pageIndicator.setViewPager(imagesRecycler);
+            pageIndicator.setCurrentItem(0);
         }
         GlideInstance.loadImageCircle(getContext(), trainer.profileImageUrl(), mainPic, R.drawable.event_placeholder);
 
         viewTutorial.setOnClickListener(v -> startActivity(new Intent(getContext(), TutorialActivity.class)));
         settings.setOnClickListener(v -> openFragment(SettingsView.class, new Bundle(), true));
-        //becomeTrainerbtn.setOnClickListener(v -> getActivity().startActivityForResult(new Intent(getContext(), BecomeTrainerActivity.class), BECOME_TRAINER_REQUEST));
         Class editClass = User.getInstance().isTrainer() ? TrainerProfileEditView.class : UserEditProfileView.class;
 
         editProfile.setOnClickListener(v-> {
@@ -201,11 +196,13 @@ public class TrainerProfilePreview extends BaseView<ProfileListPresenter> {
             getActivity().finish();
         });
 
-        String following = String.valueOf(trainer.followers().getFollowingUsers().size());
-        String followers = String.valueOf(trainer.followers().getFollowers().size());
 
         usernameTv.setText(trainer.username());
         nameTv.setText(trainer.firstName() + " " + trainer.lastName());
+        String following = String.valueOf(trainer.followers().getFollowingUsers().size());
+        String followers = String.valueOf(trainer.followers().getFollowers().size());
+
+
         followingTv.setText(following);
 
         followingTv.setOnClickListener(new View.OnClickListener() {
@@ -240,8 +237,23 @@ public class TrainerProfilePreview extends BaseView<ProfileListPresenter> {
 
         eventTV.setText(trainer.hosting().size()+"");
 
-        //todo rating, ratingcounter, ratingviewers
+        LayerDrawable stars = (LayerDrawable) rating.getProgressDrawable();
+        stars.getDrawable(2).setColorFilter(getResources().getColor(R.color.light_blue), PorterDuff.Mode.SRC_ATOP);
+        stars.getDrawable(1).setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_ATOP);
+        stars.getDrawable(0).setColorFilter(getResources().getColor(R.color.light_blue), PorterDuff.Mode.SRC_ATOP);
 
+        if(trainer.rating()==0 && trainer.reviews() == 0){
+            ratingCounter.setText(0.0f+"");
+            ratingViewers.setText("("+0+""+" reviews)");
+        }
+        else {
+
+            DecimalFormat df = new DecimalFormat("#.0");
+            String ratingEvent = String.valueOf(df.format(trainer.rating()));
+            rating.setRating(trainer.rating());
+            ratingCounter.setText(ratingEvent+"");
+            ratingViewers.setText("("+String.valueOf(trainer.reviews()+""+" reviews)"));
+        }
 
         //  editProfileBtn.setOnClickListener(v-> openFragment(ProfileListView.class, new Bundle(), true));
 
@@ -284,6 +296,8 @@ public class TrainerProfilePreview extends BaseView<ProfileListPresenter> {
         //ageTv.setText(trainer.age() + "");
         // addressTv.setText(trainer.address());
     }
+
+
 
 }
 

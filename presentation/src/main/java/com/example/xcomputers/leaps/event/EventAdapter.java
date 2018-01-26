@@ -1,7 +1,6 @@
 package com.example.xcomputers.leaps.event;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +33,6 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
     @Override
     public void onBindViewHolder(EventViewHolder holder, int position) {
-        Log.e("Tags","onBind "+data.get(position)+"");
         Glide.with(holder.imageView.getContext())
                 .load(LeapsApplication.BASE_URL + File.separator + data.get(position))
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)

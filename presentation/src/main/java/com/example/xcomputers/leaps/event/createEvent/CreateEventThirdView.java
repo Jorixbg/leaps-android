@@ -3,12 +3,11 @@ package com.example.xcomputers.leaps.event.createEvent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
+import com.example.networking.feed.event.RealEvent;
 import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.base.BaseView;
 import com.example.xcomputers.leaps.base.EmptyPresenter;
@@ -27,6 +26,7 @@ public class CreateEventThirdView extends BaseView<EmptyPresenter> {
     private EditText priceFrom;
     private EditText freeSlots;
     private ImageView nextBtn;
+    private RealEvent event;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -35,13 +35,27 @@ public class CreateEventThirdView extends BaseView<EmptyPresenter> {
         nextBtn = (ImageView) view.findViewById(R.id.create_event_next_btn);
         nextBtn.setOnClickListener(v -> {
             if (TextUtils.isEmpty(priceFrom.getText().toString())) {
-                Toast.makeText(getContext(), R.string.error_create_event_price_from, Toast.LENGTH_SHORT).show();
+                priceFrom.setError("Please provide a minimum price");
+                priceFrom.requestFocus();
             }else if(TextUtils.isEmpty(freeSlots.getText().toString())){
-                Toast.makeText(getContext(), R.string.error_create_event_free_slots, Toast.LENGTH_SHORT).show();
+                freeSlots.setError("Please provide the number of free slots");
+                freeSlots.requestFocus();
             }else{
                 ((ICreateEventActivity)getActivity()).collectData(Double.valueOf(priceFrom.getText().toString()), Integer.valueOf(freeSlots.getText().toString()));
             }
         });
+
+        event = (RealEvent) getArguments().getSerializable("event");
+        if(event !=null){
+            loadVies();
+        }
+
+
+    }
+
+    private void loadVies() {
+        priceFrom.setText(String.valueOf(event.priceFrom()));
+        freeSlots.setText(String.valueOf(event.freeSlots()));
     }
 
     @Override

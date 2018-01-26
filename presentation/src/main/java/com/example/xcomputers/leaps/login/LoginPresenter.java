@@ -41,7 +41,7 @@ class LoginPresenter extends BasePresenter {
         generalErroSubject = PublishSubject.create();
     }
 
-    void login(String username, String password) {
+    void login(String username, String password, String firebaseToken) {
         if (username == null || username.isEmpty()) {
             errorValidationSubject.onNext("Please provide a non empty username or email!");
             return;
@@ -50,7 +50,7 @@ class LoginPresenter extends BasePresenter {
             return;
         }
 
-        service.login(new LoginRequest(username, password)).enqueue(new Callback<UserResponse>() {
+        service.login(new LoginRequest(username, password,firebaseToken)).enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
                 if (response.isSuccessful()) {

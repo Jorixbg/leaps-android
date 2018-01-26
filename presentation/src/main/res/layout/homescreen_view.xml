@@ -18,7 +18,8 @@
         android:id="@+id/homescreen_tabs"
         android:layout_alignParentBottom="true"
         android:background="@android:color/white"
-        app:tabIndicatorHeight="0dp">
+        app:tabIndicatorHeight="0dp"
+        app:tabTextAppearance="@style/MineCustomTabText">
 
     </android.support.design.widget.TabLayout>
 

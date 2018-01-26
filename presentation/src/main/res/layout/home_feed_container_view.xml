@@ -21,8 +21,8 @@
                 android:id="@+id/homescreen_search_tv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:drawableLeft="@drawable/ic_action_search"
-                android:drawableStart="@drawable/ic_action_search"
+                android:drawableLeft="@drawable/ic_search"
+                android:drawableStart="@drawable/ic_search"
                 android:drawablePadding="8dp"
                 android:layout_centerInParent="true"
                 android:layout_margin="12dp"
@@ -56,6 +56,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:layout_marginRight="5dp"
+            android:layout_marginEnd="5dp"
             app:srcCompat="@drawable/show_map_btn"/>
 
     </LinearLayout>

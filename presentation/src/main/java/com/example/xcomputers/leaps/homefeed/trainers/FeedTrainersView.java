@@ -9,7 +9,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -75,28 +74,28 @@ public class FeedTrainersView extends BaseView<FeedTrainersPresenter> implements
         filterCancel = (TextView) homeFeedContainerView.findViewById(R.id.feed_header_lbl);
         filterHeaderText = (TextView) view.findViewById(R.id.home_feed_header_name);
 
-        HomeFeedContainer.getHomeView().findViewById(R.id.feed_header_lbl).setOnClickListener(v -> {
-            showLoading();
-            emptyState.setVisibility(View.GONE);
-            trainersRecycler.setVisibility(View.VISIBLE);
-            presenter.clearData();
-            presenter.getTrainersNoFilter();
-            filterHeaderText.setVisibility(View.INVISIBLE);
-            if (getParentFragment() != null) {
-                ((OnSearchDataCollectedListener) getParentFragment()).resetSearch();
-            }
-            HomeFeedContainer.getHomeView().findViewById(R.id.homescreen_search_tv).setClickable(true);
-            HomeFeedContainer.getHomeView().findViewById(R.id.feed_header_lbl).setVisibility(View.GONE);
-        });
+        if(HomeFeedContainer.getCurrentPosition() == 1) {
+            HomeFeedContainer.getHomeView().findViewById(R.id.feed_header_lbl).setOnClickListener(v -> {
+                showLoading();
+                emptyState.setVisibility(View.GONE);
+                trainersRecycler.setVisibility(View.VISIBLE);
+                presenter.clearData();
+                presenter.getTrainersNoFilter();
+                filterHeaderText.setVisibility(View.INVISIBLE);
+                if (getParentFragment() != null) {
+                    ((OnSearchDataCollectedListener) getParentFragment()).resetSearch();
+                }
+                HomeFeedContainer.getHomeView().findViewById(R.id.homescreen_search_tv).setClickable(true);
+                HomeFeedContainer.getHomeView().findViewById(R.id.feed_header_lbl).setVisibility(View.GONE);
+            });
+        }
         if (getArguments() != null) {
             if (FEED_SEARCH_TRAINER_KEY.equals(((OnSearchDataCollectedListener) getParentFragment()).getOrigin())) {
                 setFilter(((OnSearchDataCollectedListener) getParentFragment()).onSearchDataCollected());
                 HomeFeedContainer.getHomeView().findViewById(R.id.feed_header_lbl).setVisibility(View.VISIBLE);
-                Log.d("TAG", this.getClass().getCanonicalName() + " getting trainers!!!");
             } else {
                 showLoading();
                 presenter.getTrainersNoFilter();
-                Log.d("TAG", this.getClass().getCanonicalName() + " getting trainers!!!");
             }
         }
 
@@ -149,7 +148,6 @@ public class FeedTrainersView extends BaseView<FeedTrainersPresenter> implements
 
         subscriptions.add(presenter.getTrainersFilterObservable()
                 .subscribe(entities -> {
-                    Log.e("Entities",String.valueOf(entities.getTotalResults()));
                     if (entities.getTrainers().isEmpty()) {
                         emptyState.setVisibility(View.VISIBLE);
                         trainersRecycler.setVisibility(View.GONE);

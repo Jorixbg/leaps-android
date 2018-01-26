@@ -4,6 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeTrainerEvents"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/nested_trainer_view"
         android:layout_width="match_parent"
@@ -30,9 +36,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.v7.widget.RecyclerView
+            <android.support.v4.view.ViewPager
                 android:id="@+id/trainer_image_horizontall_scroll"
                 android:layout_width="match_parent"
+                android:focusableInTouchMode="true"
                 android:layout_height="160dp"/>
 
             <ImageView
@@ -71,11 +78,12 @@
                 android:layout_toRightOf="@+id/trainer_pic"
                 android:layout_marginStart="4dp"
                 android:layout_marginLeft="4dp"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:gravity="center_vertical"
                 android:textAllCaps="true"
                 android:textColor="@android:color/white"
                 android:textStyle="bold" />
+
 
             <TextView
                 android:id="@+id/trainer_title"
@@ -86,37 +94,110 @@
                 android:layout_alignTop="@+id/trainer_name"
                 android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
-                android:textSize="12sp"
+                android:textSize="10sp"
                 android:layout_toEndOf="@+id/trainer_name"
                 android:layout_toRightOf="@+id/trainer_name"
                 android:gravity="center"
                 android:textColor="@android:color/white" />
 
-            <LinearLayout
-                android:id="@+id/layout_follow"
+
+            <com.viewpagerindicator.CirclePageIndicator
+                android:id="@+id/event_indicator"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/trainer_pic">
+                android:layout_height="15dp"
+                app:radius="4dp"
+                android:layout_marginTop="100dp"
+                app:pageColor="@color/colorWhite"
+                app:strokeColor="@color/light_blue"
+                app:fillColor="@color/light_blue"
+                android:layout_toRightOf="@+id/trainer_title"
+                android:layout_toEndOf="@+id/trainer_title"
+                android:layout_below="@+id/profile_list_profile_btn"/>
 
-                <Button
-                    android:id="@+id/follow_trainer_btn"
+            <Button
+                android:id="@+id/follow_trainer_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/following_button_unclicked"
+                android:layout_below="@+id/trainer_pic"/>
+
+
+            <Button
+                android:id="@+id/trainer_msg_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="30dp"
+                android:layout_toRightOf="@+id/follow_trainer_btn"
+                android:layout_toEndOf="@+id/follow_trainer_btn"
+                android:background="@color/primaryBlue"
+                android:textColor="@color/dirty_white"
+                android:text="Write a message"
+                android:textSize="10sp"
+                android:textAllCaps="false"
+                android:layout_below="@+id/trainer_pic"/>
+
+            <LinearLayout
+                android:id="@+id/rating_layout"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal"
+                android:layout_toRightOf="@+id/trainer_pic"
+                android:layout_toEndOf="@+id/trainer_pic"
+                android:layout_below="@+id/trainer_name">
+
+                <RatingBar
+                    android:id="@+id/trainer_rating_bar"
+                    style="?android:attr/ratingBarStyleSmall"
                     android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginTop="20dp"
-                    android:background="@drawable/following_button_unclicked"/>
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:isIndicator="true"
+                    android:numStars="5"
+                    android:stepSize="1"
+                    android:theme="@style/RatingBar" />
 
+                <TextView
+                    android:id="@+id/rating_counter_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rating_indicator"
+                    android:gravity="center"
+                    android:text="4.9"
+                    android:textColor="@android:color/white" />
+
+                <TextView
+                    android:id="@+id/rating_review_counter"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="4"
+                    android:text="(80 reviews)"
+                    android:textColor="@color/primaryBlue" />
 
             </LinearLayout>
+
 
             <LinearLayout
                 android:id="@+id/linear_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
                 android:orientation="horizontal"
-                android:layout_below="@+id/layout_follow"
+                android:layout_below="@+id/rating_layout"
                 android:layout_centerHorizontal="true">
 
                 <TextView
@@ -138,7 +219,7 @@
                     android:layout_marginBottom="4dp"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="1.7"
                     android:text="0"/>
 
                 <TextView
@@ -179,7 +260,7 @@
                     android:gravity="center"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1.2" />
+                    android:layout_weight="1.5" />
 
                 <TextView
                     android:id="@+id/user_profile_followers_lbl"
@@ -242,7 +323,9 @@
                 app:alignItems="flex_start"
                 app:dividerDrawable="@drawable/flex_divider"
                 app:flexWrap="wrap"
-                app:showDivider="beginning|middle" />
+                app:showDivider="beginning|middle"
+
+                />
 
             <View
                 android:id="@+id/trainer_divider2"
@@ -376,8 +459,8 @@
 
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
-                android:drawableEnd="@drawable/arrow_right"
-                android:drawableRight="@drawable/arrow_right"
+                android:drawableEnd="@drawable/ic_action_next"
+                android:drawableRight="@drawable/ic_action_next"
                 android:layout_below="@+id/trainer_divider3"
                 android:gravity="center"
                 android:text="@string/lbl_show_past"
@@ -403,22 +486,21 @@
                     android:layout_height="match_parent" />
             </RelativeLayout>
 
-            <android.support.v4.widget.SwipeRefreshLayout
-                android:id="@+id/swipeTrainerEvents"
-                android:layout_width="match_parent"
-                android:layout_height="256dp"
-                android:layout_below="@+id/trainer_show_past_btn">
+
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/trainer_events_recycler"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="256dp"
+                    android:layout_below="@+id/trainer_show_past_btn"/>
 
-            </android.support.v4.widget.SwipeRefreshLayout>
 
-        </RelativeLayout>
+
+         </RelativeLayout>
         </RelativeLayout>
     </android.support.v4.widget.NestedScrollView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 
     <FrameLayout

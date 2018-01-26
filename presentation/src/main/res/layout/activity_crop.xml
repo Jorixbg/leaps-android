@@ -5,16 +5,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.xcomputers.leaps.test.CropActivity">
+    tools:context="com.example.xcomputers.leaps.crop.CropActivity">
 
 
 
-    <com.example.xcomputers.leaps.test.CustomCropImageView
+    <com.example.xcomputers.leaps.crop.CustomCropImageView
         android:id="@+id/CropImageView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="10"
+        app:cropAutoZoomEnabled="true"
+        app:cropAspectRatioX="1"
+        app:cropAspectRatioY="1"
+        app:cropMaxZoom="1000"
         app:cropInitialCropWindowPaddingRatio="0"/>
+
+    <!--
+
+        app:cropMinCropResultWidthPX="1500"
+        app:cropMinCropResultHeightPX="1500"
+        app:cropMaxCropResultWidthPX="1500"
+        app:cropMaxCropResultHeightPX="1500"
+    -->
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -23,6 +36,7 @@
 
 
         <TextView
+            android:id="@+id/cancel_tv"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"

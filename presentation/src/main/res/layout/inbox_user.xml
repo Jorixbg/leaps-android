@@ -1,0 +1,67 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/inbox_user_pic"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp" />
+
+    <TextView
+        android:id="@+id/inbox_user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/inbox_user_pic"
+        android:layout_toEndOf="@+id/inbox_user_pic"
+        android:layout_toRightOf="@+id/inbox_user_pic"
+        android:text="Jon Keller"
+        android:textColor="@color/primaryBlue"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/inbox_user_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/inbox_user_name"
+        android:layout_alignBottom="@+id/inbox_user_name"
+        android:layout_alignEnd="@+id/inbox_text"
+        android:layout_alignRight="@+id/inbox_text"
+        android:text="10:11"
+        android:textColor="@color/inactive_blue"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/inbox_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/inbox_user_pic"
+        android:layout_alignEnd="@+id/feed_trainers_divider"
+        android:layout_alignRight="@+id/feed_trainers_divider"
+        android:layout_toEndOf="@+id/inbox_user_pic"
+        android:layout_toRightOf="@+id/inbox_user_pic"
+
+        android:singleLine="true"
+        android:text="We travel on Saturday for Plovdiv are you comming with us"
+        android:textColor="@color/inactive_blue"
+        android:textSize="16sp" />
+    <View
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/inbox_text"
+        android:layout_height="1px"
+        android:id="@+id/feed_trainers_divider"
+        android:background="@android:color/darker_gray"
+        />
+
+
+</RelativeLayout>

@@ -47,6 +47,7 @@ public class BecomeTrainerActivity extends AppCompatActivity implements IActivit
     private BecomeTrainerService service;
     private ProgressBar progressBar;
     private FrameLayout container;
+    private static boolean flag;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -164,6 +165,7 @@ public class BecomeTrainerActivity extends AppCompatActivity implements IActivit
                     hideLoading();
                     Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
                     setResult(RESULT_OK);
+                    flag = true;
                     finish();
                 }, throwable -> {
                     service.removeHeader("Authorization");
@@ -209,5 +211,9 @@ public class BecomeTrainerActivity extends AppCompatActivity implements IActivit
             message = error.getMessage();
         }
         return message;
+    }
+
+    public static boolean isFlag() {
+        return flag;
     }
 }

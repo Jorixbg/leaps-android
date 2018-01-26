@@ -2,6 +2,8 @@ package com.example.networking.profile;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 /**
  * Created by xComputers on 23/07/2017.
  */
@@ -37,6 +39,9 @@ public class UpdateProfileRequest {
     int price;
     @SerializedName("is_trainer")
     boolean isTrainer;
+    @SerializedName("specialties")
+    List<String> specialties;
+
 
     public UpdateProfileRequest(long userId,
                                 String userName,
@@ -52,7 +57,8 @@ public class UpdateProfileRequest {
                                 int yearsOfTraining,
                                 String phoneNumber,
                                 int price,
-                                boolean isTrainer) {
+                                boolean isTrainer,
+                                List<String> specialties) {
         this.userId = userId;
         this.userName = userName;
         this.email = email;
@@ -68,6 +74,7 @@ public class UpdateProfileRequest {
         this.phoneNumber = phoneNumber;
         this.price = price;
         this.isTrainer = isTrainer;
+        this.specialties = specialties;
     }
 
     public boolean getIsTrainer(){
@@ -127,5 +134,13 @@ public class UpdateProfileRequest {
 
     public int getPrice() {
         return price;
+    }
+    
+    public boolean isTrainer() {
+        return isTrainer;
+    }
+
+    public List<String> getSpecialties() {
+        return specialties;
     }
 }

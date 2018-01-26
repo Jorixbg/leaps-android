@@ -1,6 +1,5 @@
 package com.example.networking.feed.trainer;
 
-import com.example.networking.feed.event.AttendeeResponse;
 import com.example.networking.feed.event.Event;
 import com.example.networking.feed.event.RealEvent;
 import com.example.networking.following.user.Followed;
@@ -24,6 +23,7 @@ public interface Entity extends Serializable {
     String firstName();
     String lastName();
     long birthDay();
+    String firebaseToken();
     String description();
     boolean hasFreeEvent();
     boolean isTrainer();
@@ -37,6 +37,9 @@ public interface Entity extends Serializable {
     List<Event> attending();
     List<RealEvent> hosting();
     Followed followers();
-    List<AttendeeResponse> filter();
+    Followed filter();
     int attendedEvents();
+    float rating();
+    int reviews();
+
 }

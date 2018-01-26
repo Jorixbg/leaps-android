@@ -36,7 +36,7 @@ public class SettingsPresenter extends BasePresenter {
         service.addHeader("Authorization", auth);
         this.request = new UpdateProfileRequest(entity.userId(), entity.username(), entity.email(), entity.gender(), entity.address(),
                 maxDistanceSetting, entity.firstName(), entity.lastName(), entity.birthDay(), entity.description(), entity.longDescription(),
-                entity.yearsOfTraining(), entity.phoneNumber(), entity.sesionPrice(), entity.isTrainer());
+                entity.yearsOfTraining(), entity.phoneNumber(), entity.sesionPrice(), entity.isTrainer(),entity.specialities());
         service.updateUser(request)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

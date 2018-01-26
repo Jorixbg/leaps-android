@@ -1,9 +1,12 @@
 package com.example.xcomputers.leaps.profile.userProfile;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -13,9 +16,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -29,7 +34,7 @@ import com.example.xcomputers.leaps.User;
 import com.example.xcomputers.leaps.base.BaseView;
 import com.example.xcomputers.leaps.base.Layout;
 import com.example.xcomputers.leaps.profile.trainerProfile.EditProfilePresenter;
-import com.example.xcomputers.leaps.test.CropActivity;
+import com.example.xcomputers.leaps.crop.CropActivity;
 import com.example.xcomputers.leaps.utils.EntityHolder;
 import com.example.xcomputers.leaps.utils.FilePathDescriptor;
 import com.example.xcomputers.leaps.utils.GlideInstance;
@@ -45,6 +50,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Subscription;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 /**
@@ -68,6 +74,9 @@ public class UserEditProfileView extends BaseView<EditProfilePresenter> {
     private Uri mainImageUri;
     private String auth;
 
+    private DatePickerDialog birthdayDialog;
+    private DatePickerDialog.OnDateSetListener mBirthdaySetListener;
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -89,16 +98,32 @@ public class UserEditProfileView extends BaseView<EditProfilePresenter> {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.profile_spinner_item, list);
         arrayAdapter.setDropDownViewResource(R.layout.profile_spinner_item);
         genderSpinner.setAdapter(arrayAdapter);
+        if(entity.gender()!=null && !entity.gender().isEmpty()) {
+            genderSpinner.setSelection(0, false);
+        }
         genderSpinner.setSelection("m".equals(entity.gender()) ? 0 : 1, false);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date(entity.birthDay()));
 
         birthDayTv.setText(calendar.get(Calendar.DAY_OF_MONTH) + "." + (calendar.get(Calendar.MONTH)+1) + "." + calendar.get(Calendar.YEAR));
         birthDayStamp = entity.birthDay();
+
         birthDayTv.setOnClickListener(v -> {
-            new DatePickerDialog(getContext(), (datePicker, year1, month1, day1) -> {
+
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            birthdayDialog = new DatePickerDialog(getContext(), android.R.style.Theme_Holo_Light_Dialog_MinWidth, mBirthdaySetListener, year, month, day);
+            birthdayDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            birthdayDialog.show();
+        });
+
+        mBirthdaySetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 Calendar userAge = Calendar.getInstance();
-                userAge.set(year1, month1++, day1);
+                userAge.set(year, month++, day);
                 Calendar minAdultAge = Calendar.getInstance();
                 minAdultAge.add(Calendar.YEAR, -18);
                 if (minAdultAge.before(userAge)) {
@@ -107,9 +132,11 @@ public class UserEditProfileView extends BaseView<EditProfilePresenter> {
                 }
                 //birthDay = (String.format("%s %s %s", String.valueOf(year1), String.valueOf(month1), String.valueOf(day1)));
                 birthDayStamp = userAge.getTimeInMillis();
-                birthDayTv.setText((String.format("%s.%s.%s", String.valueOf(day1), String.valueOf(month1), String.valueOf(year1))));
-            }, 1990, 2, 1).show();
-        });
+                birthDayTv.setText((String.format("%s.%s.%s",  String.valueOf(day),String.valueOf(month),String.valueOf(year))));
+
+
+            }
+        };
         locationEt.setText(entity.address());
         aboutMeET.setText(entity.longDescription());
     }
@@ -136,7 +163,7 @@ public class UserEditProfileView extends BaseView<EditProfilePresenter> {
                 birthDayStamp,
                 entity.description(),
                 aboutMeET.getText().toString(),
-                0, "", 0);
+                0, "", 0,null);
         onBack();
     }
 
@@ -149,6 +176,7 @@ public class UserEditProfileView extends BaseView<EditProfilePresenter> {
                 GlideInstance.loadImageCircle(getContext(), mainImageUri, profilePicImageView, R.drawable.profile_placeholder);
             }
         }
+
     }
 
 
@@ -280,5 +308,7 @@ public class UserEditProfileView extends BaseView<EditProfilePresenter> {
             }
         }));
     }
+
+
 
 }

@@ -1,6 +1,5 @@
 package com.example.networking.login;
 
-import com.example.networking.feed.event.AttendeeResponse;
 import com.example.networking.feed.event.Event;
 import com.example.networking.feed.event.RealEvent;
 import com.example.networking.feed.trainer.Entity;
@@ -43,6 +42,8 @@ public class UserResponse implements Entity {
     private String lastName;
     @SerializedName("birthday")
     private long birthDay;
+    @SerializedName("firebase_token")
+    private String firebase_token;
     @SerializedName("description")
     private String description;
     @SerializedName("free_event")
@@ -67,6 +68,20 @@ public class UserResponse implements Entity {
     private List<RealEvent> hostingEvents;
     @SerializedName("followed_by")
     private Followed followers;
+    @SerializedName("rating")
+    private float rating;
+    @SerializedName("reviews")
+    private int reviews;
+
+    @Override
+    public float rating() {
+        return rating;
+    }
+
+    @Override
+    public int reviews() {
+        return reviews;
+    }
 
     @Override
     public int userId() {
@@ -116,6 +131,11 @@ public class UserResponse implements Entity {
     @Override
     public long birthDay() {
         return birthDay;
+    }
+
+    @Override
+    public String firebaseToken() {
+        return firebase_token;
     }
 
     @Override
@@ -190,7 +210,7 @@ public class UserResponse implements Entity {
     }
 
     @Override
-    public List<AttendeeResponse> filter() {
+    public Followed filter() {
         return null;
     }
 

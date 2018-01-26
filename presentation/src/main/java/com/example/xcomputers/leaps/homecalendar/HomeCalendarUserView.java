@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,7 +32,7 @@ import static com.example.xcomputers.leaps.event.EventActivity.EVENT_KEY;
  * Created by xComputers on 18/06/2017.
  */
 @Layout(layoutId = R.layout.home_calendar_view)
-public class HomeCalendarUserView extends BaseView<HomeCalendarPresenter> implements SwipeRefreshLayout.OnRefreshListener {
+public class HomeCalendarUserView extends BaseView<HomeCalendarPresenter> {
 
     public static final String UPCOMING_ARGUMENT = "HomeCalendarUserView.UPCOMING_ARGUMENT";
     public static final String PAST_ARGUMENT = "HomeCalendarUserView.PAST_ARGUMENT";
@@ -49,7 +48,7 @@ public class HomeCalendarUserView extends BaseView<HomeCalendarPresenter> implem
     private String type;
     private TextView noEvetText;
     private String auth;
-    private SwipeRefreshLayout swipeRefreshLayout;
+  //  private SwipeRefreshLayout swipeRefreshLayout;
 
     public static HomeCalendarUserView newInstance(String type, String timeFrame) {
         if (TextUtils.isEmpty(type)) {
@@ -66,8 +65,8 @@ public class HomeCalendarUserView extends BaseView<HomeCalendarPresenter> implem
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        swipeRefreshLayout=(SwipeRefreshLayout) view.findViewById(R.id.swipeCalendarAttendingEvents);
-        swipeRefreshLayout.setOnRefreshListener(this);
+       /* swipeRefreshLayout=(SwipeRefreshLayout) view.findViewById(R.id.swipeCalendarAttendingEvents);
+        swipeRefreshLayout.setOnRefreshListener(this);*/
 
         noEvetText = (TextView) view.findViewById(R.id.no_event_text);
         noEvetText.setVisibility(View.GONE);
@@ -75,9 +74,6 @@ public class HomeCalendarUserView extends BaseView<HomeCalendarPresenter> implem
         recyclerView = (RecyclerView) view.findViewById(R.id.home_cal_recycler);
         auth = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("Authorization", "");
         showLoading();
-        if( User.getInstance().getUserId() == 0){
-            //Todo check if getUserId is 0
-        }
 
         if (!User.getInstance().isTrainer()) {
             createEventBtn.setVisibility(View.GONE);
@@ -130,6 +126,9 @@ public class HomeCalendarUserView extends BaseView<HomeCalendarPresenter> implem
             Event event = holder.getItem(sectionIndex, relativePosition);
             Intent intent = new Intent(getContext(), EventActivity.class);
             intent.putExtra(EVENT_KEY, event);
+            if(timeFrame.equals(PAST_ARGUMENT)){
+                intent.putExtra("Past","past");
+            }
             startActivity(intent);
         });
         recyclerView.setAdapter(adapter);
@@ -137,9 +136,7 @@ public class HomeCalendarUserView extends BaseView<HomeCalendarPresenter> implem
         RecyclerView.ItemDecoration decoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(decoration);
         recyclerView.addOnScrollListener(getListener());
-        if(swipeRefreshLayout.isRefreshing()){
-            swipeRefreshLayout.setRefreshing(false);
-        }
+
     }
 
     @Override
@@ -159,14 +156,9 @@ public class HomeCalendarUserView extends BaseView<HomeCalendarPresenter> implem
                     }
                     if (adapter == null) {
                         setupRecycler(holder);
-                        if(swipeRefreshLayout.isRefreshing()){
-                            swipeRefreshLayout.setRefreshing(false);
-                        }
                     } else {
                         adapter.setData(holder);
-                        if(swipeRefreshLayout.isRefreshing()){
-                            swipeRefreshLayout.setRefreshing(false);
-                        }
+                        recyclerView.setAdapter(adapter);
                     }
 
                     hideLoading();
@@ -185,9 +177,6 @@ public class HomeCalendarUserView extends BaseView<HomeCalendarPresenter> implem
                         setupRecycler(sectionedDataHolder);
                     } else {
                         adapter.setData(sectionedDataHolder);
-                    }
-                    if(swipeRefreshLayout.isRefreshing()){
-                        swipeRefreshLayout.setRefreshing(false);
                     }
                     hideLoading();
                 }));
@@ -220,17 +209,6 @@ public class HomeCalendarUserView extends BaseView<HomeCalendarPresenter> implem
         };
     }
 
-    @Override
-    public void onRefresh() {
-        if (getArguments().containsKey(UPCOMING_ARGUMENT)) {
-            timeFrame = UPCOMING_ARGUMENT;
-            type = getArguments().getString(TYPE_ARGUMENT);
-            presenter.getEvents(type, UPCOMING_ARGUMENT, PreferenceManager.getDefaultSharedPreferences(getContext()).getString("Authorization", ""));
-        } else if (getArguments().containsKey(PAST_ARGUMENT)) {
-            timeFrame = PAST_ARGUMENT;
-            type = getArguments().getString(TYPE_ARGUMENT);
-            presenter.getEvents(type, PAST_ARGUMENT, PreferenceManager.getDefaultSharedPreferences(getContext()).getString("Authorization", ""));
-        }
 
-    }
+
 }

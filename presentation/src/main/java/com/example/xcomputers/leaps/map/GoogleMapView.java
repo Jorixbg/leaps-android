@@ -16,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
+import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.TextView;
@@ -26,9 +27,8 @@ import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.base.BaseView;
 import com.example.xcomputers.leaps.base.Layout;
 import com.example.xcomputers.leaps.homefeed.activities.HomeFeedActivitiesPresenter;
-import com.example.xcomputers.leaps.test.MyItemDecoration;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
@@ -40,6 +40,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.ui.IconGenerator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,17 +74,24 @@ public class GoogleMapView extends BaseView<HomeFeedActivitiesPresenter> impleme
     private TextView close;
     private MyItemDecoration myItemDecoration;
     private boolean isClicked;
+    private double lat  = 0;
+    private double lon = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        close.findViewById(R.id.close_map_tv);
+
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         eventRecycler = (RecyclerView) view.findViewById(R.id.my_recycler_view);
         geocoder = new Geocoder(getContext());
         eventList = new ArrayList<>();
         markerList = new ArrayList<>();
+
+        close =(TextView) view.findViewById(R.id.close_map_tv);
+        close.setOnClickListener(v->{
+            getActivity().finish();
+        });
 
 
         /*DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(eventRecycler.getContext(),
@@ -93,9 +101,6 @@ public class GoogleMapView extends BaseView<HomeFeedActivitiesPresenter> impleme
 
 
         myItemDecoration = new MyItemDecoration(getContext());
-
-
-
 
         if(servicesOK()) {
             initMap();
@@ -113,12 +118,17 @@ public class GoogleMapView extends BaseView<HomeFeedActivitiesPresenter> impleme
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
-                double lat = eventList.get(firstVisiblePosition).latitude();
-                double lon = eventList.get(firstVisiblePosition).longtitude();
+
+                firstVisiblePosition = layoutManager.findFirstCompletelyVisibleItemPosition();
+                adapter.changeItem(firstVisiblePosition);
+                if(firstVisiblePosition != -1) {
+                     lat = eventList.get(firstVisiblePosition).latitude();
+                     lon = eventList.get(firstVisiblePosition).longtitude();
+                }
 
                 LatLng latLng = new LatLng(lat, lon);
 
+               // Log.e("Position " , firstVisiblePosition+"");
                     Marker currentMarker = null;
                     for (int i = 0; i < markerList.size(); i++) {
                         markerList.get(i).setVisible(true);
@@ -129,11 +139,13 @@ public class GoogleMapView extends BaseView<HomeFeedActivitiesPresenter> impleme
                     }
 
                     if (dx < 0) {
-                        gotoLocation(lat, lon, 15);
+                        gotoLocation(lat, lon, 18);
                         changeMarkerColor(currentMarker);
+                       // Log.e("Position left" , firstVisiblePosition+"");
                     } else {
-                        gotoLocation(lat, lon, 15);
+                        gotoLocation(lat, lon, 18);
                         changeMarkerColor(currentMarker);
+                      //  Log.e("Position right" , firstVisiblePosition+"");
                     }
                 }
 
@@ -167,13 +179,13 @@ public class GoogleMapView extends BaseView<HomeFeedActivitiesPresenter> impleme
         mapFragment.getMapAsync(this);
     }
     public boolean servicesOK() {
-
-        int isAvailable = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getContext());
-
+        GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
+        int isAvailable = googleAPI.isGooglePlayServicesAvailable(getContext());
+               // GooglePlayServicesUtil.isGooglePlayServicesAvailable(getContext());
         if (isAvailable == ConnectionResult.SUCCESS) {
             return true;
-        } else if (GooglePlayServicesUtil.isUserRecoverableError(isAvailable)) {
-            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(isAvailable, getActivity(), ERROR_DIALOG_REQUEST);
+        } else if (googleAPI.isUserResolvableError(isAvailable)) {
+            Dialog dialog =  googleAPI.getErrorDialog(getActivity(),isAvailable, ERROR_DIALOG_REQUEST);
             dialog.show();
         } else {
             Toast.makeText(getContext(), "CAN'T CONNECT TO MAPPING SERVICE", Toast.LENGTH_SHORT).show();
@@ -190,8 +202,17 @@ public class GoogleMapView extends BaseView<HomeFeedActivitiesPresenter> impleme
 
             @Override
             public boolean onMarkerClick(Marker marker) {
-                showClickedMarker(marker);
-                return  false;
+                marker.hideInfoWindow();
+                for (Marker marker1: markerList) {
+                    if(marker.equals(marker1)){
+                        showClickedMarker(marker);
+                        marker.hideInfoWindow();
+                        return  false;
+                    }
+                }
+
+                return  true;
+
 
             }
         });
@@ -206,7 +227,7 @@ public class GoogleMapView extends BaseView<HomeFeedActivitiesPresenter> impleme
             marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.clicked_event_location));
             previousMarker = marker;
             for (int i = 0; i < eventList.size(); i++) {
-                if (marker.getTitle().equalsIgnoreCase(eventList.get(i).title())) {
+                if (marker.getTitle().equalsIgnoreCase(eventList.get(i).title()+"")) {
                     layoutManager.scrollToPosition(i);
                     break;
                 }
@@ -253,7 +274,7 @@ public class GoogleMapView extends BaseView<HomeFeedActivitiesPresenter> impleme
         currentLocation = LocationServices.FusedLocationApi
                 .getLastLocation(mLocationClient);
 
-        gotoLocation(currentLocation.getLatitude(),currentLocation.getLongitude(),15);
+        gotoLocation(currentLocation.getLatitude(),currentLocation.getLongitude(),18);
         presenter.getEventsNearByMap(currentLocation.getLatitude(),currentLocation.getLongitude());
 
     }
@@ -279,18 +300,38 @@ public class GoogleMapView extends BaseView<HomeFeedActivitiesPresenter> impleme
 
 
         List<LatLng> listAddresses = new ArrayList<>();
+        IconGenerator iconFactory = new IconGenerator(getContext());
+        iconFactory.setTextAppearance(R.style.Marker);
+        iconFactory.setBackground(getResources().getDrawable(R.drawable.round_white_button_shape_border));
 
-        for(int i=0;i<eventList.size()-1;i++){
+
+
+        for(int i=0;i<eventList.size();i++){
             double latitude = eventList.get(i).latitude();
             double longitude = eventList.get(i).longtitude();
+
+
+
             addresses = geocoder.getFromLocation(latitude, longitude, 1);
             listAddresses.add(new LatLng(latitude,longitude));
+            String eventPrice = String.valueOf(eventList.get(i).priceFrom());
+
+
+            MarkerOptions markerOptions = new MarkerOptions()
+                    .title(eventList.get(i).title())
+                    .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(" $" + eventPrice +" ")))
+                    .position(listAddresses.get(i))
+                    .anchor(0.5f,1.8f);
+
+
+            mMap.addMarker(markerOptions);
+
             MarkerOptions options = new MarkerOptions()
                     .title(eventList.get(i).title())
                     .position(listAddresses.get(i))
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.event_location))
                     .visible(false);
-            options.snippet(addresses.get(0).getCountryName());
+
 
             marker = mMap.addMarker(options);
             markerList.add(marker);
@@ -298,8 +339,6 @@ public class GoogleMapView extends BaseView<HomeFeedActivitiesPresenter> impleme
         }
 
     }
-
-
 
 
     @Override
@@ -319,7 +358,7 @@ public class GoogleMapView extends BaseView<HomeFeedActivitiesPresenter> impleme
         adapter = new MyAdapter(getContext(),eventList);
         SnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(eventRecycler);
-        eventRecycler.addItemDecoration(myItemDecoration);
+       // eventRecycler.addItemDecoration(myItemDecoration);
         eventRecycler.setAdapter(adapter);
         eventRecycler.setLayoutManager(layoutManager);
 

@@ -153,7 +153,6 @@ public class HomeFeedActivitiesPresenter extends BasePresenter {
     }
 
 
-    //todo method to be fixed
    /* public void getEventsMap(double lat,double lon){
         service.getEvents(String.valueOf(lat),String.valueOf(lon))
                 .observeOn(AndroidSchedulers.mainThread())

@@ -32,6 +32,9 @@ public interface FeedEventsApi {
     @GET("/event/following/future")
     Observable<List<RealEvent>> getFollowingFutureEvent();
 
+    @GET("/event/following/past")
+    Observable<List<RealEvent>> getFollowingPastEvent();
+
 
 
 

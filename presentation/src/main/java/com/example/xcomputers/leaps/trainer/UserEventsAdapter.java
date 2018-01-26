@@ -1,5 +1,11 @@
 package com.example.xcomputers.leaps.trainer;
 
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,16 +14,26 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.afollestad.sectionedrecyclerview.ItemCoord;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.example.networking.feed.event.Event;
+import com.example.networking.feed.event.RealEvent;
 import com.example.xcomputers.leaps.LeapsApplication;
 import com.example.xcomputers.leaps.R;
+import com.example.xcomputers.leaps.follow.FollowingEventAdapter;
 import com.example.xcomputers.leaps.homefeed.activities.HomeFeedActivitiesAdapter;
+import com.example.xcomputers.leaps.homefeed.activities.HomeFeedActivitiesPresenter;
 import com.example.xcomputers.leaps.utils.GlideInstance;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -30,16 +46,25 @@ public class UserEventsAdapter extends RecyclerView.Adapter<UserEventsAdapter.Tr
 
     private List<Event> events;
     private HomeFeedActivitiesAdapter.OnEventClickListener listener;
+    private HomeFeedActivitiesPresenter presenter;
+    private Uri uri;
+    private List<RealEvent> followingEvents;
 
-    public UserEventsAdapter(List<Event> events, HomeFeedActivitiesAdapter.OnEventClickListener listener) {
+    public UserEventsAdapter(List<Event> events,List<RealEvent> followingEvents,HomeFeedActivitiesPresenter presenter ,HomeFeedActivitiesAdapter.OnEventClickListener listener) {
 
         this.events = events;
+        this.followingEvents = followingEvents;
         this.listener = listener;
+        this.presenter = presenter;
     }
 
     @Override
     public TrainerEventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new TrainerEventViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.home_feed_activities_recycler_item, parent, false));
+
+        LayoutInflater li = LayoutInflater.from(parent.getContext());
+        View row = li.inflate(R.layout.home_feed_activities_recycler_item, parent, false);
+        UserEventsAdapter.TrainerEventViewHolder vh = new UserEventsAdapter.TrainerEventViewHolder(row);
+        return vh;
     }
 
     @Override
@@ -65,14 +90,29 @@ public class UserEventsAdapter extends RecyclerView.Adapter<UserEventsAdapter.Tr
 
         Calendar eventTime = Calendar.getInstance();
         eventTime.setTime(event.timeFrom());
+
+
+        Date date = event.timeFrom();
+        DateFormat formatter = new SimpleDateFormat("HH:mm");
+        String dateFormatted = formatter.format(date);
+
         holder.itemDate.setText(
                 eventTime.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault())
                         + " "
                         + eventTime.get(Calendar.DAY_OF_MONTH)
-                        + eventTime.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault()));
+                        + " "
+                        + eventTime.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault())
+                        + ",  "
+                        + dateFormatted
+                        + ",  "
+                        + eventTime.get(Calendar.YEAR)
+                        + " ");
 
-        //TODO mainHolder.itemDistance;
-        //TODO mainHolder.shareBtn;
+
+
+        int distance = Math.round(event.distance());
+        holder.itemDistance.setText(String.valueOf(distance) + " km");
+
         if (event.priceFrom() > 0) {
             holder.itemPrice.setBackground(ContextCompat.getDrawable(holder.itemPrice.getContext(), R.drawable.round_white_button_shape));
             holder.itemPrice.setAllCaps(false);
@@ -82,6 +122,25 @@ public class UserEventsAdapter extends RecyclerView.Adapter<UserEventsAdapter.Tr
             holder.itemPrice.setAllCaps(true);
             holder.itemPrice.setText(R.string.lbl_free);
         }
+
+        boolean clicked = false;
+
+
+        if(followingEvents !=null) {
+            for (int i = 0; i < followingEvents.size(); i++) {
+                if (event.eventId() == followingEvents.get(i).eventId()) {
+                    holder.followBtn.setImageResource(R.drawable.follow_event);
+                    holder.setClicked(true);
+                    clicked = true;
+                    break;
+                }
+            }
+            if (!clicked) {
+                holder.followBtn.setImageResource(R.drawable.unfollow_event);
+                holder.setClicked(false);
+            }
+        }
+
     }
 
     @Override
@@ -99,7 +158,9 @@ public class UserEventsAdapter extends RecyclerView.Adapter<UserEventsAdapter.Tr
         private TextView itemDate;
         private ImageView itemRecurringIcon;
         private TextView itemDistance;
+        private ImageView followBtn;
         private ImageView shareBtn;
+        private boolean isClicked;
         private TextView itemPrice;
         private ImageView eventPic;
 
@@ -117,12 +178,99 @@ public class UserEventsAdapter extends RecyclerView.Adapter<UserEventsAdapter.Tr
             itemDistance = (TextView) itemView.findViewById(R.id.feed_recycler_distance_tv);
             shareBtn = (ImageView) itemView.findViewById(R.id.feed_recycler_share_button);
             itemPrice = (TextView) itemView.findViewById(R.id.feed_recycler_price);
+            followBtn = (ImageView) itemView.findViewById(R.id.feed_recycler_follow_button);
+            followBtn.setOnClickListener(this);
+            shareBtn.setOnClickListener(this);
+        }
+
+
+        public boolean isClicked() {
+            return isClicked;
+        }
+
+        public void setClicked(boolean clicked) {
+            isClicked = clicked;
         }
 
         @Override
         public void onClick(View view) {
-            listener.onEventClicked(events.get(getAdapterPosition()));
+            int position = getAdapterPosition();
+            //Toast.makeText(view.getContext(), "Item " + relativePos + " in section" + section + " clicked!", Toast.LENGTH_SHORT).show();
+            // Fix Method to work like onEventClicked method
+            if (view.getId() == followBtn.getId()){
+                final long followingEventId = events.get(position).eventId();
+                presenter.followingEvent(PreferenceManager.getDefaultSharedPreferences(view.getContext()).getString("Authorization", ""), followingEventId);
+                presenter.getFollowFutureEvent(PreferenceManager.getDefaultSharedPreferences(view.getContext()).getString("Authorization",""));
+                checkForFollowing();
+
+            }
+            if(view.getId() == shareBtn.getId()){
+              /*   String imgUrl = events.get(position).imageUrl();
+                //  Share to facebook only
+
+            ShareLinkContent shareLinkContent = new ShareLinkContent.Builder()
+                        .setContentTitle(event.title())
+                        .setContentDescription(event.description())
+                        .setContentUrl(Uri.parse("http://ec2-35-157-240-40.eu-central-1.compute.amazonaws.com:8888/"+imgUrl))
+                        .build();
+               ShareDialog shareDialog = new ShareDialog((Activity) view.getContext());
+               shareDialog.show(shareLinkContent, ShareDialog.Mode.AUTOMATIC);
+
+
+                Glide.with(view.getContext())
+                        .load(LeapsApplication.BASE_URL + File.separator + imgUrl)
+                        .asBitmap()
+                        .into(new SimpleTarget<Bitmap>(100,100) {
+                            @Override
+                            public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                                uri = getImageUri(view.getContext(),resource);
+                                sendShareIntent(uri,view,position);
+                                resource.recycle();
+                            }
+                        });*/
+
+                Intent intent =  new Intent(Intent.ACTION_SEND);
+                intent.putExtra(Intent.EXTRA_TEXT, "Check out this event at Leaps! \n" +
+                        events.get(position).title()+"" + "\nDownload Leaps app now and get first training FREE.");
+                intent.setType("text/plain");
+                view.getContext().startActivity(Intent.createChooser(intent, "Share via..."));
+
+            }
+            if (view.getId() != followBtn.getId() && view.getId() != shareBtn.getId()){
+                listener.onEventClicked(events.get(getAdapterPosition()));
+            }
         }
+
+
+        public void checkForFollowing(){
+            if (!isClicked) {
+                followBtn.setImageResource(R.drawable.follow_event);
+                isClicked=true;
+
+            }
+            else {
+                followBtn.setImageResource(R.drawable.unfollow_event);
+                isClicked=false;
+            }
+        }
+
+        public Uri getImageUri(Context inContext, Bitmap inImage) {
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+            String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+
+            return Uri.parse(path);
+        }
+
+        private void sendShareIntent(Uri uri,View view,int pos) {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+
+            intent.putExtra(Intent.EXTRA_TEXT, "Check out this event at Leaps! \n" +
+                    events.get(pos).title() + "" + "\nDownload Leaps app now and get first training FREE.");
+            intent.setType("text/plain");
+            view.getContext().startActivity(Intent.createChooser(intent, "Share via..."));
+        }
+
     }
 }
 

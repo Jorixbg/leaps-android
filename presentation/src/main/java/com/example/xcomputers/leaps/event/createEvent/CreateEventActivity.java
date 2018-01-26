@@ -2,13 +2,20 @@ package com.example.xcomputers.leaps.event.createEvent;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
@@ -17,11 +24,13 @@ import android.widget.Toast;
 
 import com.example.networking.feed.event.CreateEventService;
 import com.example.networking.feed.event.RealEvent;
+import com.example.networking.test.ChoosenDate;
 import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.User;
 import com.example.xcomputers.leaps.base.IBaseView;
 import com.example.xcomputers.leaps.utils.FilePathDescriptor;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
@@ -54,6 +63,7 @@ public class CreateEventActivity extends AppCompatActivity implements ICreateEve
     private int freeSlots;
     private List<String> tags;
     private Map<Integer, Uri> images;
+    private Map<Integer, Uri> defaultImages;
     private CreateEventService service;
     private int imageCounter = 1;
     private Bundle editBundle;
@@ -62,6 +72,7 @@ public class CreateEventActivity extends AppCompatActivity implements ICreateEve
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        defaultImages = new HashMap<>();
         setContentView(R.layout.activity_create_event);
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
@@ -76,10 +87,10 @@ public class CreateEventActivity extends AppCompatActivity implements ICreateEve
         if(event!=null && editBundle !=null){
             Bundle bundle = new Bundle();
             bundle.putSerializable("event",event);
+            bundle.putString("Edit","edit");
             openFragment(CreateEventFirstView.class, bundle);
         }
         else {
-
             openFragment(CreateEventFirstView.class, new Bundle());
         }
     }
@@ -188,7 +199,15 @@ public class CreateEventActivity extends AppCompatActivity implements ICreateEve
         this.title = title;
         this.description = description;
         this.tags = tags;
-        openFragment(CreateEventSecondView.class, new Bundle());
+        if(event!=null && editBundle !=null){
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("event",event);
+            bundle.putString("Edit","edit");
+            openFragment(CreateEventSecondView.class, bundle);
+        }
+        else {
+            openFragment(CreateEventSecondView.class, new Bundle());
+        }
     }
 
     @Override
@@ -196,35 +215,59 @@ public class CreateEventActivity extends AppCompatActivity implements ICreateEve
         this.latitude = latitude;
         this.longitude = longitude;
         this.address = address;
-        openFragment(CreateEventThirdView.class, new Bundle());
+        if(event!=null && editBundle !=null){
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("event",event);
+            bundle.putString("Edit","edit");
+            openFragment(CreateEventThirdView.class, bundle);
+        }
+        else {
+            openFragment(CreateEventThirdView.class, new Bundle());
+        }
     }
 
     @Override
     public void collectData(double priceFrom, int freeSlots) {
         this.priceFrom = priceFrom;
         this.freeSlots = freeSlots;
-        openFragment(CreateEventFourthView.class, new Bundle());
+        if(event!=null && editBundle !=null){
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("event",event);
+            bundle.putString("Edit","edit");
+            openFragment(CreateEventFourthView.class, bundle);
+        }
+        else {
+            openFragment(CreateEventFourthView.class, new Bundle());
+        }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
-    public void collectData(long eventTime) {
+    public void collectData(long eventTime,long endTime) {
         if(editBundle!=null && event!=null){
             long eventId = event.eventId();
             this.timeFrom = eventTime;
+            this.timeTo = endTime;
             showLoading();
             Map<String, RequestBody> params = new HashMap<>();
-            File photo = new File(FilePathDescriptor.getPath(this, images.get(1)));
-            RequestBody mainImageBody = RequestBody.create(MediaType.parse("image/*"), photo);
-            //TODO images needs to be event_image_url
-            MultipartBody.Part pic = MultipartBody.Part.createFormData("image", photo.getName(), mainImageBody);
+            MultipartBody.Part pic1 = null;
+            if(images.get(1)!=null) {
+                File photo = new File(FilePathDescriptor.getPath(this, images.get(1)));
+                RequestBody mainImageBody = RequestBody.create(MediaType.parse("image/*"), photo);
+                //TODO images needs to be event_image_url
+                pic1 = MultipartBody.Part.createFormData("image", photo.getName(), mainImageBody);
+            }
             service.addHeader("Authorization", PreferenceManager.getDefaultSharedPreferences(this).getString("Authorization", ""));
+
+            MultipartBody.Part finalPic = pic1;
             service.editEvent(eventId,title, description, eventTime, eventTime, 0, User.getInstance().getUserId(),
                     latitude, longitude, priceFrom, address, freeSlots, new Date().getTime(), tags)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(createEventResponse -> {
-
-                        uploadMainImage(eventId, pic);
+                        if(finalPic!=null) {
+                            uploadMainImage(eventId, finalPic);
+                        }
 
                     }, throwable -> {
                         hideLoading();
@@ -234,28 +277,71 @@ public class CreateEventActivity extends AppCompatActivity implements ICreateEve
 
 
         }
-        this.timeFrom = eventTime;
-        showLoading();
-        Map<String, RequestBody> params = new HashMap<>();
-        File photo = new File(FilePathDescriptor.getPath(this, images.get(1)));
-        RequestBody mainImageBody = RequestBody.create(MediaType.parse("image/*"), photo);
-        //TODO images needs to be event_image_url
-        MultipartBody.Part pic = MultipartBody.Part.createFormData("image", photo.getName(), mainImageBody);
-        service.addHeader("Authorization", PreferenceManager.getDefaultSharedPreferences(this).getString("Authorization", ""));
-        service.createEvent(title, description, eventTime, eventTime, 0, User.getInstance().getUserId(),
-                latitude, longitude, priceFrom, address, freeSlots, new Date().getTime(), tags)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(createEventResponse -> {
+        else {
+            this.timeFrom = eventTime;
+            this.timeTo = endTime;
+            showLoading();
+            Map<String, RequestBody> params = new HashMap<>();
+            MultipartBody.Part pic ;
+            if(images.get(1)!=null) {
+                File photo = new File(FilePathDescriptor.getPath(this, images.get(1)));
+                RequestBody mainImageBody = RequestBody.create(MediaType.parse("image/*"), photo);
+                pic = MultipartBody.Part.createFormData("image", photo.getName(), mainImageBody);
+            }
+            else {
+                Drawable drawable = this.getResources().getDrawable(R.drawable.logotype);
+                Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+                Uri uri = getImageUri(this,bitmap);
+                defaultImages.put(1,uri);
+                File defaultPhoto = new File(FilePathDescriptor.getPath(this,defaultImages.get(1)));
+                RequestBody mainImageBody = RequestBody.create(MediaType.parse("image/*"), defaultPhoto);
+                pic = MultipartBody.Part.createFormData("image", defaultPhoto.getName(), mainImageBody);
+            }
+            //TODO images needs to be event_image_url
+            service.addHeader("Authorization", PreferenceManager.getDefaultSharedPreferences(this).getString("Authorization", ""));
+            service.createEvent(title, description, eventTime, eventTime, 0, User.getInstance().getUserId(),
+                    latitude, longitude, priceFrom, address, freeSlots, new Date().getTime(), tags)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(createEventResponse -> {
 
-                    uploadMainImage(createEventResponse.getEventId(), pic);
+                        uploadMainImage(createEventResponse.getEventId(), pic);
 
-                }, throwable -> {
-                    hideLoading();
-                    Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                    }, throwable -> {
+                        hideLoading();
+                        Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @Override
+    public void collectData(String frequency, long startTime, long endTime, List<ChoosenDate> dates) {
+        //todo editRecurringEvent
+
+            this.timeFrom = startTime;
+            this.timeTo = endTime;
+            showLoading();
+            Map<String, RequestBody> params = new HashMap<>();
+            File photo = new File(FilePathDescriptor.getPath(this, images.get(1)));
+            RequestBody mainImageBody = RequestBody.create(MediaType.parse("image/*"), photo);
+            //TODO images needs to be event_image_url
+            MultipartBody.Part pic = MultipartBody.Part.createFormData("image", photo.getName(), mainImageBody);
+            service.addHeader("Authorization", PreferenceManager.getDefaultSharedPreferences(this).getString("Authorization", ""));
+            service.createRecurringEvent(title,true, description,frequency ,dates,startTime, endTime,
+                    latitude, longitude, priceFrom, address, freeSlots, tags)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(createEventResponse -> {
+                        uploadMainImage(createEventResponse.getEventId(), pic);
+                    }, throwable -> {
+                        hideLoading();
+                        Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void uploadImage(long eventId) {
         Integer keyToRemove = new Integer(-1);
         for(Map.Entry<Integer, Uri> entry : images.entrySet()){
@@ -272,7 +358,6 @@ public class CreateEventActivity extends AppCompatActivity implements ICreateEve
                     }, throwable -> {
                         service.removeHeader("Authorization");
                         hideLoading();
-                        Toast.makeText(this, "Event created!", Toast.LENGTH_SHORT).show();
                         setResult(RESULT_OK);
                         PreferenceManager.getDefaultSharedPreferences(this).edit().putString("Event", "Event").apply();
                         finish();
@@ -282,7 +367,6 @@ public class CreateEventActivity extends AppCompatActivity implements ICreateEve
         if(keyToRemove == -1){
             service.removeHeader("Authorization");
             hideLoading();
-            Toast.makeText(this, "Event created!", Toast.LENGTH_SHORT).show();
             setResult(RESULT_OK);
             PreferenceManager.getDefaultSharedPreferences(this).edit().putString("Event", "Event").apply();
             finish();
@@ -291,6 +375,7 @@ public class CreateEventActivity extends AppCompatActivity implements ICreateEve
         images.remove(keyToRemove);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void uploadMainImage(long eventId, MultipartBody.Part pic){
         service.uploadMainImage(eventId, pic)
                 .subscribeOn(Schedulers.io())
@@ -299,9 +384,15 @@ public class CreateEventActivity extends AppCompatActivity implements ICreateEve
                         , throwable -> {
                     service.removeHeader("Authorization");
                     hideLoading();
-                    Toast.makeText(this, "Event created!", Toast.LENGTH_SHORT).show();
                     setResult(RESULT_OK);
                     finish();
                 });
+    }
+
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
     }
 }

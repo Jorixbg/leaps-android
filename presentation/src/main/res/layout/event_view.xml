@@ -11,9 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-
-
-
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -26,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <android.support.v7.widget.RecyclerView
+                <android.support.v4.view.ViewPager
                     android:id="@+id/event_image_horizontall_scroll"
                     android:layout_width="match_parent"
                     android:layout_height="192dp" />
@@ -66,21 +63,70 @@
                     android:textAllCaps="true"
                     android:textColor="@android:color/white"
                     android:textSize="28sp" />
+
                 <RatingBar
                     android:layout_alignBottom="@+id/event_image_horizontall_scroll"
                     android:id="@+id/ratingBar"
                     android:layout_marginLeft="20dp"
+                    android:layout_marginStart="20dp"
                     android:layout_marginBottom="15dp"
-                    style="?android:attr/ratingBarStyleIndicator"
+                    style="?android:attr/ratingBarStyleSmall"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="20dp"
                     android:numStars="5"
                     android:stepSize="1"
-                    android:theme="@style/RatingBar"
+                    android:theme="@style/RatingBarRegistered"
                     android:isIndicator="true"/>
 
+                <TextView
+                    android:id="@+id/rating_counter_event_tv"
+                    android:layout_width="25dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/rating_indicator"
+                    android:gravity="center"
+                    android:text="4.9"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:layout_toRightOf="@+id/ratingBar"
+                    android:layout_toEndOf="@+id/ratingBar"
+                    android:layout_below="@+id/event_title"/>
+
+                <TextView
+                    android:id="@+id/rating_review_counter_event"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:text="(80 reviews)"
+                    android:textColor="@color/colorGrey"
+                    android:layout_toRightOf="@+id/rating_counter_event_tv"
+                    android:layout_toEndOf="@+id/rating_counter_event_tv"
+                    android:layout_below="@+id/event_title"/>
+
+
+
+                <com.viewpagerindicator.CirclePageIndicator
+                    android:id="@+id/event_indicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="15dp"
+                    android:layout_marginTop="10dp"
+                    app:radius="4dp"
+                    app:pageColor="@color/colorWhite"
+                    app:strokeColor="@color/light_blue"
+                    app:fillColor="@color/light_blue"
+                    android:layout_toEndOf="@+id/rating_review_counter_event"
+                    android:layout_toRightOf="@+id/rating_review_counter_event"
+                    android:layout_below="@+id/event_title"
+                    android:layout_alignLeft="@+id/feed_recycler_follow_button"
+                    android:layout_alignStart="@+id/feed_recycler_follow_button" />
+
+
                 <RelativeLayout
-                    android:id="@+id/ownerLL"
+                    android:id="@+id/owner_relative_layout"
                     android:layout_below="@+id/event_image_horizontall_scroll"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -107,7 +153,7 @@
                 <View
                     android:id="@+id/owner_divider"
                     android:background="#E1E1E1"
-                    android:layout_below="@+id/ownerLL"
+                    android:layout_below="@+id/owner_relative_layout"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_width="match_parent"
@@ -181,19 +227,37 @@
                         android:layout_marginTop="12dp"
                         app:srcCompat="@drawable/in_hashtag" />
 
+                    <TextView
+                        android:id="@+id/trainer_spec_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/event_tags_icon"
+                        android:layout_alignTop="@+id/event_tags_icon"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_toEndOf="@+id/event_tags_icon"
+                        android:layout_toRightOf="@+id/event_tags_icon"
+                        android:gravity="center"
+                        android:text="@string/lbl_specialities"
+                        android:textColor="@color/primaryBlue"
+                        android:textStyle="bold" />
+
                     <com.google.android.flexbox.FlexboxLayout
                         android:id="@+id/event_tags_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="16dp"
                         android:layout_marginRight="16dp"
-                        android:layout_toEndOf="@+id/event_tags_icon"
-                        android:layout_toRightOf="@+id/event_tags_icon"
+                        android:layout_marginTop="4dp"
+                        android:layout_alignLeft="@+id/trainer_spec_label"
+                        android:layout_alignStart="@+id/trainer_spec_label"
                         app:alignContent="flex_start"
                         app:alignItems="flex_start"
                         app:dividerDrawable="@drawable/flex_divider"
                         app:flexWrap="wrap"
-                        app:showDivider="beginning|middle" />
+                        app:showDivider="beginning|middle"
+                        android:layout_below="@+id/trainer_spec_label"/>
+
                 </RelativeLayout>
 
                 <View
@@ -299,14 +363,21 @@
                         android:layout_marginTop="16dp"
                         android:textColor="@color/primaryBlue" />
 
-                    <fragment
-                        android:id="@+id/event_map"
-                        android:name="com.google.android.gms.maps.SupportMapFragment"
+                    <LinearLayout
+                        android:id="@+id/map_layout"
                         android:layout_width="match_parent"
                         android:layout_height="180dp"
-                        android:layout_below="@id/event_location_tv"
-                        android:layout_marginTop="16dp">
-                    </fragment>
+                        android:layout_below="@id/event_location_tv">
+
+                        <fragment
+                            android:id="@+id/event_map"
+                            android:name="com.google.android.gms.maps.SupportMapFragment"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="16dp">
+                        </fragment>
+
+                    </LinearLayout>
 
 
                     <ImageView

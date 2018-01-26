@@ -129,6 +129,14 @@ public class MainActivity extends AppCompatActivity implements IActivity{
            openFragment(HomeScreenView.class,bundle,false);
        }
 
+        if(currentFragment.getClass().getSimpleName().equals("ChatView")
+                || frag !=null && frag.getClass().getSimpleName().equals("ChatView") ){
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("HomeScreenView.OPEN_INBOX_KEY",null);
+            openFragment(HomeScreenView.class,bundle,false);
+        }
+
+
         if (currentFragment.onBack()) {
             return;
         }

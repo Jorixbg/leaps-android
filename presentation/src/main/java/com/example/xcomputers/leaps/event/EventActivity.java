@@ -1,23 +1,24 @@
 package com.example.xcomputers.leaps.event;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.LayerDrawable;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSnapHelper;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SnapHelper;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -45,17 +46,15 @@ import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.User;
 import com.example.xcomputers.leaps.base.IActivity;
 import com.example.xcomputers.leaps.base.IBaseView;
+import com.example.xcomputers.leaps.comment.EventCommentPage;
+import com.example.xcomputers.leaps.comment.EventRatingView;
 import com.example.xcomputers.leaps.event.createEvent.CreateEventActivity;
-import com.example.xcomputers.leaps.test.EventCommentPage;
-import com.example.xcomputers.leaps.test.EventRatingView;
-import com.example.xcomputers.leaps.test.FollowUserView;
+import com.example.xcomputers.leaps.follow.FollowUserView;
 import com.example.xcomputers.leaps.trainer.TrainerActivity;
 import com.example.xcomputers.leaps.utils.CustomTextView;
 import com.example.xcomputers.leaps.utils.GlideInstance;
 import com.example.xcomputers.leaps.utils.TagView;
 import com.example.xcomputers.leaps.welcome.WelcomeActivity;
-import com.facebook.share.model.ShareLinkContent;
-import com.facebook.share.widget.ShareDialog;
 import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -70,11 +69,15 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.viewpagerindicator.CirclePageIndicator;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -124,7 +127,7 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
     private ImageView atendeeImage6;
     private ImageView atendeeImage7;
     private ImageView footer;
-    private RecyclerView imagesRecycler;
+    private ViewPager imagesRecycler;
     private RelativeLayout ownerRL;
     private TextView footerTV;
     private Button footerBtn;
@@ -151,6 +154,12 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
     private Marker marker;
     private Geocoder geocoder;
     boolean hasCommeted;
+    private String past;
+    private TextView counter;
+    private TextView reviews;
+    private CirclePageIndicator pageIndicator;
+    private Uri uri;
+    private LinearLayout mapLayout;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -171,6 +180,16 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
         getComment();
         createMap();
         //initRating();
+
+        past = getIntent().getStringExtra("Past");
+
+        if(past!=null && past.equals("past")){
+
+            LayerDrawable stars = (LayerDrawable) rating.getProgressDrawable();
+            stars.getDrawable(2).setColorFilter(getResources().getColor(R.color.light_blue), PorterDuff.Mode.SRC_ATOP);
+            stars.getDrawable(1).setColorFilter(getResources().getColor(R.color.colorPrimaryDark), PorterDuff.Mode.SRC_ATOP);
+            stars.getDrawable(0).setColorFilter(getResources().getColor(R.color.light_blue), PorterDuff.Mode.SRC_ATOP);
+        }
 
         attendesImages.setOnClickListener(v->{
             Bundle bundle = new Bundle();
@@ -196,7 +215,7 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
 
 
         shareBtn.setOnClickListener(v->{
-            String imgUrl = event.imageUrl();
+          /*  String imgUrl = event.imageUrl();
 
             ShareLinkContent shareLinkContent = new ShareLinkContent.Builder()
                     .setContentTitle(event.title())
@@ -204,7 +223,31 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
                     .setContentUrl(Uri.parse("http://ec2-35-157-240-40.eu-central-1.compute.amazonaws.com:8888/"+imgUrl))
                     .build();
 
-            ShareDialog.show(this, shareLinkContent);
+
+            ShareDialog.show(this, shareLinkContent);*/
+
+
+            Intent intent =  new Intent(Intent.ACTION_SEND);
+
+            intent.putExtra(Intent.EXTRA_TEXT, "Check out this event at Leaps! \n" +
+                    event.title()+"" + "\nDownload Leaps app now and get first training FREE.");
+            intent.setType("text/plain");
+            startActivity(Intent.createChooser(intent, "Share via..."));
+
+            /*Glide.with(this)
+                    .load(LeapsApplication.BASE_URL + File.separator + imgUrl)
+                    .asBitmap()
+                    .into(new SimpleTarget<Bitmap>(100,100) {
+                        @Override
+                        public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                            uri = getImageUri(getApplicationContext(),resource);
+                            Log.e("Bitmap " , imgUrl+"");
+                            sendShareIntent(uri);
+                            resource.recycle();
+                        }
+                    });*/
+
+
         });
 
 
@@ -241,6 +284,8 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
     }
 
 
+
+
     private void createMap(){
 
         geocoder = new Geocoder(this);
@@ -258,6 +303,31 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
 
     }
 
+
+   /* private void sendShareIntent(Uri uri){
+
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        shareIntent.setType("image/png");
+        shareIntent.putExtra(Intent.EXTRA_TEXT,
+                "Here is my IMAGE");
+
+
+
+
+
+        startActivity(Intent.createChooser(shareIntent,"compatible apps:"));
+    }*/
+
+
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+
+        return Uri.parse(path);
+    }
 
     private void initMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.event_map);
@@ -295,10 +365,7 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
 
             @Override
             public boolean onMarkerClick(Marker marker) {
-
-
                 return  false;
-
             }
         });
     }
@@ -335,7 +402,7 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
 
             MarkerOptions options = new MarkerOptions()
                     .position(latLng)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.event_location));
 
             marker = mMap.addMarker(options);
             CameraUpdate update = CameraUpdateFactory.newLatLngZoom(latLng, 15);
@@ -362,11 +429,9 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
                     service.removeHeader("Authorization");
 
                     followingFutureEvent();
-                    Log.e("Tags2","Follow");
                 }, throwable -> {
                     service.removeHeader("Authorization");
                     unfollowingEventFromActivity();
-                    Log.e("Tags2","Error Follow");
                 });
 
 
@@ -379,11 +444,9 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(realEvent->{
                         service.removeHeader("Authorization");
-                        Log.e("Tags2","UNFollow");
                     }, throwable -> {
                         service.removeHeader("Authorization");
                         followingFutureEvent();
-                        Log.e("Tags2","Error UNFollow");
                     });
 
     }
@@ -421,7 +484,7 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
     }
 
     private void initRating(){
-        if(hasCommeted){
+        if(hasCommeted || (past==null)){
             rating.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -472,8 +535,20 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
 
     private void setupEvent(Event event) {
 
+        if(!PreferenceManager.getDefaultSharedPreferences(this).contains("Authorization")){
+            shareBtn.setVisibility(View.GONE);
+            followBtn.setVisibility(View.GONE);
+        }
+        else {
+            shareBtn.setVisibility(View.VISIBLE);
+            followBtn.setVisibility(View.VISIBLE);
+        }
+
+        if(event.ownerId() == User.getInstance().getUserId()){
+            findViewById(R.id.attend_layout).setVisibility(View.GONE);
+        }
         if(event.date().before(new Date(System.currentTimeMillis()))){
-            findViewById(R.id.attend_layout).setVisibility(View.INVISIBLE);
+            findViewById(R.id.attend_layout).setVisibility(View.GONE);
         }
 
         List<String> images = new ArrayList<>();
@@ -487,27 +562,45 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
 
         setupFooter();
 
-        //new Code
+        if(event.rating()==0 && event.reviews() == 0){
+            counter.setText(0.0f+"");
+            reviews.setText("("+0+""+" reviews)");
+        }
+        else {
+
+            DecimalFormat df = new DecimalFormat("#.0");
+            String ratingEvent = String.valueOf(df.format(event.rating()));
+            rating.setRating(event.rating());
+            counter.setText(ratingEvent+"");
+            reviews.setText("("+String.valueOf(event.reviews()+""+" reviews)"));
+        }
 
 
-        ownerRL.setOnClickListener(v -> {
-            if(PreferenceManager.getDefaultSharedPreferences(this).getString("Authorization", "").isEmpty()){
-                Intent intent = new Intent(this, WelcomeActivity.class);
-                startActivityForResult(intent, LOGIN_REQUEST_CODE);
-                return;
-            }
-            Intent intent = new Intent(this, TrainerActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(ENTITY_ID_KEY, event.ownerId());
-            startActivity(intent);
-        });
+        if(ownerRL != null) {
+            ownerRL.setOnClickListener(v -> {
+                if (PreferenceManager.getDefaultSharedPreferences(this).getString("Authorization", "").isEmpty()
+                        || PreferenceManager.getDefaultSharedPreferences(this).getString("Authorization", null) == null) {
+                    Intent intent = new Intent(this, WelcomeActivity.class);
+                    startActivityForResult(intent, LOGIN_REQUEST_CODE);
+                    return;
+                }
+                Intent intent = new Intent(this, TrainerActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra(ENTITY_ID_KEY, event.ownerId());
+                startActivity(intent);
+            });
+        }
 
-        EventAdapter adapter = new EventAdapter(images);
+        EventViewPagerAdapter adapter = new EventViewPagerAdapter(getApplicationContext(),getSupportFragmentManager(),images);
         imagesRecycler.setAdapter(adapter);
-        imagesRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        SnapHelper helper = new LinearSnapHelper();
-        imagesRecycler.setOnFlingListener(null);
-        helper.attachToRecyclerView(imagesRecycler);
+        pageIndicator.setViewPager(imagesRecycler);
+        pageIndicator.setCurrentItem(0);
+
+       // EventAdapter adapter = new EventAdapter(images);
+      //  imagesRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+      //  SnapHelper helper = new LinearSnapHelper();
+       // imagesRecycler.setOnFlingListener(null);
+     //   helper.attachToRecyclerView(imagesRecycler);
         GlideInstance.loadImageCircle(this, event.ownerPicUrl(), ownerPic, R.drawable.profile_placeholder);
         eventLocation.setText(event.address());
         eventTitle.setText(event.title());
@@ -524,9 +617,11 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
                 + format.format(event.timeFrom())
                 + " - "
                 + format.format(event.timeTo()));
+
         aboutTv.setText(event.description());
 
         if (PreferenceManager.getDefaultSharedPreferences(this).contains(getString(R.string.auth_label))) {
+            mapLayout.setVisibility(View.VISIBLE);
             attendaceMockup.setVisibility(View.GONE);
             eventLocationMockup.setVisibility(View.GONE);
             attendaceContainer.setVisibility(View.VISIBLE);
@@ -547,6 +642,7 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
             attendaceMockup.setVisibility(View.VISIBLE);
             eventLocationMockup.setVisibility(View.VISIBLE);
             attendaceContainer.setVisibility(View.INVISIBLE);
+            mapLayout.setVisibility(View.GONE);
         }
     }
 
@@ -561,16 +657,19 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
                     break;
                 }
             }
-            footerTV.setText(attending ? getString(R.string.lbl_reject_spot) : getString(R.string.lbl_get_spot));
-            footerBtn.setText(attending ? getString(R.string.lbl_reject) : getString(R.string.lbl_attend));
-            final boolean finalAttending = attending;
-            footerBtn.setOnClickListener(v -> {
-                if (finalAttending) {
-                    unattendEvent();
-                } else {
-                    attendEvent();
-                }
-            });
+            if(footerTV!=null && footerBtn != null) {
+                footerTV.setText(attending ? getString(R.string.lbl_reject_spot) : getString(R.string.lbl_get_spot));
+                footerBtn.setText(attending ? getString(R.string.lbl_reject) : getString(R.string.lbl_attend));
+                final boolean finalAttending = attending;
+                footerBtn.setOnClickListener(v -> {
+                    if (finalAttending) {
+                        unattendEvent();
+                    } else {
+                        attendEvent();
+                    }
+                });
+            }
+
         } else {
             footerTV.setText(R.string.lbl_try_free);
             footerBtn.setText(R.string.lbl_sign_up);
@@ -583,7 +682,7 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
 
 
     private void initViews() {
-        ownerRL = (RelativeLayout) findViewById(R.id.ownerLL);
+        ownerRL = (RelativeLayout) findViewById(R.id.owner_relative_layout);
         dateTimeTV = (TextView) findViewById(R.id.event_date_time_text);
         ownerPic = (ImageView) findViewById(R.id.event_owner_pic);
         ownerName = (TextView) findViewById(R.id.event_owner_name);
@@ -604,7 +703,7 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
         atendeeImage6 = (ImageView) findViewById(R.id.event_attendee6);
         atendeeImage7 = (ImageView) findViewById(R.id.event_attendee7);
         footer = (ImageView) findViewById(R.id.event_action_footer);
-        imagesRecycler = (RecyclerView) findViewById(R.id.event_image_horizontall_scroll);
+        imagesRecycler = (ViewPager) findViewById(R.id.event_image_horizontall_scroll);
         footerBtn = (Button) findViewById(R.id.event_footer_action_button);
         footerTV = (TextView) findViewById(R.id.event_footer_text_view);
         containerLayout = (RelativeLayout) findViewById(R.id.event_container);
@@ -616,6 +715,10 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
         deleteBtn = (Button) findViewById(R.id.delete_button_event);
         followBtn = (ImageView) findViewById(R.id.feed_recycler_follow_button);
         shareBtn = (ImageView) findViewById(R.id.feed_recycler_share_button);
+        counter = (TextView) findViewById(R.id.rating_counter_event_tv);
+        reviews = (TextView) findViewById(R.id.rating_review_counter_event);
+        pageIndicator = (CirclePageIndicator) findViewById(R.id.event_indicator);
+        mapLayout = (LinearLayout) findViewById(R.id.map_layout);
     }
 
 
@@ -748,6 +851,7 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
     }
 
     private void attendEvent() {
+        FirebaseMessaging.getInstance().subscribeToTopic(String.valueOf(event.eventId()));
         service.attendEvent(User.getInstance().getUserId(),
                 event.eventId(),
                 PreferenceManager.getDefaultSharedPreferences(this).getString(getResources().getString(R.string.auth_label), ""))
@@ -755,7 +859,6 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(realEvent -> {
                     service.removeHeader(getString(R.string.auth_label));
-                    Toast.makeText(this, R.string.success_lbl, Toast.LENGTH_SHORT).show();
                     this.event = realEvent;
                     this.tagsContainer.removeAllViewsInLayout();
                     getEvent();
@@ -788,6 +891,7 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
     }
 
     private void unattendEvent() {
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(String.valueOf(event.eventId()));
         clearAttendees();
         service.unattendEvent(User.getInstance().getUserId(),
                 event.eventId(),
@@ -858,13 +962,17 @@ public class EventActivity extends AppCompatActivity implements IActivity, OnMap
     }
 
     public void showLoading() {
-        containerLayout.setVisibility(View.VISIBLE);
-        container.setVisibility(View.GONE);
+        if(container !=null && containerLayout !=null) {
+            containerLayout.setVisibility(View.VISIBLE);
+            container.setVisibility(View.GONE);
+        }
     }
 
     public void hideLoading() {
-        containerLayout.setVisibility(View.GONE);
-        container.setVisibility(View.VISIBLE);
+            if(container !=null && containerLayout !=null) {
+            containerLayout.setVisibility(View.GONE);
+            container.setVisibility(View.VISIBLE);
+        }
     }
 
 

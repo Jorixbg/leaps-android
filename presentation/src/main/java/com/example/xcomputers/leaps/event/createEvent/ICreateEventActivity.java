@@ -2,6 +2,7 @@ package com.example.xcomputers.leaps.event.createEvent;
 
 import android.net.Uri;
 
+import com.example.networking.test.ChoosenDate;
 import com.example.xcomputers.leaps.base.IActivity;
 
 import java.util.List;
@@ -16,5 +17,6 @@ public interface ICreateEventActivity extends IActivity {
     void collectData(Map<Integer, Uri> images, String title, String description, List<String> tags);
     void collectData(double latitude,double longitude,String address);
     void collectData(double priceFrom, int freeSlots);
-    void collectData(long eventTime);
+    void collectData(long eventTime,long endTime);
+    void collectData(String frequency, long startTime,long endTime,List<ChoosenDate> dates);
 }

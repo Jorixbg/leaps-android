@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "801378930759-eeac52abc6olbkd0h036mrrc37j38ivr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.xcomputers.leaps",
+            "certificate_hash": "c619cce3a9eaebeeb1b5ad1236e59db1a67c3ade"
+          }
+        },
+        {
           "client_id": "801378930759-2am1vgb5kv7dsi39heb768hnmjmlsr4v.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -52,15 +60,15 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "801378930759-6tch9qd8qauj0v6hi1eq3dshdl46thee.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "801378930759-m9jc5cgovq4hc76r6feaigqgmkq3qdhn.apps.googleusercontent.com",
+              "client_id": "801378930759-ihl3jg03kvg3ddtdbl73ovdreet0n29j.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.leaps"
+                "bundle_id": "com.recreationalsolutions.leaps"
               }
+            },
+            {
+              "client_id": "801378930759-6tch9qd8qauj0v6hi1eq3dshdl46thee.apps.googleusercontent.com",
+              "client_type": 3
             }
           ]
         },

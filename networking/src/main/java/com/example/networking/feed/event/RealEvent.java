@@ -51,16 +51,23 @@ public class RealEvent implements Event {
     private long created;
     @SerializedName("attending")
     private Attendee attendees;
-
+    @SerializedName("rating")
+    private float rating;
+    @SerializedName("reviews")
+    private int reviews;
     @SerializedName("images")
     private List<EventImage> imageUrls;
+    @SerializedName("position")
+    private int position;
+    @SerializedName("distance")
+    private float distance;
+
+
 
     public void setPosition(int position) {
         this.position = position;
     }
 
-    @SerializedName("position")
-    private int position;
 
     @Override
     public long ownerId(){return ownerId;}
@@ -153,6 +160,20 @@ public class RealEvent implements Event {
     public Attendee attendees() {
         Attendee followersObj= attendees;
         return followersObj;
+    }
+
+    @Override
+    public float rating() {
+        return rating;
+    }
+
+    @Override
+    public int reviews() {
+        return reviews;
+    }
+
+    public float distance() {
+        return distance;
     }
 
     public void setAttendee(Attendee attendees) {

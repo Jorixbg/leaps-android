@@ -40,6 +40,7 @@
         android:gravity="center_horizontal"
         android:singleLine="true"
         android:maxLines="1"
+        android:inputType="textCapSentences"
         android:imeOptions="actionNext"
         android:hint="@string/first_name"
         android:layout_below="@+id/reg_names_header"
@@ -60,6 +61,7 @@
         android:imeOptions="actionDone"
         android:hint="@string/last_name"
         android:layout_below="@+id/reg_names_first_name_et"
+        android:inputType="textCapSentences"
         />
 
 

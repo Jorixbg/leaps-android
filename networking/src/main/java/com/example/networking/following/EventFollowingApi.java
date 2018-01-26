@@ -21,10 +21,8 @@ public interface EventFollowingApi {
     @POST("user/follow")
     Observable<UserResponse> FollowingUser(@Body FollowingUserRequest request);
 
-
     @POST("/user/unfollow")
     Observable<UserResponse> UnFollowingUser(@Body FollowingUserRequest request);
-
 
     @POST("event/follow")
     Observable<RealEvent> FollowingEvent(@Body EventFollowingRequest request);

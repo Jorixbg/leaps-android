@@ -57,13 +57,12 @@ public class SearchView extends BaseViewDialog<EmptyPresenter> {
         private Button todayBtn;
         private Button next3Btn;
         private Button next5Btn;
-
         private Button allBtn;
         private SeekBar seekBar;
         private EditText searchET;
-
         private ScrollView scrollView;
         private TextView cancelBtn;
+        private Button resetBtn;
 
         private FeedFilterRequest.DateSelection dateSelection;
 
@@ -77,6 +76,7 @@ public class SearchView extends BaseViewDialog<EmptyPresenter> {
                 getActivity().onBackPressed();
                 hideLoading();
             });
+
 
             scrollView =(ScrollView) view.findViewById(R.id.scroll_search_view);
             scrollView.setOnTouchListener(new View.OnTouchListener() {
@@ -110,25 +110,62 @@ public class SearchView extends BaseViewDialog<EmptyPresenter> {
                 public void onStopTrackingTouch(SeekBar seekBar) {
                     //Empty
                 }
+
+
+
             });
             searchBtn = (CustomWhiteButton) view.findViewById(R.id.search_btn);
-            searchBtn.setOnClickListener(l -> {
+
+
+            searchBtn.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    gesture.onTouchEvent(event);
+                    return false;
+                }
+
+            });
+
+            searchBtn.setOnClickListener(v->{
                 Bundle bundle = new Bundle();
                 bundle.putSerializable(SEARCH_RESULT_KEY, collectSearchResults());
                 bundle.putString(FEED_SEARCH_ORIGIN_KEY, getArguments().getString(FEED_SEARCH_ORIGIN_KEY));
+                bundle.putString("Hello","Hello");
                 openFragment(HomeScreenView.class, bundle);
             });
+
+
+
+
             flowLayout = (FlexboxLayout) view.findViewById(R.id.search_flow_layout);
+            flowLayout.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    gesture.onTouchEvent(event);
+                    return false;
+                }
+            });
+
+
+
             List<String> tags = TagsHolder.getInstance().getTags();
             for (String tag : tags) {
                 TagView tagView = new TagView(getContext());
                 tagView.setText(tag);
-                tagView.setOnClickListener(v -> tagView.toggle());
+
                 flowLayout.addView(tagView);
+
+                tagView.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        gesture.onTouchEvent(event);
+                        return false;
+                    }
+                });
+                tagView.setOnClickListener(v -> tagView.toggle());
             }
             todayBtn = (Button) view.findViewById(R.id.search_today_btn);
             todayBtn.setOnClickListener(v -> {
-
                 todayBtn.setTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
                 next5Btn.setTextColor(ContextCompat.getColor(getContext(), R.color.whiteAlpha));
                 next3Btn.setTextColor(ContextCompat.getColor(getContext(), R.color.whiteAlpha));
@@ -161,8 +198,48 @@ public class SearchView extends BaseViewDialog<EmptyPresenter> {
             });
 
             allBtn.performClick();
-            view.findViewById(R.id.search_reset_btn).setOnClickListener(v -> resetAll());
+            resetBtn = (Button) view.findViewById(R.id.search_reset_btn);
+            resetBtn.setOnClickListener(v -> resetAll());
             searchET = (EditText) view.findViewById(R.id.search_tv);
+
+            todayBtn.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    gesture.onTouchEvent(event);
+                    return false;
+                }
+            });
+            next3Btn.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    gesture.onTouchEvent(event);
+                    return false;
+                }
+            });
+            next5Btn.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    gesture.onTouchEvent(event);
+                    return false;
+                }
+            });
+            allBtn.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                  public boolean onTouch(View v, MotionEvent event) {
+                  gesture.onTouchEvent(event);
+                  return false;
+                }
+            });
+            resetBtn.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    gesture.onTouchEvent(event);
+                    return false;
+                }
+            });
+
+
+
         }
 
     private void resetAll() {

@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.base.BaseView;
@@ -13,6 +12,7 @@ import com.example.xcomputers.leaps.base.Layout;
 import com.example.xcomputers.leaps.registration.IRegistrationContainer;
 import com.example.xcomputers.leaps.registration.IRegistrationInsideView;
 import com.example.xcomputers.leaps.utils.CustomEditText;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.List;
 
@@ -41,16 +41,19 @@ public class RegistrationNamesScreen extends BaseView<EmptyPresenter> implements
         firstNameET = (CustomEditText) view.findViewById(R.id.reg_names_first_name_et);
         lastNameET = (CustomEditText) view.findViewById(R.id.reg_names_last_name_et);
         checkArguments(savedInstanceState);
+        String firebaseToken = FirebaseInstanceId.getInstance().getToken();
         nextBtn.setOnClickListener(v -> {
             if (firstNameET.getText().toString().isEmpty()) {
-                Toast.makeText(getContext(), "Please provide a non empty first name", Toast.LENGTH_SHORT).show();
+                firstNameET.setError("Please provide a non empty first name");
+                firstNameET.requestFocus();
                 return;
             }
             if (lastNameET.getText().toString().isEmpty()) {
-                Toast.makeText(getContext(), "Please provide a non empty last name", Toast.LENGTH_SHORT).show();
+                lastNameET.setError("Please provide a non empty last name");
+                lastNameET.requestFocus();
                 return;
             }
-            container.gatherData(firstNameET.getText().toString(), lastNameET.getText().toString());
+            container.gatherData(firstNameET.getText().toString(), lastNameET.getText().toString(),firebaseToken);
         });
 
         cancelBtn.setOnClickListener(v -> {

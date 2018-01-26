@@ -62,7 +62,7 @@
                 android:text="+"
                 android:textColor="@color/primaryBlue"
                 android:textSize="28sp" />
-
+            
             <ImageView
                 android:id="@+id/first_image_imageView"
                 android:layout_width="40dp"
@@ -149,7 +149,7 @@
                 app:srcCompat="@drawable/close_red_btn" />
 
             <ImageView
-                android:id="@+id/:third_image_imageView"
+                android:id="@+id/third_image_imageView"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_below="@+id/create_event_first_picture_lbl"
@@ -308,6 +308,7 @@
                 android:paddingStart="12dp"
                 android:background="@drawable/round_blue_edit_text"
                 android:hint="@string/event_title"
+                android:inputType="textCapSentences"
                 android:textColorHint="@color/primaryBlue" />
 
             <TextView
@@ -318,7 +319,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="@string/title"
+                android:text="@string/description"
                 android:textColor="@color/primaryBlue"
                 android:textStyle="bold" />
 
@@ -338,6 +339,7 @@
                 android:background="@drawable/round_blue_edit_text"
                 android:gravity="start"
                 android:hint="@string/type_description"
+                android:inputType="textCapSentences"
                 android:textColorHint="@color/primaryBlue" />
 
             <TextView
