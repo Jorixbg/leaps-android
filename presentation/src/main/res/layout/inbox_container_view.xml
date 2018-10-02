@@ -9,7 +9,7 @@
         android:id="@+id/inbox_id"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:text="INBOX"
+        android:text="@string/homescreen_tab_chat"
         android:gravity="center"/>
     <View
         android:layout_marginStart="16dp"

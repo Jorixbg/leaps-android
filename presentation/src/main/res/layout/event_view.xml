@@ -53,7 +53,7 @@
                     />
 
 
-                <com.example.xcomputers.leaps.utils.CustomTextView
+                <club.leaps.presentation.utils.CustomTextView
                     android:id="@+id/event_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -114,10 +114,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="15dp"
                     android:layout_marginTop="10dp"
-                    app:radius="4dp"
-                    app:pageColor="@color/colorWhite"
-                    app:strokeColor="@color/light_blue"
-                    app:fillColor="@color/light_blue"
                     android:layout_toEndOf="@+id/rating_review_counter_event"
                     android:layout_toRightOf="@+id/rating_review_counter_event"
                     android:layout_below="@+id/event_title"
@@ -577,7 +573,7 @@
                        android:layout_height="wrap_content"
                        android:layout_weight="1"
                        android:visibility="gone"
-                       android:text="Edit"/>
+                       android:text="@string/lbl_edit_btn"/>
 
                    <Button
                        android:id="@+id/delete_button_event"
@@ -585,7 +581,7 @@
                        android:layout_height="wrap_content"
                        android:layout_weight="1"
                        android:visibility="gone"
-                       android:text="Delete" />
+                       android:text="@string/delete" />
 
                </LinearLayout>
 
@@ -610,7 +606,7 @@
                 android:layout_marginStart="16dp"
                 app:srcCompat="@drawable/event_cta_blue_gradient" />
 
-            <com.example.xcomputers.leaps.utils.CustomTextView
+            <club.leaps.presentation.utils.CustomTextView
                 android:id="@+id/event_footer_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

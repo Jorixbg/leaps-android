@@ -9,7 +9,7 @@
         android:id="@+id/calendarID"
         android:layout_width="300dp"
         android:layout_height="400dp"
-        android:contentDescription="Pick your birthday"
+        android:contentDescription="@string/lbl_pick_birthday"
         android:showWeekNumber="false"
         android:tag="my tag" />
 </LinearLayout>

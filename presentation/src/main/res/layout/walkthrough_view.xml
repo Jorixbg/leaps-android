@@ -17,7 +17,7 @@
           android:text="@string/skip" />
 
 
-     <com.example.xcomputers.leaps.utils.CustomTextView
+     <club.leaps.presentation.utils.CustomTextView
           android:id="@+id/walkthrough_header_tv"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"

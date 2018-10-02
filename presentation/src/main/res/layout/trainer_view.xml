@@ -68,7 +68,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="96dp" />
 
-            <com.example.xcomputers.leaps.utils.CustomTextView
+            <club.leaps.presentation.utils.CustomTextView
                 android:id="@+id/trainer_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -105,11 +105,7 @@
                 android:id="@+id/event_indicator"
                 android:layout_width="match_parent"
                 android:layout_height="15dp"
-                app:radius="4dp"
                 android:layout_marginTop="100dp"
-                app:pageColor="@color/colorWhite"
-                app:strokeColor="@color/light_blue"
-                app:fillColor="@color/light_blue"
                 android:layout_toRightOf="@+id/trainer_title"
                 android:layout_toEndOf="@+id/trainer_title"
                 android:layout_below="@+id/profile_list_profile_btn"/>
@@ -134,9 +130,9 @@
                 android:layout_marginTop="30dp"
                 android:layout_toRightOf="@+id/follow_trainer_btn"
                 android:layout_toEndOf="@+id/follow_trainer_btn"
-                android:background="@color/primaryBlue"
+                android:background="@drawable/write_message_btn"
                 android:textColor="@color/dirty_white"
-                android:text="Write a message"
+                android:text="@string/lbl_write_message"
                 android:textSize="10sp"
                 android:textAllCaps="false"
                 android:layout_below="@+id/trainer_pic"/>

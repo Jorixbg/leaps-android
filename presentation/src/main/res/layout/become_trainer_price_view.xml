@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.example.xcomputers.leaps.utils.CustomTextView
+    <club.leaps.presentation.utils.CustomTextView
         android:id="@+id/header"
         android:textSize="28sp"
         android:textColor="@color/primaryBlue"
@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <com.example.xcomputers.leaps.utils.CustomEditText
+    <club.leaps.presentation.utils.CustomEditText
         android:id="@+id/edit_text"
         android:inputType="number"
         android:layout_marginLeft="16dp"

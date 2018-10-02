@@ -14,7 +14,7 @@
         android:scaleType="fitXY"
         android:layout_height="144dp"
         />
-    <com.example.xcomputers.leaps.utils.CustomTextView
+    <club.leaps.presentation.utils.CustomTextView
         android:id="@+id/cal_recycler_item_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

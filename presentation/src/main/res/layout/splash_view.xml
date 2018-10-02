@@ -13,7 +13,7 @@
         android:id="@+id/welcome_txt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome to Leaps!"
+        android:text="@string/lbl_welcome_to_leaps"
         android:layout_below="@+id/splash_img"
         android:layout_centerInParent="true"
         android:textSize="25sp"
@@ -23,7 +23,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="The revolutonary sports companion."
+        android:text="@string/lbl_welcome_text"
         android:layout_below="@+id/welcome_txt"
         android:layout_centerInParent="true"
         android:textSize="15sp"

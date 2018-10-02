@@ -22,7 +22,7 @@
             android:layout_height="0dp"
             android:layout_weight="5"
             />
-        <com.example.xcomputers.leaps.utils.CustomTextView
+        <club.leaps.presentation.utils.CustomTextView
             android:id="@+id/cal_recycler_item_title"
             android:layout_width="match_parent"
             android:layout_height="0dp"

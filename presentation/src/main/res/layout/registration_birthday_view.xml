@@ -13,7 +13,7 @@
         android:textAllCaps="false"
         android:textColor="@color/primaryBlue"/>
 
-    <com.example.xcomputers.leaps.utils.CustomTextView
+    <club.leaps.presentation.utils.CustomTextView
         android:id="@+id/reg_birthday_header"
         android:layout_width="match_parent"
         android:layout_marginLeft="80dp"
@@ -45,7 +45,7 @@
         />
 
 
-    <com.example.xcomputers.leaps.utils.CustomTextView
+    <club.leaps.presentation.utils.CustomTextView
         android:id="@+id/reg_birthday_calendarBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

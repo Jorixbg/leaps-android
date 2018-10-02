@@ -49,7 +49,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="96dp" />
 
-                <com.example.xcomputers.leaps.utils.CustomTextView
+                <club.leaps.presentation.utils.CustomTextView
                     android:id="@+id/trainer_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -86,10 +86,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="15dp"
                     android:layout_marginTop="10dp"
-                    app:radius="4dp"
-                    app:pageColor="@color/colorWhite"
-                    app:strokeColor="@color/light_blue"
-                    app:fillColor="@color/light_blue"
                     android:layout_toRightOf="@+id/trainer_title"
                     android:layout_toEndOf="@+id/trainer_title"
                     android:layout_above="@+id/rating_layout"/>
@@ -237,6 +233,7 @@
                     android:background="#E1E1E1" />
 
                 <RelativeLayout
+                    android:id="@+id/edit_profile_rl"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/trainer_divider1">
@@ -248,7 +245,7 @@
                         android:layout_marginLeft="16dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="24dp"
-                        android:text="Edit Profile"
+                        android:text="@string/edit_profile"
                         android:textColor="@color/primaryBlue"
                         android:textSize="15sp" />
 
@@ -264,11 +261,18 @@
                         android:layout_marginTop="16dp"
                         android:background="#E1E1E1" />
 
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/settings_rl"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/edit_profile_rl">
                     <TextView
                         android:id="@+id/profile_list_settings"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/profile_list_divider2"
+
                         android:layout_marginLeft="16dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="24dp"
@@ -287,19 +291,23 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         android:background="#E1E1E1" />
+                </RelativeLayout>
 
+                <RelativeLayout
+                    android:id="@+id/invite_friends_rl"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/settings_rl">
                     <TextView
                         android:id="@+id/profile_list_invite"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/profile_list_divider3"
                         android:layout_marginLeft="16dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="24dp"
                         android:text="@string/lbl_invite_friends"
                         android:textColor="@color/primaryBlue"
                         android:textSize="15sp" />
-
 
                     <View
                         android:id="@+id/profile_list_divider4"
@@ -312,12 +320,17 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         android:background="#E1E1E1" />
+                </RelativeLayout>
 
+                    <RelativeLayout
+                        android:id="@+id/give_feedback_rl"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_below="@+id/invite_friends_rl">
                     <TextView
                         android:id="@+id/profile_list_feedback"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/profile_list_divider4"
                         android:layout_marginLeft="16dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="24dp"
@@ -336,12 +349,17 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         android:background="#E1E1E1" />
+                    </RelativeLayout>
+                <RelativeLayout
+                    android:id="@+id/view_tutorial_rl"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/give_feedback_rl">
 
                     <TextView
                         android:id="@+id/profile_list_tutorial"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/profile_list_divider5"
                         android:layout_marginLeft="16dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="24dp"
@@ -360,12 +378,17 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         android:background="#E1E1E1" />
+                </RelativeLayout>
 
+                    <RelativeLayout
+                        android:id="@+id/log_out_rl"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_below="@+id/view_tutorial_rl">
                     <TextView
                         android:id="@+id/profile_list_log_out"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/profile_list_divider6"
                         android:layout_marginLeft="16dp"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="24dp"
@@ -384,7 +407,6 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         android:background="#E1E1E1" />
-
 
                 </RelativeLayout>
 

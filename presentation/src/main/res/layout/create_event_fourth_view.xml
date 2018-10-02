@@ -32,7 +32,7 @@
             android:layout_alignLeft="@+id/create_event_divider1"
             android:layout_alignStart="@+id/create_event_divider1"
             android:layout_below="@+id/create_event_header"
-            android:text="Repeat"
+            android:text="@string/lbl_repeat"
             android:textColor="@color/primaryBlue"
             android:textStyle="bold" />
 
@@ -72,7 +72,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="Start"
+                android:text="@string/lbl_start"
                 android:textColor="@color/primaryBlue"
                 android:textStyle="bold" />
 
@@ -117,7 +117,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="End"
+                android:text="@string/lbl_end"
                 android:textColor="@color/primaryBlue"
                 android:textStyle="bold" />
 
@@ -162,7 +162,7 @@
               android:layout_marginLeft="16dp"
               android:layout_marginStart="16dp"
               android:layout_marginTop="16dp"
-              android:text="Frequency"
+              android:text="@string/lbl_frequency"
               android:textColor="@color/primaryBlue"
               android:textStyle="bold" />
 
@@ -175,7 +175,7 @@
               android:layout_toStartOf="@+id/create_event_choose_repeat_arrow"
               android:layout_marginRight="3dp"
               android:layout_marginEnd="3dp"
-              android:text="Day"
+              android:text="@string/time_stamp_daily"
               android:textSize="16sp" />
 
           <ImageView
@@ -203,8 +203,7 @@
           android:id="@+id/create_event_daily_rl"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_below="@+id/create_event_frequency_rl"
-          android:visibility="gone">
+          android:layout_below="@+id/create_event_frequency_rl">
 
           <RelativeLayout
               android:id="@+id/create_event_day_rl"
@@ -220,7 +219,7 @@
                   android:layout_marginStart="16dp"
                   android:layout_marginTop="32dp"
                   android:layout_marginBottom="5dp"
-                  android:text="DAILY"
+                  android:text="@string/time_stamp_daily_uppercase"
                   android:textColor="@color/colorGrey"
                   />
 
@@ -281,7 +280,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="5dp"
-                android:text="MONDAY"
+                android:text="@string/time_stamp_monday_uppercase"
                 android:textColor="@color/colorGrey"
                 />
 
@@ -332,7 +331,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="5dp"
-                android:text="TUESDAY"
+                android:text="@string/time_stamp_tuesday_uppercase"
                 android:textColor="@color/colorGrey" />
 
 
@@ -384,7 +383,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="32dp"
                     android:layout_marginBottom="5dp"
-                    android:text="WEDNESDAY"
+                    android:text="@string/time_stamp_wednesday_uppercase"
                     android:textColor="@color/colorGrey" />
 
                 <TextView
@@ -436,7 +435,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="32dp"
                     android:layout_marginBottom="5dp"
-                    android:text="THURSDAY"
+                    android:text="@string/time_stamp_thursday_uppercase"
                     android:textColor="@color/colorGrey" />
 
 
@@ -489,7 +488,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="5dp"
-                android:text="FRIDAY"
+                android:text="@string/time_stamp_friday_uppercase"
                 android:textColor="@color/colorGrey" />
 
 
@@ -541,7 +540,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="5dp"
-                android:text="SATURDAY"
+                android:text="@string/time_stamp_saturday_uppercase"
                 android:textColor="@color/colorGrey" />
 
 
@@ -594,7 +593,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="32dp"
                 android:layout_marginBottom="5dp"
-                android:text="SUNDAY"
+                android:text="@string/time_stamp_daily_sunday_uppercase"
                 android:textColor="@color/colorGrey" />
 
 
@@ -633,7 +632,7 @@
 
         </RelativeLayout>
 
-                <com.example.xcomputers.leaps.utils.CustomWhiteButton
+                <club.leaps.presentation.utils.CustomWhiteButton
                     android:id="@+id/publish_event_btn"
                     android:layout_width="256dp"
                     android:layout_height="wrap_content"

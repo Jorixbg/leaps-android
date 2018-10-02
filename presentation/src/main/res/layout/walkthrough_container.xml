@@ -16,9 +16,6 @@
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:gravity="center"
-        android:layout_alignParentBottom="true"
-        app:radius="4dp"
-        app:pageColor="@color/empty_indicator"
-        app:fillColor="@color/full_indicator"/>
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

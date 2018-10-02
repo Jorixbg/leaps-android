@@ -11,7 +11,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="-8dp"/>
 
-    <com.example.xcomputers.leaps.utils.CustomTextView
+    <club.leaps.presentation.utils.CustomTextView
         android:id="@android:id/text1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -13,7 +13,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/bg_login">
 
-        <com.example.xcomputers.leaps.utils.CustomTextView
+        <club.leaps.presentation.utils.CustomTextView
             android:id="@+id/login_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="100dp"/>
 
-        <com.example.xcomputers.leaps.utils.CustomEditText
+        <club.leaps.presentation.utils.CustomEditText
             android:id="@+id/login_username_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
             android:layout_marginStart="36dp"
             android:layout_marginBottom="20dp"/>
 
-        <com.example.xcomputers.leaps.utils.CustomEditText
+        <club.leaps.presentation.utils.CustomEditText
             android:id="@+id/login_password_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

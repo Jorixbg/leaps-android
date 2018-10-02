@@ -39,7 +39,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="4"
-            android:text="Cancel"
+            android:text="@string/cancel"
             android:layout_gravity="center"
             android:gravity="center"
             android:textAllCaps="false"
@@ -134,7 +134,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="Today"
+                    android:text="@string/lbl_today"
                     android:textAllCaps="false"
                     android:layout_gravity="center"
                     android:textColor="@android:color/white" />
@@ -145,7 +145,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="Next 3 days"
+                    android:text="@string/lbl_next3"
                     android:textAllCaps="false"
                     android:layout_gravity="center"
                     android:textColor="@android:color/white" />
@@ -157,7 +157,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:layout_gravity="center"
-                    android:text="Next 5 days"
+                    android:text="@string/lbl_next5"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white" />
 
@@ -178,7 +178,7 @@
 
 
 
-            <com.example.xcomputers.leaps.utils.CustomWhiteButton
+            <club.leaps.presentation.utils.CustomWhiteButton
                 android:id="@+id/search_btn"
                 android:layout_width="144dp"
                 android:layout_height="40dp"
@@ -198,7 +198,7 @@
                 android:layout_below="@id/search_btn"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="12dp"
-                android:text="Reset all"
+                android:text="@string/lbl_reset"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white" />
 

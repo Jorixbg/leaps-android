@@ -16,7 +16,7 @@
             android:layout_width="96dp"
             android:layout_height="96dp" />
 
-        <com.example.xcomputers.leaps.utils.CustomTextView
+        <club.leaps.presentation.utils.CustomTextView
             android:textStyle="bold"
             android:textColor="@color/primaryBlue"
             android:textAllCaps="true"
@@ -263,7 +263,13 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:background="#E1E1E1" />
+        </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/user_edit_profile_rl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/profile_view_settings_rl">
             <TextView
                 android:id="@+id/edit_profile_txt"
                 android:layout_width="wrap_content"
@@ -271,8 +277,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
-                android:text="Edit Profile"
-                android:layout_below="@+id/profile_list_divider2"
+                android:text="@string/edit_profile"
                 android:textColor="@color/primaryBlue"
                 android:textSize="15sp" />
 
@@ -287,12 +292,17 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:background="#E1E1E1" />
+            </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/user_settings_rl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/user_edit_profile_rl">
             <TextView
                 android:id="@+id/profile_list_settings"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/profile_list_divider3"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
@@ -311,12 +321,16 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:background="#E1E1E1" />
-
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/user_invite_friends_rl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/user_settings_rl">
             <TextView
                 android:id="@+id/profile_list_invite"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/profile_list_divider4"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
@@ -336,12 +350,16 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:background="#E1E1E1" />
-
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/user_give_feedback_rl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/user_invite_friends_rl">
             <TextView
                 android:id="@+id/profile_list_feedback"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/profile_list_divider5"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
@@ -360,12 +378,16 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:background="#E1E1E1" />
-
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/user_view_tutorial_rl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/user_give_feedback_rl">
             <TextView
                 android:id="@+id/profile_list_tutorial"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/profile_list_divider6"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
@@ -384,12 +406,16 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:background="#E1E1E1" />
-
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/user_log_out_rl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/user_view_tutorial_rl">
             <TextView
                 android:id="@+id/profile_list_log_out"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/profile_list_divider7"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
@@ -408,12 +434,12 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:background="#E1E1E1" />
-
+            </RelativeLayout>
             <RelativeLayout
                 android:id="@+id/profile_list_become_trainer_rl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/profile_list_divider8"
+                android:layout_below="@id/user_log_out_rl"
                 android:layout_marginTop="16dp">
 
                 <ImageView
@@ -455,7 +481,7 @@
                     android:textAlignment="center"
                     android:textColor="@color/primaryBlue" />
 
-            </RelativeLayout>
+
 
         </RelativeLayout>
 
