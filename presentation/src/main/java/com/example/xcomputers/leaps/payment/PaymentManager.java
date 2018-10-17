@@ -22,7 +22,6 @@ import com.adyen.core.interfaces.PaymentRequestListener;
 import com.adyen.core.models.Payment;
 import com.adyen.core.models.PaymentRequestResult;
 import com.adyen.core.utils.AsyncHttpClient;
-import com.example.xcomputers.leaps.BuildConfig;
 import com.example.xcomputers.leaps.MainActivity;
 import com.example.xcomputers.leaps.R;
 

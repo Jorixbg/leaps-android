@@ -50,6 +50,7 @@ public class ProfileListView extends BaseView<ProfileListPresenter> {
     private TextView settings;
     private ImageView editProfileBtn;
     private TextView viewTutorial;
+    private TextView pay;
     private TextView logOut;
     private Button becomeTrainerbtn;
     private RelativeLayout becomeTrainerRl;
@@ -85,6 +86,7 @@ public class ProfileListView extends BaseView<ProfileListPresenter> {
         settings.setOnClickListener(v -> openFragment(SettingsView.class, new Bundle(), true));
 
         viewTutorial.setOnClickListener(v -> startActivity(new Intent(getContext(), TutorialActivity.class)));
+        pay.setOnClickListener(v -> startActivity(new Intent(getContext(), TutorialActivity.class)));
         becomeTrainerbtn.setOnClickListener(v -> getActivity().startActivityForResult(new Intent(getContext(), BecomeTrainerActivity.class), BECOME_TRAINER_REQUEST));
         Class clazz = User.getInstance().isTrainer() ? TrainerProfilePreview.class : UserProfilePreview.class;
         profilePic.setOnClickListener(v -> openFragment(clazz, new Bundle(), true));
@@ -113,6 +115,7 @@ public class ProfileListView extends BaseView<ProfileListPresenter> {
         settings = (TextView) view.findViewById(R.id.profile_list_settings);
         editProfileBtn = (ImageView) view.findViewById(R.id.profile_list_profile_btn);
         viewTutorial = (TextView) view.findViewById(R.id.profile_list_tutorial);
+        pay = (TextView) view.findViewById(R.id.profile_list_pay);
         logOut = (TextView) view.findViewById(R.id.profile_list_log_out);
         becomeTrainerbtn = (Button) view.findViewById(R.id.profile_listing_become_trainer_btn);
         becomeTrainerbtn.setTypeface(Typeface.createFromAsset(getContext().getAssets(), "fonts/Typoforge Studio - Cervo-Medium.otf"));

@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import com.example.networking.feed.event.AttendeeResponse;
 import com.example.networking.following.FollowingService;
-import com.example.xcomputers.leaps.R;
 import com.example.xcomputers.leaps.User;
 import com.example.xcomputers.leaps.utils.EntityHolder;
 import com.example.xcomputers.leaps.utils.GlideInstance;
@@ -22,6 +21,7 @@ import com.example.xcomputers.leaps.utils.LoginResponseToUserTypeMapper;
 
 import java.util.List;
 
+import club.leaps.presentation.R;
 import rx.android.schedulers.AndroidSchedulers;
 
 /**

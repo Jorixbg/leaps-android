@@ -4,6 +4,7 @@ import com.example.networking.feed.event.Event;
 import com.example.networking.feed.event.RealEvent;
 import com.example.networking.feed.trainer.Entity;
 import com.example.networking.feed.trainer.Image;
+import com.example.networking.following.user.Followed;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -104,6 +105,11 @@ public class FollowedResponse implements Entity {
         return birthDay;
     }
 
+    @Override
+    public String firebaseToken() {
+        return null;
+    }
+
     public String description() {
         return description;
     }
@@ -151,8 +157,8 @@ public class FollowedResponse implements Entity {
         return list;
     }
 
-    public List<Event> hosting() {
-        List<Event> list = new ArrayList<>();
+    public List<RealEvent> hosting() {
+        List<RealEvent> list = new ArrayList<>();
         list.addAll(hostingEvents);
         return list;
     }
@@ -162,9 +168,24 @@ public class FollowedResponse implements Entity {
         return null;
     }
 
+    @Override
+    public com.example.networking.following.user.Followed filter() {
+        return null;
+    }
+
 
     public int attendedEvents() {
         return attendedEvents;
+    }
+
+    @Override
+    public float rating() {
+        return 0;
+    }
+
+    @Override
+    public int reviews() {
+        return 0;
     }
 
     public void setUserId(int userId) {

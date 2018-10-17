@@ -62,7 +62,7 @@ public class CommentEventAdapter extends RecyclerView.Adapter<CommentEventAdapte
         EventRatingResponse comment = comments.get(position);
         holder.userName.setText(comment.getOwnerName());
         holder.userComment.setText(comment.getComment());
-        holder.date.setText(returnDate(comment.getDate()) );
+        holder.date.setText(returnDate(comment.getDate().getTime()) );
         holder.ratingBar.setRating(comment.getRating());
         GlideInstance.loadImageCircle(context, user.profileImageUrl(), holder.userImage, R.drawable.profile_placeholder);
         Glide.with(holder.itemView.getContext())

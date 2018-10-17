@@ -128,7 +128,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
-                android:text="@string/give_us_feedback"
+                android:text="Feedback"
                 android:textColor="@color/primaryBlue"
                 android:textSize="15sp" />
 
@@ -145,10 +145,34 @@
                 android:background="#E1E1E1" />
 
             <TextView
-                android:id="@+id/profile_list_tutorial"
+                android:id="@+id/profile_list_pay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/profile_list_divider4"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="Pay"
+                android:textColor="@color/primaryBlue"
+                android:textSize="15sp" />
+
+            <View
+                android:id="@+id/profile_list_divider_pay"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_below="@+id/profile_list_pay"
+                android:layout_marginEnd="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="#E1E1E1" />
+
+            <TextView
+                android:id="@+id/profile_list_tutorial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/profile_list_divider_pay"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
