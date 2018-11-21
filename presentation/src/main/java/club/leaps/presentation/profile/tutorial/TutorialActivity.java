@@ -1,5 +1,7 @@
 package club.leaps.presentation.profile.tutorial;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,9 +11,14 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.braintreepayments.api.dropin.DropInActivity;
+import com.braintreepayments.api.dropin.DropInRequest;
+import com.braintreepayments.api.dropin.DropInResult;
+
 import club.leaps.presentation.R;
 import club.leaps.presentation.base.IActivity;
 import club.leaps.presentation.base.IBaseView;
+import club.leaps.presentation.payments.PaymentsEngine;
 
 /**
  * Created by xComputers on 23/07/2017.
@@ -21,6 +28,7 @@ public class TutorialActivity extends AppCompatActivity implements IActivity{
 
     private ViewPager viewPager;
     private ScreenSlidePagerAdapter adapter;
+    int REQUEST_CODE = 0; // TODO
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,6 +48,27 @@ public class TutorialActivity extends AppCompatActivity implements IActivity{
             finish();
         } else {
             viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
+        }
+    }
+
+    public void onPayPress() {
+        DropInRequest dropInRequest = new DropInRequest()
+                .clientToken(PaymentsEngine.clientToken);
+        startActivityForResult(dropInRequest.getIntent(this), REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
+                // use the result to update your UI and send the payment method nonce to your server
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                // the user canceled
+            } else {
+                // handle errors here, an exception may be available in
+                Exception error = (Exception) data.getSerializableExtra(DropInActivity.EXTRA_ERROR);
+            }
         }
     }
 
