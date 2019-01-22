@@ -12,7 +12,8 @@ import com.testfairy.TestFairy;
 
 public class LeapsApplication extends Application {
 
-    public static final String BASE_URL = "http://91.238.251.154:8888";
+//    public static final String BASE_URL = "http://91.238.251.154:8888";
+    public static final String BASE_URL = "http://91.238.251.125:8888";
 
     @Override
     public void onCreate() {
