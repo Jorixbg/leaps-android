@@ -2,6 +2,7 @@ package club.leaps.presentation.homescreen;
 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -22,6 +23,8 @@ import club.leaps.presentation.base.Layout;
 import club.leaps.presentation.follow.FollowingEventContainer;
 import club.leaps.presentation.homecalendar.HomeCalendarContainer;
 import club.leaps.presentation.homefeed.HomeFeedContainer;
+import club.leaps.presentation.payments.PaymentActivity;
+import club.leaps.presentation.payments.PaymentsEngine;
 import club.leaps.presentation.profile.ProfileTabViewContainer;
 import club.leaps.presentation.profile.trainerProfile.EditProfilePresenter;
 import club.leaps.presentation.test.ChatMessages;
@@ -29,6 +32,10 @@ import club.leaps.presentation.test.InboxContainer;
 import club.leaps.presentation.test.InboxUser;
 import club.leaps.presentation.utils.EntityHolder;
 import club.leaps.presentation.welcome.WelcomeActivity;
+
+import com.braintreepayments.api.dropin.DropInActivity;
+import com.braintreepayments.api.dropin.DropInRequest;
+import com.braintreepayments.api.dropin.DropInResult;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -199,7 +206,7 @@ public class HomeScreenView extends BaseView<EditProfilePresenter> {
                 text = getString(R.string.homescreen_tab_following);
                 break;
             case CALENDAR_POSITION:
-                text = getString(R.string.homescreen_tab_cal);
+                text = getString(R.string.homescreen_tab_pay);
                 break;
             case INBOX_POSITION:
                 text = getString(R.string.homescreen_tab_chat);
@@ -339,6 +346,10 @@ public class HomeScreenView extends BaseView<EditProfilePresenter> {
             @SuppressLint("RestrictedApi")
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                if(tab.getPosition() == CALENDAR_POSITION){
+                    getActivity().startActivityForResult(new Intent(getContext(), PaymentActivity.class), CALENDAR_REQUEST, null);
+                    return;
+                }
                 if(tab.getPosition() == CALENDAR_POSITION && (!PreferenceManager.getDefaultSharedPreferences(getContext()).contains("Authorization")
                         || PreferenceManager.getDefaultSharedPreferences(getContext()).getString("Authorization", null) == null)) {
                     getActivity().startActivityForResult(new Intent(getContext(), WelcomeActivity.class), CALENDAR_REQUEST, null);
@@ -357,12 +368,32 @@ public class HomeScreenView extends BaseView<EditProfilePresenter> {
                 }
             }
 
+
+//            @Override
+//            public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//                if (requestCode == 0) {
+//                    if (resultCode == Activity.RESULT_OK) {
+//                        DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
+//                        // use the result to update your UI and send the payment method nonce to your server
+//                    } else if (resultCode == Activity.RESULT_CANCELED) {
+//                        // the user canceled
+//                    } else {
+//                        // handle errors here, an exception may be available in
+//                        Exception error = (Exception) data.getSerializableExtra(DropInActivity.EXTRA_ERROR);
+//                    }
+//                }
+//            }
+
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {updateTabSelection(tab, false);}
 
             @SuppressLint("RestrictedApi")
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
+                if(tab.getPosition() == CALENDAR_POSITION){
+                    getActivity().startActivityForResult(new Intent(getContext(), PaymentActivity.class), CALENDAR_REQUEST, null);
+                    return;
+                }
                 if(tab.getPosition() == CALENDAR_POSITION && (!PreferenceManager.getDefaultSharedPreferences(getContext()).contains("Authorization")
                         || PreferenceManager.getDefaultSharedPreferences(getContext()).getString("Authorization", null) == null)) {
                     startActivityForResult(new Intent(getContext(), WelcomeActivity.class), CALENDAR_REQUEST, null);
@@ -380,6 +411,12 @@ public class HomeScreenView extends BaseView<EditProfilePresenter> {
                 }
             }
         };
+    }
+
+    public void onPayPress() {
+        DropInRequest dropInRequest = new DropInRequest()
+                .clientToken("eyJ2ZXJzaW9uIjoyLCJhdXRob3JpemF0aW9uRmluZ2VycHJpbnQiOiJmNjAyYTI5NWI1MjFlZTQ5ODg5MGNmYWRmNTdhZjQ4YWU4ZjlmZTJlOTBkYzhlZDM3YTNjZWViZDAyNWM5YmJifGNyZWF0ZWRfYXQ9MjAxOS0wMS0xNlQxMDozNDoyNi43NDU1ODkzNjUrMDAwMFx1MDAyNm1lcmNoYW50X2lkPTM0OHBrOWNnZjNiZ3l3MmJcdTAwMjZwdWJsaWNfa2V5PTJuMjQ3ZHY4OWJxOXZtcHIiLCJjb25maWdVcmwiOiJodHRwczovL2FwaS5zYW5kYm94LmJyYWludHJlZWdhdGV3YXkuY29tOjQ0My9tZXJjaGFudHMvMzQ4cGs5Y2dmM2JneXcyYi9jbGllbnRfYXBpL3YxL2NvbmZpZ3VyYXRpb24iLCJncmFwaFFMIjp7InVybCI6Imh0dHBzOi8vcGF5bWVudHMuc2FuZGJveC5icmFpbnRyZWUtYXBpLmNvbS9ncmFwaHFsIiwiZGF0ZSI6IjIwMTgtMDUtMDgifSwiY2hhbGxlbmdlcyI6W10sImVudmlyb25tZW50Ijoic2FuZGJveCIsImNsaWVudEFwaVVybCI6Imh0dHBzOi8vYXBpLnNhbmRib3guYnJhaW50cmVlZ2F0ZXdheS5jb206NDQzL21lcmNoYW50cy8zNDhwazljZ2YzYmd5dzJiL2NsaWVudF9hcGkiLCJhc3NldHNVcmwiOiJodHRwczovL2Fzc2V0cy5icmFpbnRyZWVnYXRld2F5LmNvbSIsImF1dGhVcmwiOiJodHRwczovL2F1dGgudmVubW8uc2FuZGJveC5icmFpbnRyZWVnYXRld2F5LmNvbSIsImFuYWx5dGljcyI6eyJ1cmwiOiJodHRwczovL29yaWdpbi1hbmFseXRpY3Mtc2FuZC5zYW5kYm94LmJyYWludHJlZS1hcGkuY29tLzM0OHBrOWNnZjNiZ3l3MmIifSwidGhyZWVEU2VjdXJlRW5hYmxlZCI6dHJ1ZSwicGF5cGFsRW5hYmxlZCI6dHJ1ZSwicGF5cGFsIjp7ImRpc3BsYXlOYW1lIjoiQWNtZSBXaWRnZXRzLCBMdGQuIChTYW5kYm94KSIsImNsaWVudElkIjpudWxsLCJwcml2YWN5VXJsIjoiaHR0cDovL2V4YW1wbGUuY29tL3BwIiwidXNlckFncmVlbWVudFVybCI6Imh0dHA6Ly9leGFtcGxlLmNvbS90b3MiLCJiYXNlVXJsIjoiaHR0cHM6Ly9hc3NldHMuYnJhaW50cmVlZ2F0ZXdheS5jb20iLCJhc3NldHNVcmwiOiJodHRwczovL2NoZWNrb3V0LnBheXBhbC5jb20iLCJkaXJlY3RCYXNlVXJsIjpudWxsLCJhbGxvd0h0dHAiOnRydWUsImVudmlyb25tZW50Tm9OZXR3b3JrIjp0cnVlLCJlbnZpcm9ubWVudCI6Im9mZmxpbmUiLCJ1bnZldHRlZE1lcmNoYW50IjpmYWxzZSwiYnJhaW50cmVlQ2xpZW50SWQiOiJtYXN0ZXJjbGllbnQzIiwiYmlsbGluZ0FncmVlbWVudHNFbmFibGVkIjp0cnVlLCJtZXJjaGFudEFjY291bnRJZCI6ImFjbWV3aWRnZXRzbHRkc2FuZGJveCIsImN1cnJlbmN5SXNvQ29kZSI6IlVTRCJ9LCJtZXJjaGFudElkIjoiMzQ4cGs5Y2dmM2JneXcyYiIsInZlbm1vIjoib2ZmIn0");
+        startActivityForResult(dropInRequest.getIntent(getContext()), 0);
     }
 
     @Override
@@ -418,6 +455,7 @@ public class HomeScreenView extends BaseView<EditProfilePresenter> {
 
     @Override
     public boolean onBack() {
+        onPayPress();
         return currentFragment.onBack();
     }
 

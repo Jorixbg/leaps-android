@@ -41,6 +41,7 @@
     <string name="homescreen_tab_home">HOME</string>
     <string name="homescreen_tab_following">FOLLOWING</string>
     <string name="homescreen_tab_cal">CALENDAR</string>
+    <string name="homescreen_tab_pay">PAY</string>
     <string name="homescreen_tab_chat">INBOX</string>
     <string name="homescreen_tab_profile">PROFILE</string>
     <string name="homescreen_search_bar_lbl">Sofia • Any Activity • Any Time</string>
@@ -244,4 +245,5 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_payment">PaymentActivity</string>
 </resources>
