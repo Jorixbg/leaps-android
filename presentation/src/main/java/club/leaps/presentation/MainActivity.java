@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements IActivity {
         Bundle bundle = new Bundle();
         bundle = getIntent().getExtras();
         inApp = true;
-        if(bundle.getString("userid") != null){
+        if(null != bundle && bundle.getString("userid") != null){
             openFragment(SplashView.class, bundle, false);
         }
         else {
